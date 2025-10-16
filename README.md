@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="assets/logo.png" alt="collection logo"  style="width: 100%; height:70%">
+    <img src="assets/logo.png" alt="collection logo"  style="width: 100%; height: 320px;">
 </p>
 
 # collection
