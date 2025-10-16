@@ -72,6 +72,7 @@ endif
 	@echo ""
 
 # export the variables to the sub-make
+export STD_C
 export LIBRARY_NAME
 export LIB_POSTFIX
 
@@ -82,23 +83,24 @@ export LIB_POSTFIX
 .PHONY: all clean test help create_build_dir lib test-bench
 
 # lib target
-lib: $(LIB_PATH)/lib$(LIBRARY_NAME)$(LIB_POSTFIX)
+lib: create_build_dir $(LIB_PATH)/lib$(LIBRARY_NAME)$(LIB_POSTFIX)
 
 # default goal
-all: create_build_dir lib
+all: lib
 
 # clean target
 clean:
 	@rm -rf $(BUILD_PATH)
 	@rm -rf $(LIB_PATH)
+	@$(MAKE) -C $(TEST_PATH) clean
 
 # test target
-test:
-	@$(MAKE) -C $(TEST_PATH)
+test: lib
+	@$(MAKE) -C $(TEST_PATH) test
 
 # test-bench target
-test-bench:
-	@$(MAKE) -C $(TEST_PATH) test-bench
+test-bench: lib
+	@$(MAKE) -C $(TEST_PATH) benchmark
 
 # help target
 help:
