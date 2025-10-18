@@ -45,6 +45,7 @@ DEPS            :=          $(patsubst $(SRC_PATH)/%.c, $(DEP_PATH)/%.d, $(SRCS)
 HOST_OS         :=          $(shell uname -s)
 
 # variable for dynamic library postfix
+# for now it supports only Linux and macOS
 DYLIB_POSTFIX   	:=          $(if $(findstring Darwin, $(HOST_OS)),.dylib,.so)
 STATIC_LIB_POSTFIX  :=          .a
 
