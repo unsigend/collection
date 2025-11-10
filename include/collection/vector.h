@@ -82,4 +82,30 @@ extern void* vector_back(Vector* vector);
  */
 extern void* vector_front(Vector* vector);
 
+/**
+ * Resize the vector to the given size.
+ * @param vector The vector to resize.
+ * @param new_size The new size of the vector.
+ */
+extern void vector_resize(Vector* vector, size_t new_size);
+
+/**
+ * Shrink the vector to the size of the elements.
+ * @param vector The vector to shrink.
+ */
+extern void vector_shrink_to_fit(Vector* vector);
+
+/**
+ * Push an element to the back of the vector.
+ * @param vector The vector to push the element to.
+ * @param element The element to push.
+ */
+extern void vector_push_back(Vector* vector, void* element);
+
+/**
+ * Pop an element from the back of the vector.
+ * @param vector The vector to pop the element from.
+ */
+extern void vector_pop_back(Vector* vector);
+
 #endif

@@ -21,6 +21,51 @@
 
 #include <collection/vector.h>
 
+#define VECTOR_RESIZE_FACTOR 2
+
+// @brief: destroy the elements in the range [index, index + count)
+static void _vector_destroy_range(Vector* vector, size_t index, size_t count){
+    if (vector->destroy) {
+        for (size_t i = index; i < index + count; i++) {
+            vector->destroy(vector->data[i]);
+        }
+    }
+}
+
+// @brief: resize the capacity of the vector
+static void _vector_resize_capacity(Vector* vector, size_t new_capacity){
+    // allocate or deallocate memory for the vector data
+    void **new_data = realloc(vector->data, new_capacity * sizeof(void *));
+    if (new_data == NULL){
+        fprintf(stderr, "FATAL: Failed to resize vector\n");
+        exit(COLLECTION_FAILURE);
+    }
+    vector->data = new_data;
+    vector->capacity = new_capacity;
+}
+
+void vector_shrink_to_fit(Vector* vector){
+    _vector_resize_capacity(vector, vector->size);
+}
+
+void vector_resize(Vector* vector, size_t new_size){
+    if (new_size == vector->size) {
+        return;
+    }
+    // check if the new size is greater than the capacity
+    if (new_size > vector->capacity) {
+        _vector_resize_capacity(vector, new_size);
+        // fill the new elements with NULL
+        memset(vector->data + vector->size, 0, (new_size - vector->size) * sizeof(void *));
+    }else {
+        // destroy the elements in the range [new_size, vector->size)
+        _vector_destroy_range(vector, new_size, vector->size - new_size);
+        memset(vector->data + new_size, 0, (vector->size - new_size) * sizeof(void *));
+    }
+
+    vector->size = new_size;
+}
+
 void vector_init(Vector* vector, void (*destroy)(void *)){
     // allocate memory for the vector stuct
     vector->data = NULL;
@@ -32,11 +77,7 @@ void vector_init(Vector* vector, void (*destroy)(void *)){
 
 void vector_destroy(Vector* vector){
     // destroy the elements if the destroy function is provided
-    if (vector->destroy) {
-        for (size_t i = 0; i < vector->size; i++) {
-            vector->destroy(vector->data[i]);
-        }
-    }
+    _vector_destroy_range(vector, 0, vector->size);
 
     free(vector->data);
     vector->data = NULL;
@@ -71,4 +112,29 @@ void* vector_back(Vector* vector){
 
 void* vector_front(Vector* vector){
     return vector->data;
+}
+
+void vector_push_back(Vector* vector, void* element){
+    // if the capacity is enough
+    if (vector->size < vector->capacity) {
+        vector->data[vector->size] = element;
+        vector->size++;
+    } else {
+        const size_t new_capacity = vector->capacity ? 
+        vector->capacity * VECTOR_RESIZE_FACTOR : 1;
+        _vector_resize_capacity(vector, new_capacity);
+        vector->data[vector->size] = element;
+        vector->size++;
+    }
+}
+
+void vector_pop_back(Vector* vector){
+    if (vector->size == 0){
+        return;
+    }
+    vector->size--;
+    if (vector->destroy) {
+        vector->destroy(vector->data[vector->size]);
+    }
+    vector->data[vector->size] = NULL;
 }

@@ -1,0 +1,79 @@
+@font-face {
+    font-family: "Alan Sans";
+    src: url("/AlanSans-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Fira Code";
+    src: url("/FiraCode-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Set as the default font for the entire site using Starlight CSS variables */
+:root {
+    --sl-font: "Alan Sans", system-ui, -apple-system, sans-serif;
+    --sl-font-mono: "Fira Code", "Courier New", monospace;
+}
+
+/* Apply to body and all text elements */
+html,
+body {
+    font-family: "Alan Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* Apply to Starlight components */
+.sl-markdown-content,
+.sidebar,
+header,
+nav,
+.sl-link,
+.sl-card,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+li,
+td,
+th,
+span,
+div {
+    font-family: "Alan Sans", system-ui, -apple-system, sans-serif;
+}
+
+/* Apply Fira Code to all code elements - use !important to override defaults */
+code,
+pre,
+code *,
+pre *,
+.sl-code,
+.sl-code *,
+.sl-code code,
+.sl-code pre,
+.sl-markdown-content code,
+.sl-markdown-content pre,
+.sl-markdown-content pre code,
+.sl-markdown-content code *,
+.sl-markdown-content pre *,
+.token,
+.token *,
+.hljs,
+.hljs *,
+[class*="language-"],
+[class*="language-"] *,
+.shiki,
+.shiki *,
+.astro-code,
+.astro-code *,
+pre code,
+pre code * {
+    font-family: "Fira Code", "Courier New", monospace !important;
+    font-feature-settings: "liga" 1, "calt" 1 !important;
+}
