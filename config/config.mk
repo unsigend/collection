@@ -23,7 +23,7 @@ AR              :=          ar
 STD_C           :=          c11
 
 # build method
-BUILD_METHOD    :=          dynamic
+BUILD_METHOD    :=          static
 
 # library name
 LIBRARY_NAME    :=          collection

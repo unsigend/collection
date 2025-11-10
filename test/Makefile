@@ -102,6 +102,11 @@ test: create_build_dir $(OBJS_TEST)
 	@echo " + LD\t$(CUR_DIR_NAME)/$(notdir $(BUILD_PATH))/test"
 	@echo "Build unit test ./test/build/$@\n"
 
+# unit test module target
+test-%: 
+	@$(MAKE) test
+	@$(BUILD_PATH)/test -m $*
+
 # benchmark test
 benchmark: create_build_dir $(OBJS_BENCHMARK)
 	@$(CC) $(LD_FLAGS) -o $(BUILD_PATH)/benchmark $(OBJS_BENCHMARK) \

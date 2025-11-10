@@ -105,18 +105,26 @@ test-bench: lib
 
 # test module target
 test-%: lib
+ifeq ($(BUILD_METHOD), static)
 	@$(MAKE) -C $(TEST_PATH) test-$*
+else
+	@echo "Dynamic library is not supported for module tests"
+	@echo "You can run it manually by running:"
+	@echo "  make test"
+	@echo "  ./test/build/test -m $*"
+endif
 
 # help target
 help:
 	@echo "Collection - A generic data structure and algorithms library for modern C"
 	@echo "Copyright (C) 2025 Yixiang Qiu"
 	@echo "Usage:"
-	@echo "\tmake all         - Build the library and tests"
-	@echo "\tmake clean       - Clean the build directory"
-	@echo "\tmake test        - Run the tests"
-	@echo "\tmake test-bench  - Run the benchmark tests"
-	@echo "\tmake help        - Show this help message"
+	@echo "\tmake all         	- Build the library and tests"
+	@echo "\tmake clean       	- Clean the build directory"
+	@echo "\tmake test        	- Run the tests"
+	@echo "\tmake test-[module] \t- Run the tests for a specific module"
+	@echo "\tmake test-bench  	- Run the benchmark tests"
+	@echo "\tmake help        	- Show this help message"
 	@echo ""
 
 # generate dir
