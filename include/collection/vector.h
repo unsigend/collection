@@ -45,4 +45,41 @@ extern void vector_init(Vector* vector, void (*destroy)(void *));
  */
 extern void vector_destroy(Vector* vector);
 
+
+/**
+ * Get the size of the vector.
+ * @param vector The vector to get the size of.
+ * @return The size of the vector.
+ */
+extern size_t vector_size(Vector* vector);
+
+/**
+ * Get the capacity of the vector.
+ * @param vector The vector to get the capacity of.
+ * @return The capacity of the vector.
+ */
+extern size_t vector_capacity(Vector* vector);
+
+/**
+ * Get the element at the given index.
+ * @param vector The vector to get the element from.
+ * @param index The index of the element to get.
+ * @return The element at the given index.
+ */
+extern void* vector_at(Vector* vector, size_t index);
+
+/**
+ * Get the last element of the vector.
+ * @param vector The vector to get the last element from.
+ * @return The last element of the vector, or NULL if the vector is empty.
+ */
+extern void* vector_back(Vector* vector);
+
+/**
+ * Get the first element of the vector.
+ * @param vector The vector to get the first element from.
+ * @return The first element of the vector, or NULL if the vector is empty.
+ */
+extern void* vector_front(Vector* vector);
+
 #endif

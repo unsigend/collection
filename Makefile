@@ -103,6 +103,10 @@ test: lib
 test-bench: lib
 	@$(MAKE) -C $(TEST_PATH) benchmark
 
+# test module target
+test-%: lib
+	@$(MAKE) -C $(TEST_PATH) test-$*
+
 # help target
 help:
 	@echo "Collection - A generic data structure and algorithms library for modern C"

@@ -30,6 +30,7 @@ BENCHMARKS_PATH     :=          $(CUR_DIR)/benchmark
 BUILD_PATH    		:=          $(CUR_DIR)/build
 DEP_PATH      		:=          $(BUILD_PATH)/dep
 OBJ_PATH      		:=          $(BUILD_PATH)/obj
+EXTERNAL_PATH       :=          $(CUR_DIR)/external
 
 # variables for flags
 CC_FLAGS      :=          -std=$(STD_C)
@@ -37,24 +38,27 @@ CC_FLAGS      +=  		  -Wall -Wextra -Werror
 CC_FLAGS      +=          -Wno-unused-parameter
 CC_FLAGS      +=          -O2
 CC_FLAGS      +=          -I$(INCLUDE_PATH)
+CC_FLAGS      +=          -I$(EXTERNAL_PATH)/include
 CC_DEPS_FLAGS :=          -MMD -MP -MF
 LD_FLAGS      :=          -L$(LIB_PATH) -l$(LIBRARY_NAME)
 
+# source files
 TEST_SRCS           :=          $(shell find $(TESTS_PATH) -name "*.c")
+EXTERNAL_SRCS       :=          $(shell find $(EXTERNAL_PATH)/src -name "*.c")
 BENCHMARK_SRCS      :=          $(shell find $(BENCHMARKS_PATH) -name "*.c")
+
+# objects
 TEST_OBJS           :=          $(patsubst $(TESTS_PATH)/%.c, $(OBJ_PATH)/%.o, $(TEST_SRCS))
 BENCHMARK_OBJS      :=          $(patsubst $(BENCHMARKS_PATH)/%.c, $(OBJ_PATH)/%.o, $(BENCHMARK_SRCS))
+EXTERNAL_OBJS       :=          $(patsubst $(EXTERNAL_PATH)/src/%.c, $(OBJ_PATH)/%.o, $(EXTERNAL_SRCS))
+
+# dependencies
 TEST_DEPS           :=          $(patsubst $(TESTS_PATH)/%.c, $(DEP_PATH)/%.d, $(TEST_SRCS))
 BENCHMARK_DEPS      :=          $(patsubst $(BENCHMARKS_PATH)/%.c, $(DEP_PATH)/%.d, $(BENCHMARK_SRCS))
 
-TEST_MAIN_OBJ       :=          $(OBJ_PATH)/main.o
-BENCHMARK_MAIN_OBJ  :=          $(OBJ_PATH)/benchmark.main.o
-
-TEST_OBJS           +=          $(TEST_MAIN_OBJ)
-BENCHMARK_OBJS      +=          $(BENCHMARK_MAIN_OBJ)
-
-TEST_DEPS           +=          $(TEST_MAIN_OBJ:.o=.d)
-BENCHMARK_DEPS      +=          $(BENCHMARK_MAIN_OBJ:.o=.d)
+# final dependencies OBJS
+OBJS_TEST           :=          $(TEST_OBJS) $(EXTERNAL_OBJS)
+OBJS_BENCHMARK     :=          $(BENCHMARK_OBJS) $(EXTERNAL_OBJS)
 
 # general rules for all tests
 $(OBJ_PATH)/%.o: $(TESTS_PATH)/%.c
@@ -68,9 +72,10 @@ $(OBJ_PATH)/%.o: $(BENCHMARKS_PATH)/%.c
 	@$(CC) $(CC_FLAGS) $(CC_DEPS_FLAGS) $(DEP_PATH)/$(notdir $(@F:.o=.d)) -c $< -o $@
 	@echo " + CC\t$(CUR_DIR_NAME)/$@"
 
-# rules for main objects
-$(OBJ_PATH)/%.o: $(CUR_DIR)/%.c
-	@$(CC) $(CC_FLAGS) $(CC_DEPS_FLAGS) $(DEP_PATH)/$(notdir $(@F:.o=.d)) -c $< -o $@
+# general rules for all external objects
+$(OBJ_PATH)/%.o: $(EXTERNAL_PATH)/src/%.c
+	@mkdir -p $(dir $@)
+	@$(CC) $(CC_FLAGS) -c $< -o $@
 	@echo " + CC\t$(CUR_DIR_NAME)/$@"
 
 # include the dependencies
@@ -91,15 +96,15 @@ clean:
 	@rm -rf $(BUILD_PATH)
 
 # unit test
-test: create_build_dir $(TEST_OBJS)
-	@$(CC) $(LD_FLAGS) -o $(BUILD_PATH)/test $(TEST_OBJS) \
+test: create_build_dir $(OBJS_TEST)
+	@$(CC) $(LD_FLAGS) -o $(BUILD_PATH)/test $(OBJS_TEST) \
 	$(LIB_PATH)/lib$(LIBRARY_NAME)$(LIB_POSTFIX)
 	@echo " + LD\t$(CUR_DIR_NAME)/$(notdir $(BUILD_PATH))/test"
 	@echo "Build unit test ./test/build/$@\n"
 
 # benchmark test
-benchmark: create_build_dir $(BENCHMARK_OBJS)
-	@$(CC) $(LD_FLAGS) -o $(BUILD_PATH)/benchmark $(BENCHMARK_OBJS) \
+benchmark: create_build_dir $(OBJS_BENCHMARK)
+	@$(CC) $(LD_FLAGS) -o $(BUILD_PATH)/benchmark $(OBJS_BENCHMARK) \
 	$(LIB_PATH)/lib$(LIBRARY_NAME)$(LIB_POSTFIX)
 	@echo " + LD\t$(CUR_DIR_NAME)/$(notdir $(BUILD_PATH))/benchmark"
 	@echo "Build benchmark test ./test/build/$@\n"
