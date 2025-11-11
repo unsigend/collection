@@ -947,6 +947,862 @@ UTEST_TEST_CASE(vector_pop_back){
 }
 
 /**
+ * Test: vector_insert
+ * Dependencies: vector_init, vector_push_back, vector_at, vector_size
+ * Description: Tests inserting elements at arbitrary positions.
+ */
+UTEST_TEST_CASE(vector_insert){
+    // Test 1: Insert at beginning of empty vector
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        const char *data = "first";
+        vector_insert(&vec, 0, (void *)data);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 1);
+        EXPECT_TRUE(vector_at(&vec, 0) == (void *)data);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 2: Insert at beginning of non-empty vector
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"second");
+        vector_push_back(&vec, (void *)"third");
+        
+        vector_insert(&vec, 0, (void *)"first");
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 3);
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "first");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "second");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 2), "third");
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 3: Insert in the middle
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"first");
+        vector_push_back(&vec, (void *)"third");
+        
+        vector_insert(&vec, 1, (void *)"second");
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 3);
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "first");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "second");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 2), "third");
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 4: Insert at end (equivalent to push_back)
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"first");
+        vector_push_back(&vec, (void *)"second");
+        
+        vector_insert(&vec, vector_size(&vec), (void *)"third");
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 3);
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 2), "third");
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 5: Multiple insertions at same position
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"end");
+        
+        vector_insert(&vec, 0, (void *)"c");
+        vector_insert(&vec, 0, (void *)"b");
+        vector_insert(&vec, 0, (void *)"a");
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 4);
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "a");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "b");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 2), "c");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 3), "end");
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 6: Insert NULL pointer
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"first");
+        vector_insert(&vec, 1, NULL);
+        vector_push_back(&vec, (void *)"third");
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 3);
+        EXPECT_NULL(vector_at(&vec, 1));
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 7: Insert with capacity growth
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        // Fill to capacity
+        vector_push_back(&vec, (void *)1);
+        size_t initial_cap = vector_capacity(&vec);
+        
+        // Insert should trigger growth
+        vector_insert(&vec, 0, (void *)0);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 2);
+        EXPECT_GREATER_UINT64(vector_capacity(&vec), initial_cap);
+        EXPECT_TRUE(vector_at(&vec, 0) == (void *)0);
+        EXPECT_TRUE(vector_at(&vec, 1) == (void *)1);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 8: Insert multiple elements sequentially
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 10; i++) {
+            vector_insert(&vec, i, (void *)(long)i);
+        }
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 10);
+        
+        for (int i = 0; i < 10; i++) {
+            EXPECT_TRUE(vector_at(&vec, i) == (void *)(long)i);
+        }
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 9: Insert preserves existing elements
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        const char *elements[] = {"a", "b", "d", "e"};
+        for (int i = 0; i < 4; i++) {
+            vector_push_back(&vec, (void *)elements[i]);
+        }
+        
+        vector_insert(&vec, 2, (void *)"c");
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 5);
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "a");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "b");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 2), "c");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 3), "d");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 4), "e");
+        
+        vector_destroy(&vec);
+    }
+    
+    // Note: Out of bounds insert (index > size) causes termination and cannot be tested
+}
+
+/**
+ * Test: vector_remove
+ * Dependencies: vector_init, vector_push_back, vector_at, vector_size
+ * Description: Tests removing elements from arbitrary positions.
+ */
+UTEST_TEST_CASE(vector_remove){
+    // Test 1: Remove only element
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"only");
+        vector_remove(&vec, 0);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 2: Remove first element
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"first");
+        vector_push_back(&vec, (void *)"second");
+        vector_push_back(&vec, (void *)"third");
+        
+        vector_remove(&vec, 0);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 2);
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "second");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "third");
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 3: Remove middle element
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"first");
+        vector_push_back(&vec, (void *)"second");
+        vector_push_back(&vec, (void *)"third");
+        
+        vector_remove(&vec, 1);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 2);
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "first");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "third");
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 4: Remove last element
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"first");
+        vector_push_back(&vec, (void *)"second");
+        vector_push_back(&vec, (void *)"third");
+        
+        vector_remove(&vec, 2);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 2);
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "first");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "second");
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 5: Remove multiple elements sequentially
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 10; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        // Remove every other element from the front
+        for (int i = 0; i < 5; i++) {
+            vector_remove(&vec, 0);
+        }
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 5);
+        
+        // Remaining elements should be 5-9
+        for (int i = 0; i < 5; i++) {
+            EXPECT_TRUE(vector_at(&vec, i) == (void *)(long)(i + 5));
+        }
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 6: Capacity unchanged after remove
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 10; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        size_t cap = vector_capacity(&vec);
+        
+        vector_remove(&vec, 5);
+        vector_remove(&vec, 3);
+        
+        EXPECT_EQUAL_UINT64(vector_capacity(&vec), cap);
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 8);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 7: Remove with destroy function
+    {
+        int destroy_count = 0;
+        Vector vec;
+        vector_init(&vec, destroy_counter);
+        
+        vector_push_back(&vec, &destroy_count);
+        vector_push_back(&vec, &destroy_count);
+        vector_push_back(&vec, &destroy_count);
+        
+        vector_remove(&vec, 1);
+        
+        EXPECT_EQUAL_INT(destroy_count, 1);
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 2);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 8: Remove all elements one by one from front
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 5; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        for (int i = 0; i < 5; i++) {
+            vector_remove(&vec, 0);
+        }
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 9: Remove all elements one by one from back
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 5; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        // Always remove last element
+        for (int i = 4; i >= 0; i--) {
+            vector_remove(&vec, vector_size(&vec) - 1);
+        }
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 10: Remove then insert at same position
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"a");
+        vector_push_back(&vec, (void *)"b");
+        vector_push_back(&vec, (void *)"c");
+        
+        vector_remove(&vec, 1);
+        vector_insert(&vec, 1, (void *)"new");
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 3);
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "a");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "new");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 2), "c");
+        
+        vector_destroy(&vec);
+    }
+    
+    // Note: Out of bounds remove (index >= size) causes termination and cannot be tested
+}
+
+/**
+ * Test: vector_clear
+ * Dependencies: vector_init, vector_push_back, vector_size, vector_capacity
+ * Description: Tests clearing all elements from the vector.
+ */
+UTEST_TEST_CASE(vector_clear){
+    // Test 1: Clear empty vector
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_clear(&vec);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 2: Clear single element
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"element");
+        vector_clear(&vec);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 3: Clear multiple elements
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 10; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        vector_clear(&vec);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 4: Capacity unchanged after clear
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 10; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        size_t cap = vector_capacity(&vec);
+        
+        vector_clear(&vec);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        EXPECT_EQUAL_UINT64(vector_capacity(&vec), cap);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 5: Clear with destroy function
+    {
+        int destroy_count = 0;
+        Vector vec;
+        vector_init(&vec, destroy_counter);
+        
+        for (int i = 0; i < 100; i++) {
+            vector_push_back(&vec, &destroy_count);
+        }
+        
+        vector_clear(&vec);
+        
+        EXPECT_EQUAL_INT(destroy_count, 100);
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 6: Push after clear
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"before");
+        vector_clear(&vec);
+        
+        vector_push_back(&vec, (void *)"after");
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 1);
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "after");
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 7: Multiple clear operations
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int cycle = 0; cycle < 3; cycle++) {
+            for (int i = 0; i < 5; i++) {
+                vector_push_back(&vec, (void *)(long)i);
+            }
+            
+            EXPECT_EQUAL_UINT64(vector_size(&vec), 5);
+            
+            vector_clear(&vec);
+            
+            EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        }
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 8: Clear and shrink_to_fit
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 100; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        vector_clear(&vec);
+        vector_shrink_to_fit(&vec);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        EXPECT_EQUAL_UINT64(vector_capacity(&vec), 0);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 9: Clear preserves capacity for reuse
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 50; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        size_t cap_before = vector_capacity(&vec);
+        vector_clear(&vec);
+        size_t cap_after = vector_capacity(&vec);
+        
+        EXPECT_EQUAL_UINT64(cap_before, cap_after);
+        
+        // Should be able to push without reallocation
+        for (int i = 0; i < 50; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        EXPECT_EQUAL_UINT64(vector_capacity(&vec), cap_after);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 10: Clear then resize
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 10; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        vector_clear(&vec);
+        vector_resize(&vec, 5);
+        
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 5);
+        
+        // All elements should be NULL
+        for (size_t i = 0; i < 5; i++) {
+            EXPECT_NULL(vector_at(&vec, i));
+        }
+        
+        vector_destroy(&vec);
+    }
+}
+
+/**
+ * Test: vector_empty
+ * Dependencies: vector_init, vector_push_back, vector_pop_back
+ * Description: Tests checking if the vector is empty.
+ */
+UTEST_TEST_CASE(vector_empty){
+    // Test 1: Empty after initialization
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        EXPECT_TRUE(vector_empty(&vec));
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 2: Not empty after push
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"element");
+        
+        EXPECT_FALSE(vector_empty(&vec));
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 3: Empty after push and pop
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"element");
+        EXPECT_FALSE(vector_empty(&vec));
+        
+        vector_pop_back(&vec);
+        EXPECT_TRUE(vector_empty(&vec));
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 4: Empty after clear
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 10; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        EXPECT_FALSE(vector_empty(&vec));
+        
+        vector_clear(&vec);
+        
+        EXPECT_TRUE(vector_empty(&vec));
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 5: Empty after resize to zero
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_resize(&vec, 10);
+        EXPECT_FALSE(vector_empty(&vec));
+        
+        vector_resize(&vec, 0);
+        EXPECT_TRUE(vector_empty(&vec));
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 6: Not empty after resize from zero
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        EXPECT_TRUE(vector_empty(&vec));
+        
+        vector_resize(&vec, 5);
+        
+        EXPECT_FALSE(vector_empty(&vec));
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 7: Empty consistency with size
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        EXPECT_TRUE(vector_empty(&vec) == (vector_size(&vec) == 0));
+        
+        vector_push_back(&vec, (void *)1);
+        EXPECT_TRUE(vector_empty(&vec) == (vector_size(&vec) == 0));
+        
+        vector_push_back(&vec, (void *)2);
+        EXPECT_TRUE(vector_empty(&vec) == (vector_size(&vec) == 0));
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 8: Empty after multiple operations
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        // Start empty
+        EXPECT_TRUE(vector_empty(&vec));
+        
+        // Add elements
+        for (int i = 0; i < 5; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        EXPECT_FALSE(vector_empty(&vec));
+        
+        // Remove all
+        for (int i = 0; i < 5; i++) {
+            vector_pop_back(&vec);
+        }
+        EXPECT_TRUE(vector_empty(&vec));
+        
+        vector_destroy(&vec);
+    }
+}
+
+/**
+ * Test: vector_data
+ * Dependencies: vector_init, vector_push_back, vector_resize
+ * Description: Tests getting the internal data pointer.
+ */
+UTEST_TEST_CASE(vector_data){
+    // Test 1: Data of empty vector is NULL
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        EXPECT_NULL(vector_data(&vec));
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 2: Data pointer after push
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        const char *elem = "test";
+        vector_push_back(&vec, (void *)elem);
+        
+        void** data = vector_data(&vec);
+        EXPECT_NOT_NULL(data);
+        EXPECT_TRUE(data[0] == (void *)elem);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 3: Data consistency with direct member access
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)"test");
+        
+        EXPECT_TRUE(vector_data(&vec) == vec.data);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 4: Direct access via data pointer
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        const char *elements[] = {"a", "b", "c", "d", "e"};
+        for (int i = 0; i < 5; i++) {
+            vector_push_back(&vec, (void *)elements[i]);
+        }
+        
+        void** data = vector_data(&vec);
+        
+        for (int i = 0; i < 5; i++) {
+            EXPECT_TRUE(data[i] == (void *)elements[i]);
+        }
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 5: Data pointer with resize
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_resize(&vec, 10);
+        
+        void** data = vector_data(&vec);
+        EXPECT_NOT_NULL(data);
+        
+        // All should be NULL
+        for (size_t i = 0; i < 10; i++) {
+            EXPECT_NULL(data[i]);
+        }
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 6: Modify through data pointer
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_resize(&vec, 3);
+        
+        void** data = vector_data(&vec);
+        data[0] = (void *)"first";
+        data[1] = (void *)"second";
+        data[2] = (void *)"third";
+        
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "first");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "second");
+        EXPECT_EQUAL_STRING((char*)vector_at(&vec, 2), "third");
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 7: Data pointer changes after reallocation
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_push_back(&vec, (void *)1);
+        void** data_before = vector_data(&vec);
+        
+        // Trigger reallocation
+        for (int i = 0; i < 100; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        void** data_after = vector_data(&vec);
+        
+        // Pointer should have changed due to reallocation
+        EXPECT_TRUE(data_before != data_after);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 8: Iterate using data pointer
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 20; i++) {
+            vector_push_back(&vec, (void *)(long)(i * 2));
+        }
+        
+        void** data = vector_data(&vec);
+        
+        for (int i = 0; i < 20; i++) {
+            EXPECT_TRUE(data[i] == (void *)(long)(i * 2));
+        }
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 9: Data pointer after clear still valid but size is zero
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        for (int i = 0; i < 10; i++) {
+            vector_push_back(&vec, (void *)(long)i);
+        }
+        
+        void** data_before = vector_data(&vec);
+        
+        vector_clear(&vec);
+        
+        void** data_after = vector_data(&vec);
+        
+        // Pointer should be same (capacity unchanged)
+        EXPECT_TRUE(data_before == data_after);
+        EXPECT_NOT_NULL(data_after);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 10: Data pointer with shrink_to_fit on empty
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        vector_resize(&vec, 10);
+        EXPECT_NOT_NULL(vector_data(&vec));
+        
+        vector_resize(&vec, 0);
+        vector_shrink_to_fit(&vec);
+        
+        EXPECT_NULL(vector_data(&vec));
+        
+        vector_destroy(&vec);
+    }
+}
+
+/**
  * Test Suite: vector
  * Runs all vector test cases in dependency order.
  */
@@ -962,5 +1818,10 @@ UTEST_TEST_SUITE(vector){
     UTEST_RUN_TEST_CASE(vector_front);
     UTEST_RUN_TEST_CASE(vector_back);
     UTEST_RUN_TEST_CASE(vector_pop_back);
+    UTEST_RUN_TEST_CASE(vector_empty);
+    UTEST_RUN_TEST_CASE(vector_data);
+    UTEST_RUN_TEST_CASE(vector_insert);
+    UTEST_RUN_TEST_CASE(vector_remove);
+    UTEST_RUN_TEST_CASE(vector_clear);
 }
 

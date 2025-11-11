@@ -5,10 +5,6 @@ description: Dynamic array implementation with automatic resizing
 
 The `Vector` is a dynamic array data structure that automatically grows and shrinks as needed. It provides efficient random access to elements and is inspired by C++ `std::vector`.
 
-## Overview
-
-Vector is a sequence container that stores elements as void pointers with automatic memory management. The storage is handled automatically, being expanded and contracted as needed.
-
 ## Type Definition
 
 ```c
@@ -25,6 +21,8 @@ typedef struct {
 ---
 
 ## Functions
+
+Public interfaces for vector, include `<collection/vector.h>`.
 
 ### vector_init
 
@@ -121,6 +119,88 @@ The capacity of the currently allocated storage. This may be greater than or equ
 **Complexity:** O(1)
 
 **Note:** Use `vector_shrink_to_fit()` to reduce capacity to match size.
+
+---
+
+### vector_empty
+
+```c
+bool vector_empty(Vector* vector);
+```
+
+Checks if the vector is empty.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+
+**Return Value:**
+
+`true` if the vector contains no elements (size == 0), `false` otherwise.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+Vector vec;
+vector_init(&vec, NULL);
+
+if (vector_empty(&vec)) {
+    printf("Vector is empty\n");
+}
+
+vector_push_back(&vec, "element");
+
+if (!vector_empty(&vec)) {
+    printf("Vector has elements\n");
+}
+```
+
+---
+
+### vector_data
+
+```c
+void** vector_data(Vector* vector);
+```
+
+Returns a pointer to the underlying array serving as element storage.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+
+**Return Value:**
+
+Pointer to the underlying array, or `NULL` if the vector is empty.
+
+**Complexity:** O(1)
+
+**Description:**
+
+Returns a direct pointer to the internal array of element pointers. This allows direct access to the storage for performance-critical operations. The returned pointer may be invalidated by any operation that changes the vector's capacity.
+
+**Important:** 
+-   The pointer is invalidated after operations that cause reallocation (push_back, insert, resize with growth)
+-   Direct modification of the array should be done carefully to avoid breaking vector invariants
+-   Valid only for indices [0, size)
+
+**Example:**
+
+```c
+Vector vec;
+vector_init(&vec, NULL);
+
+vector_push_back(&vec, "a");
+vector_push_back(&vec, "b");
+vector_push_back(&vec, "c");
+
+void** data = vector_data(&vec);
+for (size_t i = 0; i < vector_size(&vec); i++) {
+    printf("%s\n", (char*)data[i]);
+}
+```
 
 ---
 
@@ -320,6 +400,112 @@ vector_pop_back(&vec);        // Safe no-op on empty vector
 
 ---
 
+### vector_insert
+
+```c
+void vector_insert(Vector* vector, size_t index, void* element);
+```
+
+Inserts an element at the specified position.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+-   `index` - Position where the element will be inserted (0-based)
+-   `element` - Pointer to the element to insert (can be `NULL`)
+
+**Description:**
+
+Inserts the element at the specified index, shifting all elements at and after that position to the right. The element can be inserted at any position from 0 to size (inclusive), where inserting at size is equivalent to `vector_push_back()`.
+
+**Complexity:** O(n) where n is the number of elements after the insertion point
+
+**Important:** Accessing an index > size causes program termination. Valid indices are [0, size].
+
+**Example:**
+
+```c
+vector_push_back(&vec, "first");
+vector_push_back(&vec, "third");
+vector_insert(&vec, 1, "second");  // Insert in the middle
+// Vector now contains: ["first", "second", "third"]
+
+vector_insert(&vec, 0, "start");   // Insert at beginning
+vector_insert(&vec, vector_size(&vec), "end");  // Insert at end
+```
+
+---
+
+### vector_remove
+
+```c
+void vector_remove(Vector* vector, size_t index);
+```
+
+Removes the element at the specified position.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+-   `index` - Position of the element to remove (0-based)
+
+**Description:**
+
+Removes the element at the specified index, shifting all elements after that position to the left. The destroy function is called on the removed element if provided.
+
+**Complexity:** O(n) where n is the number of elements after the removal point
+
+**Important:** Accessing an index >= size causes program termination. Valid indices are [0, size).
+
+**Example:**
+
+```c
+// Vector contains: ["a", "b", "c", "d"]
+vector_remove(&vec, 1);  // Remove "b"
+// Vector now contains: ["a", "c", "d"]
+
+vector_remove(&vec, 0);  // Remove first element
+// Vector now contains: ["c", "d"]
+```
+
+**Note:** Capacity is not reduced. Use `vector_shrink_to_fit()` to free memory.
+
+---
+
+### vector_clear
+
+```c
+void vector_clear(Vector* vector);
+```
+
+Removes all elements from the vector.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+
+**Description:**
+
+Removes all elements from the vector and sets size to 0. The destroy function is called on each element if provided. The capacity remains unchanged.
+
+**Complexity:** O(n) where n is the number of elements
+
+**Example:**
+
+```c
+vector_push_back(&vec, "one");
+vector_push_back(&vec, "two");
+vector_push_back(&vec, "three");
+// size=3, capacity>=3
+
+vector_clear(&vec);
+// size=0, capacity unchanged
+```
+
+**Note:** Capacity is not reduced. Use `vector_shrink_to_fit()` after clearing to free memory.
+
+---
+
 ## Usage Examples
 
 ### Basic Usage
@@ -424,6 +610,8 @@ int main(void) {
 | `vector_destroy`       | O(n)           |
 | `vector_size`          | O(1)           |
 | `vector_capacity`      | O(1)           |
+| `vector_empty`         | O(1)           |
+| `vector_data`          | O(1)           |
 | `vector_at`            | O(1)           |
 | `vector_front`         | O(1)           |
 | `vector_back`          | O(1)           |
@@ -431,6 +619,9 @@ int main(void) {
 | `vector_shrink_to_fit` | O(n)           |
 | `vector_push_back`     | O(1) amortized |
 | `vector_pop_back`      | O(1)           |
+| `vector_insert`        | O(n)           |
+| `vector_remove`        | O(n)           |
+| `vector_clear`         | O(n)           |
 
 Where n is the number of elements.
 
