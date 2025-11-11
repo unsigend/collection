@@ -7,9 +7,9 @@ The `Vector` is a dynamic array data structure that automatically grows and shri
 
 ## Overview
 
-A `Vector` is a generic container that stores elements of any type using void pointers. It maintains both a size (number of elements) and a capacity (allocated memory), automatically resizing when needed.
+Vector is a sequence container that stores elements as void pointers with automatic memory management. The storage is handled automatically, being expanded and contracted as needed.
 
-## Structure
+## Type Definition
 
 ```c
 typedef struct {
@@ -20,262 +20,439 @@ typedef struct {
 } Vector;
 ```
 
-### Fields
+**Note:** Direct access to struct members is possible but not recommended. Use the provided interface functions instead.
 
-- **`data`**: Pointer to the array of void pointers storing elements
-- **`size`**: Current number of elements in the vector
-- **`capacity`**: Total allocated capacity of the vector
-- **`destroy`**: Optional function pointer to destroy elements when they are removed
+---
 
-## Initialization and Cleanup
+## Functions
 
-### `vector_init`
-
-Initialize a vector with an optional destroy function.
+### vector_init
 
 ```c
 void vector_init(Vector* vector, void (*destroy)(void *));
 ```
 
+Initializes a vector to an empty state.
+
 **Parameters:**
-- `vector`: Pointer to the vector to initialize
-- `destroy`: Function pointer to destroy elements (can be `NULL` if elements don't need cleanup)
+
+-   `vector` - Pointer to the vector to initialize
+-   `destroy` - Optional destructor function called when elements are removed. Pass `NULL` if no cleanup is needed
+
+**Complexity:** O(1)
 
 **Example:**
+
 ```c
 Vector vec;
-vector_init(&vec, free);  // Use free() to destroy elements
+vector_init(&vec, NULL);  // No destructor
+
+Vector vec2;
+vector_init(&vec2, free);  // Use free() as destructor
 ```
 
-### `vector_destroy`
+---
 
-Destroy a vector and free all associated memory.
+### vector_destroy
 
 ```c
 void vector_destroy(Vector* vector);
 ```
 
+Destroys the vector and frees all associated memory.
+
 **Parameters:**
-- `vector`: Pointer to the vector to destroy
+
+-   `vector` - Pointer to the vector to destroy
+
+**Description:**
+
+Calls the destroy function (if provided) on all elements, then frees the internal array. After destruction, the vector is reset to an empty state.
+
+**Complexity:** O(n) where n is the number of elements
 
 **Example:**
+
 ```c
+Vector vec;
+vector_init(&vec, NULL);
+// ... use vector ...
 vector_destroy(&vec);
 ```
 
-## Accessing Elements
+---
 
-### `vector_size`
-
-Get the current number of elements in the vector.
+### vector_size
 
 ```c
 size_t vector_size(Vector* vector);
 ```
 
-**Returns:** The number of elements in the vector
+Returns the number of elements in the vector.
 
-**Example:**
-```c
-size_t count = vector_size(&vec);
-```
+**Parameters:**
 
-### `vector_capacity`
+-   `vector` - Pointer to the vector
 
-Get the current capacity of the vector.
+**Return Value:**
+
+The number of elements currently stored in the vector.
+
+**Complexity:** O(1)
+
+---
+
+### vector_capacity
 
 ```c
 size_t vector_capacity(Vector* vector);
 ```
 
-**Returns:** The allocated capacity of the vector
+Returns the number of elements that can be held in currently allocated storage.
 
-**Example:**
-```c
-size_t cap = vector_capacity(&vec);
-```
+**Parameters:**
 
-### `vector_at`
+-   `vector` - Pointer to the vector
 
-Get the element at a specific index.
+**Return Value:**
+
+The capacity of the currently allocated storage. This may be greater than or equal to the size.
+
+**Complexity:** O(1)
+
+**Note:** Use `vector_shrink_to_fit()` to reduce capacity to match size.
+
+---
+
+### vector_at
 
 ```c
 void* vector_at(Vector* vector, size_t index);
 ```
 
+Returns the element at the specified index with bounds checking.
+
 **Parameters:**
-- `vector`: Pointer to the vector
-- `index`: Zero-based index of the element
 
-**Returns:** Pointer to the element at the given index
+-   `vector` - Pointer to the vector
+-   `index` - Position of the element to return (0-based)
 
-**Note:** This function will exit the program if the index is out of bounds.
+**Return Value:**
+
+Pointer to the element at the specified index.
+
+**Complexity:** O(1)
+
+**Important:** Accessing an index >= size causes program termination. Valid indices are [0, size).
 
 **Example:**
+
 ```c
-int* value = (int*)vector_at(&vec, 0);
+Vector vec;
+vector_init(&vec, NULL);
+vector_push_back(&vec, "hello");
+char* str = (char*)vector_at(&vec, 0);  // Returns "hello"
 ```
 
-### `vector_front`
+---
 
-Get the first element of the vector.
+### vector_front
 
 ```c
 void* vector_front(Vector* vector);
 ```
 
-**Returns:** Pointer to the first element, or `NULL` if the vector is empty
+Returns the first element in the vector.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+
+**Return Value:**
+
+Pointer to the first element, or `NULL` if the vector is empty.
+
+**Complexity:** O(1)
 
 **Example:**
+
 ```c
-int* first = (int*)vector_front(&vec);
+void* first = vector_front(&vec);
+if (first != NULL) {
+    // Process first element
+}
 ```
 
-### `vector_back`
+---
 
-Get the last element of the vector.
+### vector_back
 
 ```c
 void* vector_back(Vector* vector);
 ```
 
-**Returns:** Pointer to the last element, or `NULL` if the vector is empty
-
-**Example:**
-```c
-int* last = (int*)vector_back(&vec);
-```
-
-## Modifying Elements
-
-### `vector_push_back`
-
-Add an element to the end of the vector.
-
-```c
-void vector_push_back(Vector* vector, void* element);
-```
+Returns the last element in the vector.
 
 **Parameters:**
-- `vector`: Pointer to the vector
-- `element`: Pointer to the element to add
 
-**Note:** The vector will automatically resize if the capacity is insufficient. The resize factor is 2x.
+-   `vector` - Pointer to the vector
 
-**Example:**
-```c
-int* value = malloc(sizeof(int));
-*value = 42;
-vector_push_back(&vec, value);
-```
+**Return Value:**
 
-### `vector_pop_back`
+Pointer to the last element, or `NULL` if the vector is empty.
 
-Remove the last element from the vector.
+**Complexity:** O(1)
 
-```c
-void vector_pop_back(Vector* vector);
-```
+---
 
-**Parameters:**
-- `vector`: Pointer to the vector
-
-**Note:** If a destroy function was provided during initialization, it will be called on the removed element. Does nothing if the vector is empty.
-
-**Example:**
-```c
-vector_pop_back(&vec);
-```
-
-### `vector_resize`
-
-Resize the vector to a new size.
+### vector_resize
 
 ```c
 void vector_resize(Vector* vector, size_t new_size);
 ```
 
+Resizes the vector to contain `new_size` elements.
+
 **Parameters:**
-- `vector`: Pointer to the vector
-- `new_size`: The new size for the vector
+
+-   `vector` - Pointer to the vector
+-   `new_size` - New size of the vector
 
 **Behavior:**
-- If `new_size > size`: New elements are initialized to `NULL`
-- If `new_size < size`: Elements beyond the new size are destroyed (if destroy function is provided)
-- If `new_size > capacity`: The capacity is automatically increased
+
+-   If `new_size` is **greater** than current size: new elements are added and initialized to `NULL`
+-   If `new_size` is **smaller** than current size: elements are removed and the destroy function is called on them
+-   If `new_size` **equals** current size: no operation is performed
+
+**Complexity:** O(n) where n is the larger of the old or new size
 
 **Example:**
+
 ```c
-vector_resize(&vec, 10);  // Resize to 10 elements
+vector_resize(&vec, 10);  // Create 10 NULL elements
+vector_resize(&vec, 5);   // Remove last 5 elements
+vector_resize(&vec, 0);   // Remove all elements
 ```
 
-### `vector_shrink_to_fit`
+**Note:** When shrinking, capacity is not reduced. Use `vector_shrink_to_fit()` to free unused memory.
 
-Reduce the capacity to match the current size.
+---
+
+### vector_shrink_to_fit
 
 ```c
 void vector_shrink_to_fit(Vector* vector);
 ```
 
+Reduces capacity to match the current size, freeing unused memory.
+
 **Parameters:**
-- `vector`: Pointer to the vector
+
+-   `vector` - Pointer to the vector
+
+**Complexity:** O(n) where n is the number of elements
 
 **Example:**
+
 ```c
-vector_shrink_to_fit(&vec);  // Free unused memory
+vector_resize(&vec, 100);     // size=100, capacity=100
+vector_resize(&vec, 10);      // size=10, capacity=100
+vector_shrink_to_fit(&vec);   // size=10, capacity=10
 ```
 
-## Complete Example
+---
+
+### vector_push_back
+
+```c
+void vector_push_back(Vector* vector, void* element);
+```
+
+Appends an element to the end of the vector.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+-   `element` - Pointer to the element to append (can be `NULL`)
+
+**Description:**
+
+Appends the element to the end. If necessary, capacity is automatically increased. The vector takes ownership of the pointer but not the pointed-to object.
+
+**Complexity:** O(1) amortized, O(n) worst case when reallocation occurs
+
+**Example:**
+
+```c
+vector_push_back(&vec, "first");
+vector_push_back(&vec, "second");
+```
+
+---
+
+### vector_pop_back
+
+```c
+void vector_pop_back(Vector* vector);
+```
+
+Removes the last element from the vector.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+
+**Description:**
+
+Removes the last element and calls the destroy function on it if provided. Calling on an empty vector is safe and does nothing.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+vector_push_back(&vec, "element");
+vector_pop_back(&vec);        // Removes "element"
+vector_pop_back(&vec);        // Safe no-op on empty vector
+```
+
+**Note:** Capacity is not reduced. Use `vector_shrink_to_fit()` to free memory.
+
+---
+
+## Usage Examples
+
+### Basic Usage
 
 ```c
 #include <collection/vector.h>
 #include <stdio.h>
-#include <stdlib.h>
 
-int main() {
+int main(void) {
     Vector vec;
-    vector_init(&vec, free);
-    
+    vector_init(&vec, NULL);
+
     // Add elements
-    for (int i = 0; i < 5; i++) {
-        int* value = malloc(sizeof(int));
-        *value = i * 10;
-        vector_push_back(&vec, value);
-    }
-    
+    vector_push_back(&vec, "Hello");
+    vector_push_back(&vec, "World");
+
     // Access elements
+    printf("First: %s\n", (char*)vector_front(&vec));
+    printf("Last: %s\n", (char*)vector_back(&vec));
     printf("Size: %zu\n", vector_size(&vec));
-    printf("Capacity: %zu\n", vector_capacity(&vec));
-    
-    // Iterate through elements
+
+    // Iterate
     for (size_t i = 0; i < vector_size(&vec); i++) {
-        int* value = (int*)vector_at(&vec, i);
-        printf("vec[%zu] = %d\n", i, *value);
+        printf("%s\n", (char*)vector_at(&vec, i));
     }
-    
-    // Get first and last
-    int* first = (int*)vector_front(&vec);
-    int* last = (int*)vector_back(&vec);
-    printf("First: %d, Last: %d\n", *first, *last);
-    
-    // Remove last element
-    vector_pop_back(&vec);
-    printf("Size after pop: %zu\n", vector_size(&vec));
-    
+
     // Cleanup
     vector_destroy(&vec);
     return 0;
 }
 ```
 
-## Performance Characteristics
+### With Custom Destructor
 
-- **Access:** O(1) for random access via `vector_at`
-- **Insertion:** O(1) amortized for `vector_push_back` (due to exponential resizing)
-- **Deletion:** O(1) for `vector_pop_back`
-- **Resize:** O(n) where n is the number of elements
+```c
+#include <collection/vector.h>
+#include <stdlib.h>
+#include <string.h>
 
-## Memory Management
+typedef struct {
+    int id;
+    char* name;
+} Person;
 
-The vector uses exponential growth (2x factor) to minimize reallocations. When elements are removed or the vector is resized to a smaller size, the destroy function (if provided) is called on each removed element to allow proper cleanup of dynamically allocated data.
+void destroy_person(void* data) {
+    Person* p = (Person*)data;
+    free(p->name);
+    free(p);
+}
 
+int main(void) {
+    Vector vec;
+    vector_init(&vec, destroy_person);
+
+    // Create and add person
+    Person* p = malloc(sizeof(Person));
+    p->id = 1;
+    p->name = strdup("Alice");
+    vector_push_back(&vec, p);
+
+    // All persons will be freed automatically
+    vector_destroy(&vec);
+    return 0;
+}
+```
+
+### Pre-allocation and Batch Operations
+
+```c
+#include <collection/vector.h>
+
+int main(void) {
+    Vector vec;
+    vector_init(&vec, NULL);
+
+    // Pre-allocate space for 1000 elements
+    vector_resize(&vec, 1000);
+
+    // Fill with data
+    for (size_t i = 0; i < 1000; i++) {
+        vec.data[i] = (void*)(long)i;
+    }
+
+    // Process elements
+    for (size_t i = 0; i < vector_size(&vec); i++) {
+        long value = (long)vector_at(&vec, i);
+        // ... process value ...
+    }
+
+    vector_destroy(&vec);
+    return 0;
+}
+```
+
+---
+
+## Complexity
+
+| Operation              | Complexity     |
+| ---------------------- | -------------- |
+| `vector_init`          | O(1)           |
+| `vector_destroy`       | O(n)           |
+| `vector_size`          | O(1)           |
+| `vector_capacity`      | O(1)           |
+| `vector_at`            | O(1)           |
+| `vector_front`         | O(1)           |
+| `vector_back`          | O(1)           |
+| `vector_resize`        | O(n)           |
+| `vector_shrink_to_fit` | O(n)           |
+| `vector_push_back`     | O(1) amortized |
+| `vector_pop_back`      | O(1)           |
+
+Where n is the number of elements.
+
+---
+
+## Important Notes
+
+### Memory Management
+
+-   The vector manages its own memory allocation
+-   The destroy function is called automatically when elements are removed
+-   The vector never calls `free()` on element pointers unless the destroy function does so
+
+### Thread Safety
+
+Vector operations are **not thread-safe**. External synchronization is required for concurrent access.
+
+### Undefined Behavior
+
+Avoid the following:
+
+-   Passing `NULL` vector pointers to any function
+-   Accessing elements at index >= size
+-   Using a vector after calling `vector_destroy()` without re-initializing
+-   Directly modifying `size` or `capacity` members

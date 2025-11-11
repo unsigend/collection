@@ -52,15 +52,23 @@ void vector_resize(Vector* vector, size_t new_size){
     if (new_size == vector->size) {
         return;
     }
-    // check if the new size is greater than the capacity
+    
+    // expand the capacity
     if (new_size > vector->capacity) {
         _vector_resize_capacity(vector, new_size);
         // fill the new elements with NULL
         memset(vector->data + vector->size, 0, (new_size - vector->size) * sizeof(void *));
-    }else {
-        // destroy the elements in the range [new_size, vector->size)
-        _vector_destroy_range(vector, new_size, vector->size - new_size);
-        memset(vector->data + new_size, 0, (vector->size - new_size) * sizeof(void *));
+    }
+    // shrink the size
+    else {
+        if (new_size < vector->size) {
+            // destroy the elements in the range [new_size, vector->size)
+            _vector_destroy_range(vector, new_size, vector->size - new_size);
+            memset(vector->data + new_size, 0, (vector->size - new_size) * sizeof(void *));
+        }else {
+            // fill the new elements with NULL
+            memset(vector->data + vector->size, 0, (new_size - vector->size) * sizeof(void *));
+        }
     }
 
     vector->size = new_size;
@@ -76,11 +84,13 @@ void vector_init(Vector* vector, void (*destroy)(void *)){
 
 
 void vector_destroy(Vector* vector){
-    // destroy the elements if the destroy function is provided
-    _vector_destroy_range(vector, 0, vector->size);
+    if (vector->data){
+        // destroy the elements if the destroy function is provided
+        _vector_destroy_range(vector, 0, vector->size);
 
-    free(vector->data);
-    vector->data = NULL;
+        free(vector->data);
+        vector->data = NULL;
+    }
     vector->size = 0;
     vector->capacity = 0;
     vector->destroy = NULL;
@@ -111,7 +121,7 @@ void* vector_back(Vector* vector){
 }
 
 void* vector_front(Vector* vector){
-    return vector->data;
+    return vector->data ? vector->data[0] : NULL;
 }
 
 void vector_push_back(Vector* vector, void* element){

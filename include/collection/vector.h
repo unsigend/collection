@@ -45,7 +45,6 @@ extern void vector_init(Vector* vector, void (*destroy)(void *));
  */
 extern void vector_destroy(Vector* vector);
 
-
 /**
  * Get the size of the vector.
  * @param vector The vector to get the size of.
