@@ -15,6 +15,12 @@ export default defineConfig({
             ],
             sidebar: [
                 {
+                    label: "Guide",
+                    items: [
+                        { label: "Introduction", slug: "introduction" },
+                    ],
+                },
+                {
                     label: "Collection",
                     autogenerate: { directory: "collection" },
                 },
