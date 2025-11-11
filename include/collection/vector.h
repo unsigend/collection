@@ -23,6 +23,7 @@
  * API reference and inspired by C++ std::vector.
  */
 #include <collection/common.h>
+#include <stdbool.h>
 
 // internal struct for Vector
 typedef struct {
@@ -44,6 +45,20 @@ extern void vector_init(Vector* vector, void (*destroy)(void *));
  * @param vector The vector to destroy.
  */
 extern void vector_destroy(Vector* vector);
+
+/**
+ * Check if the vector is empty.
+ * @param vector The vector to check.
+ * @return True if the vector is empty, false otherwise.
+ */
+extern bool vector_empty(Vector* vector);
+
+/**
+ * Get the data of the vector.
+ * @param vector The vector to get the data from.
+ * @return The data of the vector.
+ */
+extern void** vector_data(Vector* vector);
 
 /**
  * Get the size of the vector.
@@ -106,5 +121,26 @@ extern void vector_push_back(Vector* vector, void* element);
  * @param vector The vector to pop the element from.
  */
 extern void vector_pop_back(Vector* vector);
+
+/**
+ * Insert an element at the given index.
+ * @param vector The vector to insert the element into.
+ * @param index The index of the element to insert.
+ * @param element The element to insert.
+ */
+extern void vector_insert(Vector* vector, size_t index, void* element);
+
+/**
+ * Remove an element from the vector at the given index.
+ * @param vector The vector to remove the element from.
+ * @param index The index of the element to remove.
+ */
+extern void vector_remove(Vector* vector, size_t index);
+
+/**
+ * Remove all elements from the vector.
+ * @param vector The vector to remove the elements from.
+ */
+extern void vector_clear(Vector* vector);
 
 #endif
