@@ -36,6 +36,8 @@ EXTERNAL_PATH       :=          $(CUR_DIR)/external
 CC_FLAGS      :=          -std=$(STD_C)
 CC_FLAGS      +=  		  -Wall -Wextra -Werror
 CC_FLAGS      +=          -Wno-unused-parameter
+CC_FLAGS      +=          -Wno-unused-variable
+CC_FLAGS      +=          -Wno-unused-function
 CC_FLAGS      +=          -O2
 CC_FLAGS      +=          -I$(INCLUDE_PATH)
 CC_FLAGS      +=          -I$(EXTERNAL_PATH)/include

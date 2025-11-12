@@ -299,50 +299,6 @@ if (slist_pop_front(&list, NULL) == -1) {
 
 ---
 
-### slist_pop_back
-
-```c
-int slist_pop_back(SList* slist, void** data);
-```
-
-Removes the last element from the list.
-
-**Parameters:**
-
--   `slist` - Pointer to the list
--   `data` - Optional pointer to store the removed element. Pass `NULL` if the element should be destroyed
-
-**Return Value:**
-
-Returns `0` on success, `-1` if the list is empty.
-
-**Description:**
-
-Removes the last node from the list. If `data` is not `NULL`, the removed element is stored at `*data` and the destroy function is **not** called (user takes ownership). If `data` is `NULL`, the destroy function is called on the element if provided.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-// Without retrieving data (destroy function is called)
-slist_push_back(&list, element);
-slist_pop_back(&list, NULL);
-
-// With retrieving data (user responsibility to free)
-void* element;
-if (slist_pop_back(&list, &element) == 0) {
-    // Use element
-    free(element);  // User must free if needed
-}
-```
-
-**Note:**
-
--   When retrieving data, the caller is responsible for freeing the memory if necessary.
-
----
-
 ### slist_insert_after
 
 ```c
@@ -649,7 +605,6 @@ int main(void) {
 | `slist_push_front`   | O(1)       |
 | `slist_push_back`    | O(1)       |
 | `slist_pop_front`    | O(1)       |
-| `slist_pop_back`     | O(1)       |
 | `slist_insert_after` | O(1)       |
 | `slist_remove_after` | O(1)       |
 | `slist_next`         | O(1)       |

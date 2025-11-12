@@ -5,16 +5,20 @@
 #define MATCH(A, B) strcmp(A, B) == 0
 
 extern UTEST_TEST_SUITE(vector);
+extern UTEST_TEST_SUITE(slist);
 
 //@brief: run all tests
 void all_tests(void){
     UTEST_RUN_TEST_SUITE(vector);
+    UTEST_RUN_TEST_SUITE(slist);
 }
 
 //@brief: dispatch the tests
 void dispatch_tests(char * module){
     if (MATCH(module, "vector")) {
         UTEST_RUN_TEST_SUITE(vector);
+    } else if (MATCH(module, "slist")) {
+        UTEST_RUN_TEST_SUITE(slist);
     }
     else if (MATCH(module, "all")) {
         all_tests();
