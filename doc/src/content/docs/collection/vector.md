@@ -5,24 +5,19 @@ description: Dynamic array implementation with automatic resizing
 
 The `Vector` is a dynamic array data structure that automatically grows and shrinks as needed. It provides efficient random access to elements and is inspired by C++ `std::vector`.
 
-## Type Definition
+## Header Files
+
+To use the vector in your code, include the header file:
 
 ```c
-typedef struct {
-    void **data;
-    size_t size;
-    size_t capacity;
-    void (*destroy)(void *);
-} Vector;
+#include <collection/vector.h>
 ```
 
-**Note:** Direct access to struct members is possible but not recommended. Use the provided interface functions instead.
-
----
+This provides access to the `Vector` type and all vector functions.
 
 ## Functions
 
-Public interfaces for vector, include `<collection/vector.h>`.
+Public interfaces for vector operations:
 
 ### vector_init
 
@@ -181,7 +176,8 @@ Pointer to the underlying array, or `NULL` if the vector is empty.
 
 Returns a direct pointer to the internal array of element pointers. This allows direct access to the storage for performance-critical operations. The returned pointer may be invalidated by any operation that changes the vector's capacity.
 
-**Important:** 
+**Important:**
+
 -   The pointer is invalidated after operations that cause reallocation (push_back, insert, resize with growth)
 -   Direct modification of the array should be done carefully to avoid breaking vector invariants
 -   Valid only for indices [0, size)
@@ -373,7 +369,7 @@ vector_push_back(&vec, "second");
 ### vector_pop_back
 
 ```c
-void vector_pop_back(Vector* vector);
+int vector_pop_back(Vector* vector, void** data);
 ```
 
 Removes the last element from the vector.
@@ -381,29 +377,49 @@ Removes the last element from the vector.
 **Parameters:**
 
 -   `vector` - Pointer to the vector
+-   `data` - Optional pointer to store the removed element. Pass `NULL` if the element should be destroyed
+
+**Return Value:**
+
+Returns `0` on success, `-1` if the vector is empty.
 
 **Description:**
 
-Removes the last element and calls the destroy function on it if provided. Calling on an empty vector is safe and does nothing.
+Removes the last element from the vector. If `data` is not `NULL`, the removed element is stored at `*data` and the destroy function is **not** called (user takes ownership). If `data` is `NULL`, the destroy function is called on the element if provided.
 
 **Complexity:** O(1)
 
 **Example:**
 
 ```c
-vector_push_back(&vec, "element");
-vector_pop_back(&vec);        // Removes "element"
-vector_pop_back(&vec);        // Safe no-op on empty vector
+// Without retrieving data (destroy function is called)
+vector_push_back(&vec, element);
+vector_pop_back(&vec, NULL);
+
+// With retrieving data (user responsibility to free)
+void* element;
+if (vector_pop_back(&vec, &element) == 0) {
+    // Use element
+    free(element);  // User must free if needed
+}
+
+// Pop from empty vector
+if (vector_pop_back(&vec, NULL) == -1) {
+    printf("Vector is empty\n");
+}
 ```
 
-**Note:** Capacity is not reduced. Use `vector_shrink_to_fit()` to free memory.
+**Note:**
+
+-   Capacity is not reduced. Use `vector_shrink_to_fit()` to free memory.
+-   When retrieving data, the caller is responsible for freeing the memory if necessary.
 
 ---
 
 ### vector_insert
 
 ```c
-void vector_insert(Vector* vector, size_t index, void* element);
+int vector_insert(Vector* vector, size_t index, void* element);
 ```
 
 Inserts an element at the specified position.
@@ -414,21 +430,25 @@ Inserts an element at the specified position.
 -   `index` - Position where the element will be inserted (0-based)
 -   `element` - Pointer to the element to insert (can be `NULL`)
 
+**Return Value:**
+
+Returns `0` on success, `-1` on failure (invalid index).
+
 **Description:**
 
 Inserts the element at the specified index, shifting all elements at and after that position to the right. The element can be inserted at any position from 0 to size (inclusive), where inserting at size is equivalent to `vector_push_back()`.
 
 **Complexity:** O(n) where n is the number of elements after the insertion point
 
-**Important:** Accessing an index > size causes program termination. Valid indices are [0, size].
-
 **Example:**
 
 ```c
 vector_push_back(&vec, "first");
 vector_push_back(&vec, "third");
-vector_insert(&vec, 1, "second");  // Insert in the middle
-// Vector now contains: ["first", "second", "third"]
+
+if (vector_insert(&vec, 1, "second") == 0) {
+    // Vector now contains: ["first", "second", "third"]
+}
 
 vector_insert(&vec, 0, "start");   // Insert at beginning
 vector_insert(&vec, vector_size(&vec), "end");  // Insert at end
@@ -439,7 +459,7 @@ vector_insert(&vec, vector_size(&vec), "end");  // Insert at end
 ### vector_remove
 
 ```c
-void vector_remove(Vector* vector, size_t index);
+int vector_remove(Vector* vector, size_t index, void** data);
 ```
 
 Removes the element at the specified position.
@@ -448,27 +468,46 @@ Removes the element at the specified position.
 
 -   `vector` - Pointer to the vector
 -   `index` - Position of the element to remove (0-based)
+-   `data` - Optional pointer to store the removed element. Pass `NULL` if the element should be destroyed
+
+**Return Value:**
+
+Returns `0` on success, `-1` on failure (invalid index).
 
 **Description:**
 
-Removes the element at the specified index, shifting all elements after that position to the left. The destroy function is called on the removed element if provided.
+Removes the element at the specified index, shifting all elements after that position to the left. If `data` is not `NULL`, the removed element is stored at `*data` and the destroy function is **not** called (user takes ownership). If `data` is `NULL`, the destroy function is called on the element if provided.
 
 **Complexity:** O(n) where n is the number of elements after the removal point
-
-**Important:** Accessing an index >= size causes program termination. Valid indices are [0, size).
 
 **Example:**
 
 ```c
+// Without retrieving data (destroy function is called)
+vector_remove(&vec, 1, NULL);
+
+// With retrieving data (user responsibility to free)
+void* removed_element;
+if (vector_remove(&vec, 1, &removed_element) == 0) {
+    // Use removed_element
+    free(removed_element);  // User must free if needed
+}
+
+// Example with strings
 // Vector contains: ["a", "b", "c", "d"]
-vector_remove(&vec, 1);  // Remove "b"
+vector_remove(&vec, 1, NULL);  // Remove "b", destroy is called
 // Vector now contains: ["a", "c", "d"]
 
-vector_remove(&vec, 0);  // Remove first element
+char* removed;
+vector_remove(&vec, 0, (void**)&removed);  // Remove and retrieve "a"
 // Vector now contains: ["c", "d"]
+// User is responsible for freeing 'removed' if needed
 ```
 
-**Note:** Capacity is not reduced. Use `vector_shrink_to_fit()` to free memory.
+**Note:**
+
+-   Capacity is not reduced. Use `vector_shrink_to_fit()` to free memory.
+-   When retrieving data, the caller is responsible for freeing the memory if necessary.
 
 ---
 

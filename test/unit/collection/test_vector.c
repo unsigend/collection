@@ -784,19 +784,21 @@ UTEST_TEST_CASE(vector_back){
  * Description: Tests removal of the last element.
  */
 UTEST_TEST_CASE(vector_pop_back){
-    // Test 1: Pop from empty vector (safe no-op)
+    // Test 1: Pop from empty vector returns failure
     {
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_pop_back(&vec);  // Should not crash
+        void* data = NULL;
+        int result = vector_pop_back(&vec, &data);
         
+        EXPECT_EQUAL_INT(result, -1);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
         
         vector_destroy(&vec);
     }
     
-    // Test 2: Pop single element
+    // Test 2: Pop single element without retrieving data
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -805,14 +807,33 @@ UTEST_TEST_CASE(vector_pop_back){
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 1);
         
-        vector_pop_back(&vec);
+        int result = vector_pop_back(&vec, NULL);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
         
         vector_destroy(&vec);
     }
     
-    // Test 3: Pop multiple elements
+    // Test 3: Pop single element and retrieve data
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        const char* test_data = "test";
+        vector_push_back(&vec, (void *)test_data);
+        
+        void* data = NULL;
+        int result = vector_pop_back(&vec, &data);
+        
+        EXPECT_EQUAL_INT(result, 0);
+        EXPECT_TRUE(data == (void *)test_data);
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 4: Pop multiple elements
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -823,7 +844,10 @@ UTEST_TEST_CASE(vector_pop_back){
         
         for (int i = 9; i >= 0; i--) {
             EXPECT_EQUAL_UINT64(vector_size(&vec), (size_t)(i + 1));
-            vector_pop_back(&vec);
+            void* data = NULL;
+            int result = vector_pop_back(&vec, &data);
+            EXPECT_EQUAL_INT(result, 0);
+            EXPECT_TRUE(data == (void *)(long)i);
         }
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
@@ -831,7 +855,7 @@ UTEST_TEST_CASE(vector_pop_back){
         vector_destroy(&vec);
     }
     
-    // Test 4: Pop updates back
+    // Test 5: Pop updates back
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -840,16 +864,16 @@ UTEST_TEST_CASE(vector_pop_back){
         vector_push_back(&vec, (void *)2);
         vector_push_back(&vec, (void *)3);
         
-        vector_pop_back(&vec);
+        vector_pop_back(&vec, NULL);
         EXPECT_TRUE(vector_back(&vec) == (void *)2);
         
-        vector_pop_back(&vec);
+        vector_pop_back(&vec, NULL);
         EXPECT_TRUE(vector_back(&vec) == (void *)1);
         
         vector_destroy(&vec);
     }
     
-    // Test 5: Capacity unchanged after pop
+    // Test 6: Capacity unchanged after pop
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -860,15 +884,15 @@ UTEST_TEST_CASE(vector_pop_back){
         
         size_t cap = vector_capacity(&vec);
         
-        vector_pop_back(&vec);
-        vector_pop_back(&vec);
+        vector_pop_back(&vec, NULL);
+        vector_pop_back(&vec, NULL);
         
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), cap);
         
         vector_destroy(&vec);
     }
     
-    // Test 6: Pop clears element slot
+    // Test 7: Pop clears element slot
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -876,7 +900,7 @@ UTEST_TEST_CASE(vector_pop_back){
         vector_push_back(&vec, (void *)0xBEEF);
         size_t old_capacity = vector_capacity(&vec);
         
-        vector_pop_back(&vec);
+        vector_pop_back(&vec, NULL);
         
         // Element should be NULL (within capacity range)
         if (old_capacity > 0) {
@@ -886,7 +910,7 @@ UTEST_TEST_CASE(vector_pop_back){
         vector_destroy(&vec);
     }
     
-    // Test 7: Push and pop repeatedly
+    // Test 8: Push and pop repeatedly
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -895,14 +919,14 @@ UTEST_TEST_CASE(vector_pop_back){
             vector_push_back(&vec, (void *)(long)cycle);
             EXPECT_EQUAL_UINT64(vector_size(&vec), 1);
             
-            vector_pop_back(&vec);
+            vector_pop_back(&vec, NULL);
             EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
         }
         
         vector_destroy(&vec);
     }
     
-    // Test 8: Pop with destroy function
+    // Test 9: Pop with destroy function (data not retrieved)
     {
         int destroy_count = 0;
         Vector vec;
@@ -912,19 +936,38 @@ UTEST_TEST_CASE(vector_pop_back){
         vector_push_back(&vec, &destroy_count);
         vector_push_back(&vec, &destroy_count);
         
-        vector_pop_back(&vec);
+        vector_pop_back(&vec, NULL);
         EXPECT_EQUAL_INT(destroy_count, 1);
         
-        vector_pop_back(&vec);
+        vector_pop_back(&vec, NULL);
         EXPECT_EQUAL_INT(destroy_count, 2);
         
-        vector_pop_back(&vec);
+        vector_pop_back(&vec, NULL);
         EXPECT_EQUAL_INT(destroy_count, 3);
         
         vector_destroy(&vec);
     }
     
-    // Test 9: Pop all then push again
+    // Test 10: Pop with data retrieval (destroy not called)
+    {
+        int destroy_count = 0;
+        Vector vec;
+        vector_init(&vec, destroy_counter);
+        
+        vector_push_back(&vec, &destroy_count);
+        vector_push_back(&vec, &destroy_count);
+        
+        void* data = NULL;
+        vector_pop_back(&vec, &data);
+        
+        // Destroy should NOT be called when data is retrieved
+        EXPECT_EQUAL_INT(destroy_count, 0);
+        EXPECT_NOT_NULL(data);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 11: Pop all then push again
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -932,8 +975,8 @@ UTEST_TEST_CASE(vector_pop_back){
         vector_push_back(&vec, (void *)1);
         vector_push_back(&vec, (void *)2);
         
-        vector_pop_back(&vec);
-        vector_pop_back(&vec);
+        vector_pop_back(&vec, NULL);
+        vector_pop_back(&vec, NULL);
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
         
@@ -958,8 +1001,9 @@ UTEST_TEST_CASE(vector_insert){
         vector_init(&vec, NULL);
         
         const char *data = "first";
-        vector_insert(&vec, 0, (void *)data);
+        int result = vector_insert(&vec, 0, (void *)data);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 1);
         EXPECT_TRUE(vector_at(&vec, 0) == (void *)data);
         
@@ -974,8 +1018,9 @@ UTEST_TEST_CASE(vector_insert){
         vector_push_back(&vec, (void *)"second");
         vector_push_back(&vec, (void *)"third");
         
-        vector_insert(&vec, 0, (void *)"first");
+        int result = vector_insert(&vec, 0, (void *)"first");
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 3);
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "first");
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "second");
@@ -992,8 +1037,9 @@ UTEST_TEST_CASE(vector_insert){
         vector_push_back(&vec, (void *)"first");
         vector_push_back(&vec, (void *)"third");
         
-        vector_insert(&vec, 1, (void *)"second");
+        int result = vector_insert(&vec, 1, (void *)"second");
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 3);
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "first");
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "second");
@@ -1010,8 +1056,9 @@ UTEST_TEST_CASE(vector_insert){
         vector_push_back(&vec, (void *)"first");
         vector_push_back(&vec, (void *)"second");
         
-        vector_insert(&vec, vector_size(&vec), (void *)"third");
+        int result = vector_insert(&vec, vector_size(&vec), (void *)"third");
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 3);
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 2), "third");
         
@@ -1025,10 +1072,13 @@ UTEST_TEST_CASE(vector_insert){
         
         vector_push_back(&vec, (void *)"end");
         
-        vector_insert(&vec, 0, (void *)"c");
-        vector_insert(&vec, 0, (void *)"b");
-        vector_insert(&vec, 0, (void *)"a");
+        int r1 = vector_insert(&vec, 0, (void *)"c");
+        int r2 = vector_insert(&vec, 0, (void *)"b");
+        int r3 = vector_insert(&vec, 0, (void *)"a");
         
+        EXPECT_EQUAL_INT(r1, 0);
+        EXPECT_EQUAL_INT(r2, 0);
+        EXPECT_EQUAL_INT(r3, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 4);
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "a");
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "b");
@@ -1044,9 +1094,10 @@ UTEST_TEST_CASE(vector_insert){
         vector_init(&vec, NULL);
         
         vector_push_back(&vec, (void *)"first");
-        vector_insert(&vec, 1, NULL);
+        int result = vector_insert(&vec, 1, NULL);
         vector_push_back(&vec, (void *)"third");
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 3);
         EXPECT_NULL(vector_at(&vec, 1));
         
@@ -1063,8 +1114,9 @@ UTEST_TEST_CASE(vector_insert){
         size_t initial_cap = vector_capacity(&vec);
         
         // Insert should trigger growth
-        vector_insert(&vec, 0, (void *)0);
+        int result = vector_insert(&vec, 0, (void *)0);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 2);
         EXPECT_GREATER_UINT64(vector_capacity(&vec), initial_cap);
         EXPECT_TRUE(vector_at(&vec, 0) == (void *)0);
@@ -1079,7 +1131,8 @@ UTEST_TEST_CASE(vector_insert){
         vector_init(&vec, NULL);
         
         for (int i = 0; i < 10; i++) {
-            vector_insert(&vec, i, (void *)(long)i);
+            int result = vector_insert(&vec, i, (void *)(long)i);
+            EXPECT_EQUAL_INT(result, 0);
         }
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 10);
@@ -1101,8 +1154,9 @@ UTEST_TEST_CASE(vector_insert){
             vector_push_back(&vec, (void *)elements[i]);
         }
         
-        vector_insert(&vec, 2, (void *)"c");
+        int result = vector_insert(&vec, 2, (void *)"c");
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 5);
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "a");
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "b");
@@ -1122,20 +1176,39 @@ UTEST_TEST_CASE(vector_insert){
  * Description: Tests removing elements from arbitrary positions.
  */
 UTEST_TEST_CASE(vector_remove){
-    // Test 1: Remove only element
+    // Test 1: Remove only element without retrieving data
     {
         Vector vec;
         vector_init(&vec, NULL);
         
         vector_push_back(&vec, (void *)"only");
-        vector_remove(&vec, 0);
+        int result = vector_remove(&vec, 0, NULL);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
         
         vector_destroy(&vec);
     }
     
-    // Test 2: Remove first element
+    // Test 2: Remove element and retrieve data
+    {
+        Vector vec;
+        vector_init(&vec, NULL);
+        
+        const char* test_data = "test";
+        vector_push_back(&vec, (void *)test_data);
+        
+        void* data = NULL;
+        int result = vector_remove(&vec, 0, &data);
+        
+        EXPECT_EQUAL_INT(result, 0);
+        EXPECT_TRUE(data == (void *)test_data);
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 3: Remove first element
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -1144,8 +1217,9 @@ UTEST_TEST_CASE(vector_remove){
         vector_push_back(&vec, (void *)"second");
         vector_push_back(&vec, (void *)"third");
         
-        vector_remove(&vec, 0);
+        int result = vector_remove(&vec, 0, NULL);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 2);
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "second");
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "third");
@@ -1153,7 +1227,7 @@ UTEST_TEST_CASE(vector_remove){
         vector_destroy(&vec);
     }
     
-    // Test 3: Remove middle element
+    // Test 4: Remove middle element
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -1162,8 +1236,9 @@ UTEST_TEST_CASE(vector_remove){
         vector_push_back(&vec, (void *)"second");
         vector_push_back(&vec, (void *)"third");
         
-        vector_remove(&vec, 1);
+        int result = vector_remove(&vec, 1, NULL);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 2);
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "first");
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "third");
@@ -1171,7 +1246,7 @@ UTEST_TEST_CASE(vector_remove){
         vector_destroy(&vec);
     }
     
-    // Test 4: Remove last element
+    // Test 5: Remove last element
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -1180,8 +1255,9 @@ UTEST_TEST_CASE(vector_remove){
         vector_push_back(&vec, (void *)"second");
         vector_push_back(&vec, (void *)"third");
         
-        vector_remove(&vec, 2);
+        int result = vector_remove(&vec, 2, NULL);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 2);
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 0), "first");
         EXPECT_EQUAL_STRING((char*)vector_at(&vec, 1), "second");
@@ -1189,7 +1265,7 @@ UTEST_TEST_CASE(vector_remove){
         vector_destroy(&vec);
     }
     
-    // Test 5: Remove multiple elements sequentially
+    // Test 6: Remove multiple elements sequentially
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -1200,7 +1276,8 @@ UTEST_TEST_CASE(vector_remove){
         
         // Remove every other element from the front
         for (int i = 0; i < 5; i++) {
-            vector_remove(&vec, 0);
+            int result = vector_remove(&vec, 0, NULL);
+            EXPECT_EQUAL_INT(result, 0);
         }
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 5);
@@ -1213,7 +1290,7 @@ UTEST_TEST_CASE(vector_remove){
         vector_destroy(&vec);
     }
     
-    // Test 6: Capacity unchanged after remove
+    // Test 7: Capacity unchanged after remove
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -1224,8 +1301,8 @@ UTEST_TEST_CASE(vector_remove){
         
         size_t cap = vector_capacity(&vec);
         
-        vector_remove(&vec, 5);
-        vector_remove(&vec, 3);
+        vector_remove(&vec, 5, NULL);
+        vector_remove(&vec, 3, NULL);
         
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), cap);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 8);
@@ -1233,7 +1310,7 @@ UTEST_TEST_CASE(vector_remove){
         vector_destroy(&vec);
     }
     
-    // Test 7: Remove with destroy function
+    // Test 8: Remove with destroy function (data not retrieved)
     {
         int destroy_count = 0;
         Vector vec;
@@ -1243,15 +1320,36 @@ UTEST_TEST_CASE(vector_remove){
         vector_push_back(&vec, &destroy_count);
         vector_push_back(&vec, &destroy_count);
         
-        vector_remove(&vec, 1);
+        int result = vector_remove(&vec, 1, NULL);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_INT(destroy_count, 1);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 2);
         
         vector_destroy(&vec);
     }
     
-    // Test 8: Remove all elements one by one from front
+    // Test 9: Remove with data retrieval (destroy not called)
+    {
+        int destroy_count = 0;
+        Vector vec;
+        vector_init(&vec, destroy_counter);
+        
+        vector_push_back(&vec, &destroy_count);
+        vector_push_back(&vec, &destroy_count);
+        
+        void* data = NULL;
+        int result = vector_remove(&vec, 0, &data);
+        
+        EXPECT_EQUAL_INT(result, 0);
+        // Destroy should NOT be called when data is retrieved
+        EXPECT_EQUAL_INT(destroy_count, 0);
+        EXPECT_NOT_NULL(data);
+        
+        vector_destroy(&vec);
+    }
+    
+    // Test 10: Remove all elements one by one from front
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -1261,7 +1359,10 @@ UTEST_TEST_CASE(vector_remove){
         }
         
         for (int i = 0; i < 5; i++) {
-            vector_remove(&vec, 0);
+            void* data = NULL;
+            int result = vector_remove(&vec, 0, &data);
+            EXPECT_EQUAL_INT(result, 0);
+            EXPECT_TRUE(data == (void *)(long)i);
         }
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
@@ -1269,7 +1370,7 @@ UTEST_TEST_CASE(vector_remove){
         vector_destroy(&vec);
     }
     
-    // Test 9: Remove all elements one by one from back
+    // Test 11: Remove all elements one by one from back
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -1280,7 +1381,8 @@ UTEST_TEST_CASE(vector_remove){
         
         // Always remove last element
         for (int i = 4; i >= 0; i--) {
-            vector_remove(&vec, vector_size(&vec) - 1);
+            int result = vector_remove(&vec, vector_size(&vec) - 1, NULL);
+            EXPECT_EQUAL_INT(result, 0);
         }
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
@@ -1288,7 +1390,7 @@ UTEST_TEST_CASE(vector_remove){
         vector_destroy(&vec);
     }
     
-    // Test 10: Remove then insert at same position
+    // Test 12: Remove then insert at same position
     {
         Vector vec;
         vector_init(&vec, NULL);
@@ -1297,7 +1399,7 @@ UTEST_TEST_CASE(vector_remove){
         vector_push_back(&vec, (void *)"b");
         vector_push_back(&vec, (void *)"c");
         
-        vector_remove(&vec, 1);
+        vector_remove(&vec, 1, NULL);
         vector_insert(&vec, 1, (void *)"new");
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 3);
@@ -1533,7 +1635,7 @@ UTEST_TEST_CASE(vector_empty){
         vector_push_back(&vec, (void *)"element");
         EXPECT_FALSE(vector_empty(&vec));
         
-        vector_pop_back(&vec);
+        vector_pop_back(&vec, NULL);
         EXPECT_TRUE(vector_empty(&vec));
         
         vector_destroy(&vec);
@@ -1617,7 +1719,7 @@ UTEST_TEST_CASE(vector_empty){
         
         // Remove all
         for (int i = 0; i < 5; i++) {
-            vector_pop_back(&vec);
+            vector_pop_back(&vec, NULL);
         }
         EXPECT_TRUE(vector_empty(&vec));
         
