@@ -37,12 +37,14 @@ typedef struct {
  * Initialize the vector.
  * @param vector The vector to initialize.
  * @param destroy The function to destroy the elements.
+ * @complexity O(1)
  */
 extern void vector_init(Vector* vector, void (*destroy)(void *));
 
 /**
  * Destroy the vector.
  * @param vector The vector to destroy.
+ * @complexity O(n)
  */
 extern void vector_destroy(Vector* vector);
 
@@ -50,6 +52,7 @@ extern void vector_destroy(Vector* vector);
  * Check if the vector is empty.
  * @param vector The vector to check.
  * @return True if the vector is empty, false otherwise.
+ * @complexity O(1)
  */
 extern bool vector_empty(Vector* vector);
 
@@ -57,6 +60,7 @@ extern bool vector_empty(Vector* vector);
  * Get the data of the vector.
  * @param vector The vector to get the data from.
  * @return The data of the vector.
+ * @complexity O(1)
  */
 extern void** vector_data(Vector* vector);
 
@@ -64,6 +68,7 @@ extern void** vector_data(Vector* vector);
  * Get the size of the vector.
  * @param vector The vector to get the size of.
  * @return The size of the vector.
+ * @complexity O(1)
  */
 extern size_t vector_size(Vector* vector);
 
@@ -71,6 +76,7 @@ extern size_t vector_size(Vector* vector);
  * Get the capacity of the vector.
  * @param vector The vector to get the capacity of.
  * @return The capacity of the vector.
+ * @complexity O(1)
  */
 extern size_t vector_capacity(Vector* vector);
 
@@ -79,6 +85,7 @@ extern size_t vector_capacity(Vector* vector);
  * @param vector The vector to get the element from.
  * @param index The index of the element to get.
  * @return The element at the given index.
+ * @complexity O(1)
  */
 extern void* vector_at(Vector* vector, size_t index);
 
@@ -86,6 +93,7 @@ extern void* vector_at(Vector* vector, size_t index);
  * Get the last element of the vector.
  * @param vector The vector to get the last element from.
  * @return The last element of the vector, or NULL if the vector is empty.
+ * @complexity O(1)
  */
 extern void* vector_back(Vector* vector);
 
@@ -93,6 +101,7 @@ extern void* vector_back(Vector* vector);
  * Get the first element of the vector.
  * @param vector The vector to get the first element from.
  * @return The first element of the vector, or NULL if the vector is empty.
+ * @complexity O(1)
  */
 extern void* vector_front(Vector* vector);
 
@@ -100,12 +109,14 @@ extern void* vector_front(Vector* vector);
  * Resize the vector to the given size.
  * @param vector The vector to resize.
  * @param new_size The new size of the vector.
+ * @complexity O(n)
  */
 extern void vector_resize(Vector* vector, size_t new_size);
 
 /**
  * Shrink the vector to the size of the elements.
  * @param vector The vector to shrink.
+ * @complexity O(n)
  */
 extern void vector_shrink_to_fit(Vector* vector);
 
@@ -113,33 +124,43 @@ extern void vector_shrink_to_fit(Vector* vector);
  * Push an element to the back of the vector.
  * @param vector The vector to push the element to.
  * @param element The element to push.
+ * @complexity O(1) amortized, O(n) worst case when reallocation occurs
  */
 extern void vector_push_back(Vector* vector, void* element);
 
 /**
  * Pop an element from the back of the vector.
  * @param vector The vector to pop the element from.
+ * @param data The pointer to store the popped element.
+ * @return 0 if successful, -1 if failed
+ * @complexity O(1)
  */
-extern void vector_pop_back(Vector* vector);
+extern int vector_pop_back(Vector* vector, void** data);
 
 /**
  * Insert an element at the given index.
  * @param vector The vector to insert the element into.
  * @param index The index of the element to insert.
  * @param element The element to insert.
+ * @return 0 if successful, -1 if failed
+ * @complexity O(n)
  */
-extern void vector_insert(Vector* vector, size_t index, void* element);
+extern int vector_insert(Vector* vector, size_t index, void* element);
 
 /**
  * Remove an element from the vector at the given index.
  * @param vector The vector to remove the element from.
  * @param index The index of the element to remove.
+ * @param data The pointer to store the removed element.
+ * @return 0 if successful, -1 if failed
+ * @complexity O(n)
  */
-extern void vector_remove(Vector* vector, size_t index);
+extern int vector_remove(Vector* vector, size_t index, void** data);
 
 /**
  * Remove all elements from the vector.
  * @param vector The vector to remove the elements from.
+ * @complexity O(n)
  */
 extern void vector_clear(Vector* vector);
 

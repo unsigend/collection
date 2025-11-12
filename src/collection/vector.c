@@ -148,15 +148,19 @@ void vector_push_back(Vector* vector, void* element){
     vector->data[vector->size++] = element;
 }
 
-void vector_pop_back(Vector* vector){
+int vector_pop_back(Vector* vector, void** data){
     if (vector->size == 0){
-        return;
+        return COLLECTION_FAILURE;
     }
     vector->size--;
-    if (vector->destroy) {
+    if (data){
+        *data = vector->data[vector->size];
+    }
+    if (!data && vector->destroy){
         vector->destroy(vector->data[vector->size]);
     }
     vector->data[vector->size] = NULL;
+    return COLLECTION_SUCCESS;
 }
 
 void vector_clear(Vector* vector){
@@ -167,14 +171,13 @@ void vector_clear(Vector* vector){
     vector->size = 0;
 }
 
-void vector_insert(Vector* vector, size_t index, void* element){
+int vector_insert(Vector* vector, size_t index, void* element){
     if (index > vector->size){
-        fprintf(stderr, "FATAL: Index out of bounds\n");
-        exit(COLLECTION_FAILURE);
+        return COLLECTION_FAILURE;
     }
     if (index == vector->size){
         vector_push_back(vector, element);
-        return;
+        return COLLECTION_SUCCESS;
     }
     // expand the capacity
     if (vector->size >= vector->capacity){
@@ -186,18 +189,22 @@ void vector_insert(Vector* vector, size_t index, void* element){
     memmove(vector->data + index + 1, vector->data + index, (vector->size - index) * sizeof(void *));
     vector->data[index] = element;
     vector->size++;
+    return COLLECTION_SUCCESS;
 }
 
-void vector_remove(Vector* vector, size_t index){
+int vector_remove(Vector* vector, size_t index, void** data){
     if (index >= vector->size){
-        fprintf(stderr, "FATAL: Index out of bounds\n");
-        exit(COLLECTION_FAILURE);
+        return COLLECTION_FAILURE;
     }
-    if (vector->destroy) {
+    if (data){
+        *data = vector->data[index];
+    }
+    if (!data && vector->destroy){
         vector->destroy(vector->data[index]);
     }
     // shift the elements to the left
     memmove(vector->data + index, vector->data + index + 1, (vector->size - index - 1) * sizeof(void *));
     vector->size--;
     vector->data[vector->size] = NULL;
+    return COLLECTION_SUCCESS;
 }
