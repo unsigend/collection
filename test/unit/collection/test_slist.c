@@ -511,120 +511,6 @@ UTEST_TEST_CASE(slist_pop_front){
 }
 
 /**
- * Test: slist_pop_back
- * Dependencies: slist_init, slist_push_back, slist_size
- */
-UTEST_TEST_CASE(slist_pop_back){
-    // Test 1: Pop from empty list
-    {
-        SList list;
-        slist_init(&list, NULL);
-        
-        void* data = NULL;
-        int result = slist_pop_back(&list, &data);
-        
-        EXPECT_EQUAL_INT(result, -1);
-        EXPECT_EQUAL_UINT64(slist_size(&list), 0);
-        
-        slist_destroy(&list);
-    }
-    
-    // Test 2: Pop single element without retrieving data
-    {
-        SList list;
-        slist_init(&list, NULL);
-        
-        slist_push_back(&list, (void *)0x1234);
-        
-        int result = slist_pop_back(&list, NULL);
-        
-        EXPECT_EQUAL_INT(result, 0);
-        EXPECT_EQUAL_UINT64(slist_size(&list), 0);
-        
-        slist_destroy(&list);
-    }
-    
-    // Test 3: Pop single element and retrieve data
-    {
-        SList list;
-        slist_init(&list, NULL);
-        
-        const char* test_data = "test";
-        slist_push_back(&list, (void *)test_data);
-        
-        void* data = NULL;
-        int result = slist_pop_back(&list, &data);
-        
-        EXPECT_EQUAL_INT(result, 0);
-        EXPECT_TRUE(data == (void *)test_data);
-        EXPECT_EQUAL_UINT64(slist_size(&list), 0);
-        
-        slist_destroy(&list);
-    }
-    
-    // Test 4: Pop multiple elements
-    {
-        SList list;
-        slist_init(&list, NULL);
-        
-        for (int i = 0; i < 10; i++) {
-            slist_push_back(&list, (void *)(long)i);
-        }
-        
-        for (int i = 9; i >= 0; i--) {
-            void* data = NULL;
-            int result = slist_pop_back(&list, &data);
-            EXPECT_EQUAL_INT(result, 0);
-            EXPECT_TRUE(data == (void *)(long)i);
-        }
-        
-        EXPECT_EQUAL_UINT64(slist_size(&list), 0);
-        
-        slist_destroy(&list);
-    }
-    
-    // Test 5: Pop with destroy function (data not retrieved)
-    {
-        int destroy_count = 0;
-        SList list;
-        slist_init(&list, destroy_counter);
-        
-        slist_push_back(&list, &destroy_count);
-        slist_push_back(&list, &destroy_count);
-        slist_push_back(&list, &destroy_count);
-        
-        slist_pop_back(&list, NULL);
-        EXPECT_EQUAL_INT(destroy_count, 1);
-        
-        slist_pop_back(&list, NULL);
-        EXPECT_EQUAL_INT(destroy_count, 2);
-        
-        slist_pop_back(&list, NULL);
-        EXPECT_EQUAL_INT(destroy_count, 3);
-        
-        slist_destroy(&list);
-    }
-    
-    // Test 6: Pop with data retrieval (destroy not called)
-    {
-        int destroy_count = 0;
-        SList list;
-        slist_init(&list, destroy_counter);
-        
-        slist_push_back(&list, &destroy_count);
-        slist_push_back(&list, &destroy_count);
-        
-        void* data = NULL;
-        slist_pop_back(&list, &data);
-        
-        EXPECT_EQUAL_INT(destroy_count, 0);
-        EXPECT_NOT_NULL(data);
-        
-        slist_destroy(&list);
-    }
-}
-
-/**
  * Test: slist_next
  * Dependencies: slist_init, slist_push_back, slist_front
  */
@@ -814,7 +700,7 @@ UTEST_TEST_CASE(slist_remove_after){
         slist_destroy(&list);
     }
     
-    // Test 5: Remove with destroy function (data not retrieved)
+    // Test 5: Remove with destroy function
     {
         int destroy_count = 0;
         SList list;
@@ -989,7 +875,6 @@ UTEST_TEST_SUITE(slist){
     UTEST_RUN_TEST_CASE(slist_front);
     UTEST_RUN_TEST_CASE(slist_back);
     UTEST_RUN_TEST_CASE(slist_pop_front);
-    UTEST_RUN_TEST_CASE(slist_pop_back);
     UTEST_RUN_TEST_CASE(slist_next);
     UTEST_RUN_TEST_CASE(slist_data);
     UTEST_RUN_TEST_CASE(slist_head);

@@ -70,17 +70,17 @@ extern bool slist_empty(SList* slist);
 extern size_t slist_size(SList* slist);
 
 /**
- * Get the first element of the singly linked list.
+ * Get the first node of the singly linked list.
  * @param slist The singly linked list to get the first element of.
- * @return The first element of the singly linked list.
+ * @return The first node of the singly linked list.
  * @complexity O(1)
  */
 extern SListNode* slist_front(SList* slist);
 
 /**
- * Get the last element of the singly linked list.
- * @param slist The singly linked list to get the last element of.
- * @return The last element of the singly linked list.
+ * Get the last node of the singly linked list.
+ * @param slist The singly linked list to get the last node of.
+ * @return The last node of the singly linked list.
  * @complexity O(1)
  */
 extern SListNode* slist_back(SList* slist);
@@ -109,15 +109,6 @@ extern void slist_push_back(SList* slist, void* data);
  * @complexity O(1)
  */
 extern int slist_pop_front(SList* slist, void** data);
-
-/**
- * Pop an element from the back of the singly linked list.
- * @param slist The singly linked list to pop the element from.
- * @param data The pointer to store the popped element.
- * @return 0 if successful, -1 if failed
- * @complexity O(1)
- */
-extern int slist_pop_back(SList* slist, void** data);
 
 /**
  * Insert an element after a given node.

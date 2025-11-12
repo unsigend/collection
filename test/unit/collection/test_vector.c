@@ -160,7 +160,7 @@ UTEST_TEST_CASE(vector_resize){
     {
         Vector vec;
         vector_init(&vec, NULL);
-        
+
         vector_resize(&vec, 10);
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 10);
