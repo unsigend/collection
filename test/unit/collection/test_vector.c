@@ -161,8 +161,9 @@ UTEST_TEST_CASE(vector_resize){
         Vector vec;
         vector_init(&vec, NULL);
 
-        vector_resize(&vec, 10);
+        int result = vector_resize(&vec, 10);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 10);
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), 10);
         EXPECT_NOT_NULL(vec.data);
@@ -180,11 +181,13 @@ UTEST_TEST_CASE(vector_resize){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 5);
+        int result = vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(result, 0);
         void *original_data = vec.data;
         
-        vector_resize(&vec, 5);
+        result = vector_resize(&vec, 5);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 5);
         EXPECT_TRUE(vec.data == original_data);
         
@@ -196,8 +199,10 @@ UTEST_TEST_CASE(vector_resize){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 5);
-        vector_resize(&vec, 0);
+        int result = vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(result, 0);
+        result = vector_resize(&vec, 0);
+        EXPECT_EQUAL_INT(result, 0);
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), 5);
@@ -210,13 +215,13 @@ UTEST_TEST_CASE(vector_resize){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 5), 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 5);
         
-        vector_resize(&vec, 10);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10), 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 10);
         
-        vector_resize(&vec, 20);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 20), 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 20);
         
         vector_destroy(&vec);
@@ -227,10 +232,10 @@ UTEST_TEST_CASE(vector_resize){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 100);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 100), 0);
         size_t cap_after_expand = vector_capacity(&vec);
         
-        vector_resize(&vec, 10);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10), 0);
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 10);
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), cap_after_expand);
@@ -243,13 +248,13 @@ UTEST_TEST_CASE(vector_resize){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 10);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10), 0);
         const char *markers[5] = {"a", "b", "c", "d", "e"};
         for (size_t i = 0; i < 5; i++) {
             vec.data[i] = (void *)markers[i];
         }
         
-        vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 5), 0);
         
         // First 5 elements should be preserved
         for (size_t i = 0; i < 5; i++) {
@@ -264,12 +269,12 @@ UTEST_TEST_CASE(vector_resize){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 10);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10), 0);
         for (size_t i = 0; i < 10; i++) {
             vec.data[i] = (void *)0xDEADBEEF;
         }
         
-        vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 5), 0);
         
         // Elements [5, 10) should be NULL
         for (size_t i = 5; i < 10; i++) {
@@ -284,13 +289,13 @@ UTEST_TEST_CASE(vector_resize){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 10);
-        vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10), 0);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 5), 0);
         size_t cap = vector_capacity(&vec);
         EXPECT_EQUAL_UINT64(cap, 10);
         
         // Expand but within capacity
-        vector_resize(&vec, 7);  
+        EXPECT_EQUAL_INT(vector_resize(&vec, 7), 0);
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 7);
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), cap);
@@ -304,12 +309,12 @@ UTEST_TEST_CASE(vector_resize){
         Vector vec;
         vector_init(&vec, destroy_counter);
         
-        vector_resize(&vec, 10);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10), 0);
         for (size_t i = 0; i < 10; i++) {
             vec.data[i] = &destroy_count;
         }
         
-        vector_resize(&vec, 3);  // Should call destroy 7 times
+        EXPECT_EQUAL_INT(vector_resize(&vec, 3), 0);  // Should call destroy 7 times
         
         EXPECT_EQUAL_INT(destroy_count, 7);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 3);
@@ -322,7 +327,7 @@ UTEST_TEST_CASE(vector_resize){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 10000);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10000), 0);
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 10000);
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), 10000);
@@ -342,9 +347,10 @@ UTEST_TEST_CASE(vector_shrink_to_fit){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 10);
-        vector_shrink_to_fit(&vec);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10), 0);
+        int result = vector_shrink_to_fit(&vec);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 10);
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), 10);
         
@@ -356,13 +362,14 @@ UTEST_TEST_CASE(vector_shrink_to_fit){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 100);
-        vector_resize(&vec, 10);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 100), 0);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10), 0);
         
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), 100);
         
-        vector_shrink_to_fit(&vec);
+        int result = vector_shrink_to_fit(&vec);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 10);
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), 10);
         
@@ -374,11 +381,12 @@ UTEST_TEST_CASE(vector_shrink_to_fit){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 50);
-        vector_resize(&vec, 0);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 50), 0);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 0), 0);
         
-        vector_shrink_to_fit(&vec);
+        int result = vector_shrink_to_fit(&vec);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 0);
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), 0);
         
@@ -390,16 +398,17 @@ UTEST_TEST_CASE(vector_shrink_to_fit){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 100);
-        vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 100), 0);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 5), 0);
         
         const char *data = "preserved";
         for (size_t i = 0; i < 5; i++) {
             vec.data[i] = (void *)data;
         }
         
-        vector_shrink_to_fit(&vec);
+        int result = vector_shrink_to_fit(&vec);
         
+        EXPECT_EQUAL_INT(result, 0);
         for (size_t i = 0; i < 5; i++) {
             EXPECT_TRUE(vec.data[i] == (void *)data);
         }
@@ -420,8 +429,9 @@ UTEST_TEST_CASE(vector_push_back){
         vector_init(&vec, NULL);
         
         const char *data = "first";
-        vector_push_back(&vec, (void *)data);
+        int result = vector_push_back(&vec, (void *)data);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 1);
         EXPECT_GREATER_EQUAL_UINT64(vector_capacity(&vec), 1);
         EXPECT_TRUE(vec.data[0] == (void *)data);
@@ -435,7 +445,8 @@ UTEST_TEST_CASE(vector_push_back){
         vector_init(&vec, NULL);
         
         for (int i = 0; i < 10; i++) {
-            vector_push_back(&vec, (void *)(long)i);
+            int result = vector_push_back(&vec, (void *)(long)i);
+            EXPECT_EQUAL_INT(result, 0);
         }
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 10);
@@ -452,8 +463,9 @@ UTEST_TEST_CASE(vector_push_back){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_push_back(&vec, NULL);
+        int result = vector_push_back(&vec, NULL);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 1);
         EXPECT_NULL(vec.data[0]);
         
@@ -466,15 +478,18 @@ UTEST_TEST_CASE(vector_push_back){
         vector_init(&vec, NULL);
         
         // First push: capacity should be 1
-        vector_push_back(&vec, (void *)1);
+        int result = vector_push_back(&vec, (void *)1);
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), 1);
         
         // Second push: capacity should double to 2
-        vector_push_back(&vec, (void *)2);
+        result = vector_push_back(&vec, (void *)2);
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), 2);
         
         // Third push: capacity should double to 4
-        vector_push_back(&vec, (void *)3);
+        result = vector_push_back(&vec, (void *)3);
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_capacity(&vec), 4);
         
         vector_destroy(&vec);
@@ -485,11 +500,12 @@ UTEST_TEST_CASE(vector_push_back){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 5), 0);
         size_t cap = vector_capacity(&vec);
         
-        vector_push_back(&vec, (void *)0xABCD);
+        int result = vector_push_back(&vec, (void *)0xABCD);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(vector_size(&vec), 6);
         EXPECT_GREATER_UINT64(vector_capacity(&vec), cap);
         
@@ -502,7 +518,8 @@ UTEST_TEST_CASE(vector_push_back){
         vector_init(&vec, NULL);
         
         for (int i = 0; i < 1000; i++) {
-            vector_push_back(&vec, (void *)(long)i);
+            int result = vector_push_back(&vec, (void *)(long)i);
+            EXPECT_EQUAL_INT(result, 0);
         }
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 1000);
@@ -524,10 +541,10 @@ UTEST_TEST_CASE(vector_push_back){
         const char *str2 = "world";
         int num = 42;
         
-        vector_push_back(&vec, (void *)str1);
-        vector_push_back(&vec, (void *)str2);
-        vector_push_back(&vec, &num);
-        vector_push_back(&vec, NULL);
+        EXPECT_EQUAL_INT(vector_push_back(&vec, (void *)str1), 0);
+        EXPECT_EQUAL_INT(vector_push_back(&vec, (void *)str2), 0);
+        EXPECT_EQUAL_INT(vector_push_back(&vec, &num), 0);
+        EXPECT_EQUAL_INT(vector_push_back(&vec, NULL), 0);
         
         EXPECT_TRUE(vec.data[0] == (void *)str1);
         EXPECT_TRUE(vec.data[1] == (void *)str2);
@@ -667,7 +684,7 @@ UTEST_TEST_CASE(vector_front){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 5), 0);
         vec.data[0] = (void *)0xBEEF;
         
         EXPECT_TRUE(vector_front(&vec) == (void *)0xBEEF);
@@ -755,7 +772,7 @@ UTEST_TEST_CASE(vector_back){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 5), 0);
         vec.data[4] = (void *)0xDEAD;
         
         EXPECT_TRUE(vector_back(&vec) == (void *)0xDEAD);
@@ -1582,11 +1599,11 @@ UTEST_TEST_CASE(vector_clear){
         vector_init(&vec, NULL);
         
         for (int i = 0; i < 10; i++) {
-            vector_push_back(&vec, (void *)(long)i);
+            EXPECT_EQUAL_INT(vector_push_back(&vec, (void *)(long)i), 0);
         }
         
         vector_clear(&vec);
-        vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 5), 0);
         
         EXPECT_EQUAL_UINT64(vector_size(&vec), 5);
         
@@ -1664,10 +1681,10 @@ UTEST_TEST_CASE(vector_empty){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 10);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10), 0);
         EXPECT_FALSE(vector_empty(&vec));
         
-        vector_resize(&vec, 0);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 0), 0);
         EXPECT_TRUE(vector_empty(&vec));
         
         vector_destroy(&vec);
@@ -1680,7 +1697,7 @@ UTEST_TEST_CASE(vector_empty){
         
         EXPECT_TRUE(vector_empty(&vec));
         
-        vector_resize(&vec, 5);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 5), 0);
         
         EXPECT_FALSE(vector_empty(&vec));
         
@@ -1794,7 +1811,7 @@ UTEST_TEST_CASE(vector_data){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 10);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10), 0);
         
         void** data = vector_data(&vec);
         EXPECT_NOT_NULL(data);
@@ -1812,7 +1829,7 @@ UTEST_TEST_CASE(vector_data){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 3);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 3), 0);
         
         void** data = vector_data(&vec);
         data[0] = (void *)"first";
@@ -1892,11 +1909,11 @@ UTEST_TEST_CASE(vector_data){
         Vector vec;
         vector_init(&vec, NULL);
         
-        vector_resize(&vec, 10);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 10), 0);
         EXPECT_NOT_NULL(vector_data(&vec));
         
-        vector_resize(&vec, 0);
-        vector_shrink_to_fit(&vec);
+        EXPECT_EQUAL_INT(vector_resize(&vec, 0), 0);
+        EXPECT_EQUAL_INT(vector_shrink_to_fit(&vec), 0);
         
         EXPECT_NULL(vector_data(&vec));
         

@@ -121,17 +121,19 @@ extern void slist_destroy(SList* slist);
  * Push an element to the front of the singly linked list.
  * @param slist The singly linked list to push the element to.
  * @param data The element to push.
+ * @return 0 if successful, -1 if failed (memory allocation failure)
  * @complexity O(1)
  */
-extern void slist_push_front(SList* slist, void* data);
+extern int slist_push_front(SList* slist, void* data);
 
 /**
  * Push an element to the back of the singly linked list.
  * @param slist The singly linked list to push the element to.
  * @param data The element to push.
+ * @return 0 if successful, -1 if failed (memory allocation failure)
  * @complexity O(1)
  */
-extern void slist_push_back(SList* slist, void* data);
+extern int slist_push_back(SList* slist, void* data);
 
 /**
  * Pop an element from the front of the singly linked list.

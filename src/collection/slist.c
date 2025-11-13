@@ -31,10 +31,10 @@ void slist_destroy(SList* slist){
     slist->destroy = NULL;
 }
 
-void slist_push_front(SList* slist, void* data){
+int slist_push_front(SList* slist, void* data){
     SListNode* node = malloc(sizeof(SListNode));
     if (!node)
-        return;
+        return COLLECTION_FAILURE;
     node->data = data;
     node->next = slist->head;
     slist->head = node;
@@ -42,12 +42,13 @@ void slist_push_front(SList* slist, void* data){
         slist->tail = node;
     }
     slist->size++;
+    return COLLECTION_SUCCESS;
 }
 
-void slist_push_back(SList* slist, void* data){
+int slist_push_back(SList* slist, void* data){
     SListNode* node = malloc(sizeof(SListNode));
     if (!node)
-        return;
+        return COLLECTION_FAILURE;
     node->data = data;
     node->next = NULL;
     if (slist->head == NULL){
@@ -57,6 +58,7 @@ void slist_push_back(SList* slist, void* data){
     }
     slist->tail = node;
     slist->size++;
+    return COLLECTION_SUCCESS;
 }
 
 int slist_pop_front(SList* slist, void** data){

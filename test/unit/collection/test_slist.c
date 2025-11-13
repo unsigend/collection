@@ -155,8 +155,9 @@ UTEST_TEST_CASE(slist_push_front){
         slist_init(&list, NULL);
         
         const char *data = "first";
-        slist_push_front(&list, (void *)data);
+        int result = slist_push_front(&list, (void *)data);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(slist_size(&list), 1);
         EXPECT_NOT_NULL(list.head);
         EXPECT_TRUE(list.head == list.tail);
@@ -170,7 +171,8 @@ UTEST_TEST_CASE(slist_push_front){
         slist_init(&list, NULL);
         
         for (int i = 0; i < 10; i++) {
-            slist_push_front(&list, (void *)(long)i);
+            int result = slist_push_front(&list, (void *)(long)i);
+            EXPECT_EQUAL_INT(result, 0);
         }
         
         EXPECT_EQUAL_UINT64(slist_size(&list), 10);
@@ -183,8 +185,9 @@ UTEST_TEST_CASE(slist_push_front){
         SList list;
         slist_init(&list, NULL);
         
-        slist_push_front(&list, NULL);
+        int result = slist_push_front(&list, NULL);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(slist_size(&list), 1);
         EXPECT_NOT_NULL(list.head);
         
@@ -196,9 +199,9 @@ UTEST_TEST_CASE(slist_push_front){
         SList list;
         slist_init(&list, NULL);
         
-        slist_push_front(&list, (void *)"third");
-        slist_push_front(&list, (void *)"second");
-        slist_push_front(&list, (void *)"first");
+        EXPECT_EQUAL_INT(slist_push_front(&list, (void *)"third"), 0);
+        EXPECT_EQUAL_INT(slist_push_front(&list, (void *)"second"), 0);
+        EXPECT_EQUAL_INT(slist_push_front(&list, (void *)"first"), 0);
         
         SListNode* node = list.head;
         EXPECT_EQUAL_STRING((char*)node->data, "first");
@@ -218,8 +221,9 @@ UTEST_TEST_CASE(slist_push_back){
         slist_init(&list, NULL);
         
         const char *data = "first";
-        slist_push_back(&list, (void *)data);
+        int result = slist_push_back(&list, (void *)data);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(slist_size(&list), 1);
         EXPECT_NOT_NULL(list.head);
         EXPECT_TRUE(list.head == list.tail);
@@ -233,7 +237,8 @@ UTEST_TEST_CASE(slist_push_back){
         slist_init(&list, NULL);
         
         for (int i = 0; i < 10; i++) {
-            slist_push_back(&list, (void *)(long)i);
+            int result = slist_push_back(&list, (void *)(long)i);
+            EXPECT_EQUAL_INT(result, 0);
         }
         
         EXPECT_EQUAL_UINT64(slist_size(&list), 10);
@@ -246,8 +251,9 @@ UTEST_TEST_CASE(slist_push_back){
         SList list;
         slist_init(&list, NULL);
         
-        slist_push_back(&list, NULL);
+        int result = slist_push_back(&list, NULL);
         
+        EXPECT_EQUAL_INT(result, 0);
         EXPECT_EQUAL_UINT64(slist_size(&list), 1);
         
         slist_destroy(&list);
@@ -258,9 +264,9 @@ UTEST_TEST_CASE(slist_push_back){
         SList list;
         slist_init(&list, NULL);
         
-        slist_push_back(&list, (void *)"first");
-        slist_push_back(&list, (void *)"second");
-        slist_push_back(&list, (void *)"third");
+        EXPECT_EQUAL_INT(slist_push_back(&list, (void *)"first"), 0);
+        EXPECT_EQUAL_INT(slist_push_back(&list, (void *)"second"), 0);
+        EXPECT_EQUAL_INT(slist_push_back(&list, (void *)"third"), 0);
         
         SListNode* node = list.head;
         EXPECT_EQUAL_STRING((char*)node->data, "first");
