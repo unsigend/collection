@@ -111,7 +111,7 @@ void vector_destroy(Vector* vector){
     vector->destroy = NULL;
 }
 
-void* vector_at(Vector* vector, size_t index){
+void* vector_at(const Vector* vector, size_t index){
     if (index >= vector->size){
         fprintf(stderr, "FATAL: Index out of bounds\n");
         exit(COLLECTION_FAILURE);
@@ -119,14 +119,14 @@ void* vector_at(Vector* vector, size_t index){
     return vector->data[index];
 }
 
-void* vector_back(Vector* vector){
+void* vector_back(const Vector* vector){
     if (vector->size == 0){
         return NULL;
     }
     return vector->data[vector->size - 1];
 }
 
-void* vector_front(Vector* vector){
+void* vector_front(const Vector* vector){
     if (vector->size == 0){
         return NULL;
     }
