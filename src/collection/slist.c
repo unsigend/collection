@@ -32,6 +32,8 @@ void slist_destroy(SList* slist){
 }
 
 int slist_push_front(SList* slist, void* data){
+    if (!slist)
+        return COLLECTION_FAILURE;
     SListNode* node = malloc(sizeof(SListNode));
     if (!node)
         return COLLECTION_FAILURE;
@@ -46,6 +48,8 @@ int slist_push_front(SList* slist, void* data){
 }
 
 int slist_push_back(SList* slist, void* data){
+    if (!slist)
+        return COLLECTION_FAILURE;
     SListNode* node = malloc(sizeof(SListNode));
     if (!node)
         return COLLECTION_FAILURE;
