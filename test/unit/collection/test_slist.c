@@ -853,6 +853,111 @@ UTEST_TEST_CASE(slist_tail){
 }
 
 /**
+ * Test: slist_clear
+ * Dependencies: slist_init, slist_push_back, slist_size
+ */
+UTEST_TEST_CASE(slist_clear){
+    // Test 1: Clear empty list
+    {
+        SList list;
+        slist_init(&list, NULL);
+        
+        slist_clear(&list);
+        
+        EXPECT_EQUAL_UINT64(slist_size(&list), 0);
+        EXPECT_NULL(list.head);
+        EXPECT_NULL(list.tail);
+        
+        slist_destroy(&list);
+    }
+    
+    // Test 2: Clear single element list
+    {
+        SList list;
+        slist_init(&list, NULL);
+        
+        slist_push_back(&list, (void *)"test");
+        slist_clear(&list);
+        
+        EXPECT_EQUAL_UINT64(slist_size(&list), 0);
+        EXPECT_NULL(list.head);
+        EXPECT_NULL(list.tail);
+        
+        slist_destroy(&list);
+    }
+    
+    // Test 3: Clear multiple element list
+    {
+        SList list;
+        slist_init(&list, NULL);
+        
+        for (int i = 0; i < 10; i++) {
+            slist_push_back(&list, (void *)(long)i);
+        }
+        
+        slist_clear(&list);
+        
+        EXPECT_EQUAL_UINT64(slist_size(&list), 0);
+        EXPECT_NULL(list.head);
+        EXPECT_NULL(list.tail);
+        
+        slist_destroy(&list);
+    }
+    
+    // Test 4: Clear with destroy function
+    {
+        int destroy_count = 0;
+        SList list;
+        slist_init(&list, destroy_counter);
+        
+        slist_push_back(&list, &destroy_count);
+        slist_push_back(&list, &destroy_count);
+        slist_push_back(&list, &destroy_count);
+        
+        slist_clear(&list);
+        
+        EXPECT_EQUAL_INT(destroy_count, 3);
+        EXPECT_EQUAL_UINT64(slist_size(&list), 0);
+        
+        slist_destroy(&list);
+    }
+    
+    // Test 5: Clear and reuse list
+    {
+        SList list;
+        slist_init(&list, NULL);
+        
+        slist_push_back(&list, (void *)"first");
+        slist_push_back(&list, (void *)"second");
+        
+        slist_clear(&list);
+        
+        EXPECT_EQUAL_UINT64(slist_size(&list), 0);
+        
+        slist_push_back(&list, (void *)"new");
+        
+        EXPECT_EQUAL_UINT64(slist_size(&list), 1);
+        EXPECT_EQUAL_STRING((char*)slist_front(&list)->data, "new");
+        
+        slist_destroy(&list);
+    }
+    
+    // Test 6: Multiple clears
+    {
+        SList list;
+        slist_init(&list, NULL);
+        
+        slist_push_back(&list, (void *)"test");
+        slist_clear(&list);
+        slist_clear(&list);
+        
+        EXPECT_EQUAL_UINT64(slist_size(&list), 0);
+        
+        slist_destroy(&list);
+    }
+}
+
+/**
  * Test Suite: slist
  */
 UTEST_TEST_SUITE(slist){
@@ -871,5 +976,6 @@ UTEST_TEST_SUITE(slist){
     UTEST_RUN_TEST_CASE(slist_tail);
     UTEST_RUN_TEST_CASE(slist_insert_after);
     UTEST_RUN_TEST_CASE(slist_remove_after);
+    UTEST_RUN_TEST_CASE(slist_clear);
 }
 

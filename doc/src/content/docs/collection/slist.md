@@ -422,6 +422,42 @@ if (slist_pop_front(&list, NULL) == -1) {
 
 ---
 
+### slist_clear
+
+```c
+void slist_clear(SList* slist);
+```
+
+Removes all elements from the list.
+
+**Parameters:**
+
+-   `slist` - Pointer to the list
+
+**Description:**
+
+Removes all elements from the list and sets size to 0. The destroy function is called on each element if provided. After clearing, the list is in an empty state and can be reused.
+
+**Complexity:** O(n) where n is the number of elements
+
+**Example:**
+
+```c
+slist_push_back(&list, "one");
+slist_push_back(&list, "two");
+slist_push_back(&list, "three");
+// size=3
+
+slist_clear(&list);
+// size=0, head=NULL, tail=NULL
+
+// List can be reused
+slist_push_back(&list, "new");
+// size=1
+```
+
+---
+
 ### slist_insert_after
 
 ```c
@@ -607,6 +643,7 @@ int main(void) {
 | `slist_push_front`   | O(1)       |
 | `slist_push_back`    | O(1)       |
 | `slist_pop_front`    | O(1)       |
+| `slist_clear`        | O(n)       |
 | `slist_insert_after` | O(1)       |
 | `slist_remove_after` | O(1)       |
 | `slist_next`         | O(1)       |

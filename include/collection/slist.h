@@ -143,6 +143,13 @@ extern void slist_push_back(SList* slist, void* data);
 extern int slist_pop_front(SList* slist, void** data);
 
 /**
+ * Clear the singly linked list.
+ * @param slist The singly linked list to clear.
+ * @complexity O(n)
+ */
+extern void slist_clear(SList* slist);
+
+/**
  * Insert an element after a given node.
  * @param slist The singly linked list to insert the element into.
  * @param node The node to insert the element after.

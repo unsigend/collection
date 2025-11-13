@@ -27,19 +27,7 @@ void slist_init(SList* slist, void (*destroy)(void *)){
 }
 
 void slist_destroy(SList* slist){
-    SListNode* node = slist->head;
-    while (node){
-        SListNode* next = node->next;
-        if (slist->destroy){
-            slist->destroy(node->data);
-        }
-        free(node);
-        node = next;
-    }
-    
-    slist->size = 0;
-    slist->head = NULL;
-    slist->tail = NULL;
+    slist_clear(slist);
     slist->destroy = NULL;
 }
 
@@ -72,7 +60,7 @@ void slist_push_back(SList* slist, void* data){
 }
 
 int slist_pop_front(SList* slist, void** data){
-    if (slist->size == 0){
+    if (!slist || slist_empty(slist)){
         return COLLECTION_FAILURE;
     }
     SListNode* node = slist->head;
@@ -88,6 +76,24 @@ int slist_pop_front(SList* slist, void** data){
     free(node);
     slist->size--;
     return COLLECTION_SUCCESS;
+}
+
+void slist_clear(SList* slist){
+    if (!slist || slist_empty(slist)){
+        return;
+    }
+    SListNode* node = slist->head;
+    while (node){
+        SListNode* next = node->next;
+        if (slist->destroy){
+            slist->destroy(node->data);
+        }
+        free(node);
+        node = next;
+    }
+    slist->size = 0;
+    slist->head = NULL;
+    slist->tail = NULL;
 }
 
 int slist_insert_after(SList* slist, SListNode* node, void* data){
