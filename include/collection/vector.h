@@ -87,7 +87,7 @@ extern void vector_destroy(Vector* vector);
  * @return The element at the given index.
  * @complexity O(1)
  */
-extern void* vector_at(Vector* vector, size_t index);
+extern void* vector_at(const Vector* vector, size_t index);
 
 /**
  * Get the last element of the vector.
@@ -95,7 +95,7 @@ extern void* vector_at(Vector* vector, size_t index);
  * @return The last element of the vector, or NULL if the vector is empty.
  * @complexity O(1)
  */
-extern void* vector_back(Vector* vector);
+extern void* vector_back(const Vector* vector);
 
 /**
  * Get the first element of the vector.
@@ -103,7 +103,7 @@ extern void* vector_back(Vector* vector);
  * @return The first element of the vector, or NULL if the vector is empty.
  * @complexity O(1)
  */
-extern void* vector_front(Vector* vector);
+extern void* vector_front(const Vector* vector);
 
 /**
  * Resize the vector to the given size.

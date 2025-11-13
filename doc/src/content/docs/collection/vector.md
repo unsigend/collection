@@ -207,7 +207,7 @@ vector_destroy(&vec);
 ### vector_at
 
 ```c
-void* vector_at(Vector* vector, size_t index);
+void* vector_at(const Vector* vector, size_t index);
 ```
 
 Returns the element at the specified index with bounds checking.
@@ -239,7 +239,7 @@ char* str = (char*)vector_at(&vec, 0);  // Returns "hello"
 ### vector_front
 
 ```c
-void* vector_front(Vector* vector);
+void* vector_front(const Vector* vector);
 ```
 
 Returns the first element in the vector.
@@ -268,7 +268,7 @@ if (first != NULL) {
 ### vector_back
 
 ```c
-void* vector_back(Vector* vector);
+void* vector_back(const Vector* vector);
 ```
 
 Returns the last element in the vector.
