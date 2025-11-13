@@ -29,7 +29,7 @@
  * @param vector The vector to destroy the elements in.
  * @param index The index of the first element to destroy.
  * @param count The number of elements to destroy.
- * @complexity O(count)
+ * @complexity O(n)
  */
 static void _vector_destroy_range(Vector* vector, size_t index, size_t count){
     if (vector->destroy) {
