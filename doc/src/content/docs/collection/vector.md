@@ -288,7 +288,7 @@ Pointer to the last element, or `NULL` if the vector is empty.
 ### vector_resize
 
 ```c
-void vector_resize(Vector* vector, size_t new_size);
+int vector_resize(Vector* vector, size_t new_size);
 ```
 
 Resizes the vector to contain `new_size` elements.
@@ -298,20 +298,32 @@ Resizes the vector to contain `new_size` elements.
 -   `vector` - Pointer to the vector
 -   `new_size` - New size of the vector
 
+**Return Value:**
+
+Returns `0` on success, `-1` on failure.
+
 **Behavior:**
 
 -   If `new_size` is **greater** than current size: new elements are added and initialized to `NULL`
 -   If `new_size` is **smaller** than current size: elements are removed and the destroy function is called on them
 -   If `new_size` **equals** current size: no operation is performed
+-   If memory allocation fails when growing, the vector remains unchanged and `-1` is returned
 
 **Complexity:** O(n) where n is the larger of the old or new size
 
 **Example:**
 
 ```c
-vector_resize(&vec, 10);  // Create 10 NULL elements
-vector_resize(&vec, 5);   // Remove last 5 elements
-vector_resize(&vec, 0);   // Remove all elements
+if (vector_resize(&vec, 10) == 0) {  // Create 10 NULL elements
+    // Success
+}
+
+if (vector_resize(&vec, 5) != 0) {   // Remove last 5 elements
+    // Handle allocation failure (though shrinking typically succeeds)
+    fprintf(stderr, "Resize failed\n");
+}
+
+vector_resize(&vec, 0);   // Remove all elements (always succeeds)
 ```
 
 **Note:** When shrinking, capacity is not reduced. Use `vector_shrink_to_fit()` to free unused memory.
@@ -321,7 +333,7 @@ vector_resize(&vec, 0);   // Remove all elements
 ### vector_shrink_to_fit
 
 ```c
-void vector_shrink_to_fit(Vector* vector);
+int vector_shrink_to_fit(Vector* vector);
 ```
 
 Reduces capacity to match the current size, freeing unused memory.
@@ -330,6 +342,14 @@ Reduces capacity to match the current size, freeing unused memory.
 
 -   `vector` - Pointer to the vector
 
+**Return Value:**
+
+Returns `0` on success, `-1` on failure.
+
+**Description:**
+
+Attempts to reduce the allocated memory to match the current size. If memory allocation fails during the shrinking operation, the vector remains unchanged with its original capacity and `-1` is returned. The vector contents are never lost.
+
 **Complexity:** O(n) where n is the number of elements
 
 **Example:**
@@ -337,7 +357,13 @@ Reduces capacity to match the current size, freeing unused memory.
 ```c
 vector_resize(&vec, 100);     // size=100, capacity=100
 vector_resize(&vec, 10);      // size=10, capacity=100
-vector_shrink_to_fit(&vec);   // size=10, capacity=10
+
+if (vector_shrink_to_fit(&vec) == 0) {   // size=10, capacity=10
+    // Successfully freed unused memory
+} else {
+    // Shrink failed but vector is still valid with old capacity
+    fprintf(stderr, "Failed to shrink, but vector is still usable\n");
+}
 ```
 
 ---
@@ -345,7 +371,7 @@ vector_shrink_to_fit(&vec);   // size=10, capacity=10
 ### vector_push_back
 
 ```c
-void vector_push_back(Vector* vector, void* element);
+int vector_push_back(Vector* vector, void* element);
 ```
 
 Appends an element to the end of the vector.
@@ -355,17 +381,27 @@ Appends an element to the end of the vector.
 -   `vector` - Pointer to the vector
 -   `element` - Pointer to the element to append (can be `NULL`)
 
+**Return Value:**
+
+Returns `0` on success, `-1` on failure.
+
 **Description:**
 
-Appends the element to the end. If necessary, capacity is automatically increased. The vector takes ownership of the pointer but not the pointed-to object.
+Appends the element to the end. If necessary, capacity is automatically increased. The vector takes ownership of the pointer but not the pointed-to object. If memory allocation fails during reallocation, the vector remains unchanged and `-1` is returned.
 
 **Complexity:** O(1) amortized, O(n) worst case when reallocation occurs
 
 **Example:**
 
 ```c
-vector_push_back(&vec, "first");
-vector_push_back(&vec, "second");
+if (vector_push_back(&vec, "first") == 0) {
+    // Successfully added
+}
+
+if (vector_push_back(&vec, "second") != 0) {
+    // Handle allocation failure
+    fprintf(stderr, "Failed to push element\n");
+}
 ```
 
 ---
@@ -385,7 +421,7 @@ Removes the last element from the vector.
 
 **Return Value:**
 
-Returns `0` on success, `-1` if the vector is empty.
+Returns `0` on success, `-1` on failure.
 
 **Description:**
 
@@ -436,7 +472,7 @@ Inserts an element at the specified position.
 
 **Return Value:**
 
-Returns `0` on success, `-1` on failure (invalid index).
+Returns `0` on success, `-1` on failure.
 
 **Description:**
 
@@ -476,7 +512,7 @@ Removes the element at the specified position.
 
 **Return Value:**
 
-Returns `0` on success, `-1` on failure (invalid index).
+Returns `0` on success, `-1` on failure.
 
 **Description:**
 

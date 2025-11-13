@@ -109,24 +109,27 @@ extern void* vector_front(Vector* vector);
  * Resize the vector to the given size.
  * @param vector The vector to resize.
  * @param new_size The new size of the vector.
+ * @return 0 if successful, -1 if failed
  * @complexity O(n)
  */
-extern void vector_resize(Vector* vector, size_t new_size);
+extern int vector_resize(Vector* vector, size_t new_size);
 
 /**
  * Shrink the vector to the size of the elements.
  * @param vector The vector to shrink.
- * @complexity O(n)
+ * @return 0 if successful, -1 if failed
+ * @complexity O(1)
  */
-extern void vector_shrink_to_fit(Vector* vector);
+extern int vector_shrink_to_fit(Vector* vector);
 
 /**
  * Push an element to the back of the vector.
  * @param vector The vector to push the element to.
  * @param element The element to push.
+ * @return 0 if successful, -1 if failed
  * @complexity O(1) amortized, O(n) worst case when reallocation occurs
  */
-extern void vector_push_back(Vector* vector, void* element);
+extern int vector_push_back(Vector* vector, void* element);
 
 /**
  * Pop an element from the back of the vector.

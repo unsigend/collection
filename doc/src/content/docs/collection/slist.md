@@ -318,7 +318,7 @@ slist_destroy(&list);
 ### slist_push_front
 
 ```c
-void slist_push_front(SList* slist, void* data);
+int slist_push_front(SList* slist, void* data);
 ```
 
 Inserts an element at the beginning of the list.
@@ -328,17 +328,27 @@ Inserts an element at the beginning of the list.
 -   `slist` - Pointer to the list
 -   `data` - Pointer to the element to insert (can be `NULL`)
 
+**Return Value:**
+
+Returns `0` on success, `-1` on failure.
+
 **Description:**
 
-Inserts a new node with the given data at the front of the list. This operation does not invalidate any node pointers.
+Inserts a new node with the given data at the front of the list. This operation does not invalidate any node pointers. If memory allocation fails, the list remains unchanged and `-1` is returned.
 
 **Complexity:** O(1)
 
 **Example:**
 
 ```c
-slist_push_front(&list, "first");
-slist_push_front(&list, "second");
+if (slist_push_front(&list, "first") == 0) {
+    // Successfully inserted
+}
+
+if (slist_push_front(&list, "second") != 0) {
+    // Handle allocation failure
+    fprintf(stderr, "Failed to push element\n");
+}
 // List now contains: ["second", "first"]
 ```
 
@@ -347,7 +357,7 @@ slist_push_front(&list, "second");
 ### slist_push_back
 
 ```c
-void slist_push_back(SList* slist, void* data);
+int slist_push_back(SList* slist, void* data);
 ```
 
 Appends an element to the end of the list.
@@ -357,17 +367,27 @@ Appends an element to the end of the list.
 -   `slist` - Pointer to the list
 -   `data` - Pointer to the element to append (can be `NULL`)
 
+**Return Value:**
+
+Returns `0` on success, `-1` on failure.
+
 **Description:**
 
-Inserts a new node with the given data at the back of the list. This operation does not invalidate any node pointers.
+Inserts a new node with the given data at the back of the list. This operation does not invalidate any node pointers. If memory allocation fails, the list remains unchanged and `-1` is returned.
 
 **Complexity:** O(1)
 
 **Example:**
 
 ```c
-slist_push_back(&list, "first");
-slist_push_back(&list, "second");
+if (slist_push_back(&list, "first") == 0) {
+    // Successfully inserted
+}
+
+if (slist_push_back(&list, "second") != 0) {
+    // Handle allocation failure
+    fprintf(stderr, "Failed to push element\n");
+}
 // List now contains: ["first", "second"]
 ```
 
@@ -388,7 +408,7 @@ Removes the first element from the list.
 
 **Return Value:**
 
-Returns `0` on success, `-1` if the list is empty.
+Returns `0` on success, `-1` on failure.
 
 **Description:**
 
@@ -474,7 +494,7 @@ Inserts an element after a given node.
 
 **Return Value:**
 
-Returns `0` on success, `-1` on failure (NULL node).
+Returns `0` on success, `-1` on failure.
 
 **Description:**
 
@@ -509,7 +529,7 @@ Removes the element after a given node.
 
 **Return Value:**
 
-Returns `0` on success, `-1` on failure (NULL node or no next node).
+Returns `0` on success, `-1` on failure.
 
 **Description:**
 
