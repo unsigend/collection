@@ -78,14 +78,6 @@ void vector_resize(Vector* vector, size_t new_size){
     vector->size = new_size;
 }
 
-bool vector_empty(Vector* vector){
-    return vector->size == 0;
-}
-
-void** vector_data(Vector* vector){
-    return vector->data;
-}
-
 void vector_init(Vector* vector, void (*destroy)(void *)){
     // allocate memory for the vector stuct
     vector->data = NULL;
@@ -106,14 +98,6 @@ void vector_destroy(Vector* vector){
     vector->size = 0;
     vector->capacity = 0;
     vector->destroy = NULL;
-}
-
-size_t vector_size(Vector* vector){
-    return vector->size;
-}
-
-size_t vector_capacity(Vector* vector){
-    return vector->capacity;
 }
 
 void* vector_at(Vector* vector, size_t index){

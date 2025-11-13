@@ -54,7 +54,7 @@ extern void vector_destroy(Vector* vector);
  * @return True if the vector is empty, false otherwise.
  * @complexity O(1)
  */
-extern bool vector_empty(Vector* vector);
+#define vector_empty(vector) ((vector)->size == 0)
 
 /**
  * Get the data of the vector.
@@ -62,7 +62,7 @@ extern bool vector_empty(Vector* vector);
  * @return The data of the vector.
  * @complexity O(1)
  */
-extern void** vector_data(Vector* vector);
+#define vector_data(vector) ((vector)->data)
 
 /**
  * Get the size of the vector.
@@ -70,7 +70,7 @@ extern void** vector_data(Vector* vector);
  * @return The size of the vector.
  * @complexity O(1)
  */
-extern size_t vector_size(Vector* vector);
+#define vector_size(vector) ((vector)->size)
 
 /**
  * Get the capacity of the vector.
@@ -78,7 +78,7 @@ extern size_t vector_size(Vector* vector);
  * @return The capacity of the vector.
  * @complexity O(1)
  */
-extern size_t vector_capacity(Vector* vector);
+#define vector_capacity(vector) ((vector)->capacity)
 
 /**
  * Get the element at the given index.

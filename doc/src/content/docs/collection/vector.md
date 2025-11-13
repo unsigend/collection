@@ -15,6 +15,135 @@ To use the vector in your code, include the header file:
 
 This provides access to the `Vector` type and all vector functions.
 
+## Macros
+
+Efficient inline operations implemented as macros:
+
+### vector_size
+
+```c
+vector_size(vector)
+```
+
+Returns the number of elements in the vector.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+
+**Return Value:**
+
+The number of elements currently stored in the vector.
+
+**Complexity:** O(1)
+
+---
+
+### vector_capacity
+
+```c
+vector_capacity(vector)
+```
+
+Returns the number of elements that can be held in currently allocated storage.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+
+**Return Value:**
+
+The capacity of the currently allocated storage. This may be greater than or equal to the size.
+
+**Complexity:** O(1)
+
+**Note:** Use `vector_shrink_to_fit()` to reduce capacity to match size.
+
+---
+
+### vector_empty
+
+```c
+vector_empty(vector)
+```
+
+Checks if the vector is empty.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+
+**Return Value:**
+
+`true` if the vector contains no elements (size == 0), `false` otherwise.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+Vector vec;
+vector_init(&vec, NULL);
+
+if (vector_empty(&vec)) {
+    printf("Vector is empty\n");
+}
+
+vector_push_back(&vec, "element");
+
+if (!vector_empty(&vec)) {
+    printf("Vector has elements\n");
+}
+```
+
+---
+
+### vector_data
+
+```c
+vector_data(vector)
+```
+
+Returns a pointer to the underlying array serving as element storage.
+
+**Parameters:**
+
+-   `vector` - Pointer to the vector
+
+**Return Value:**
+
+Pointer to the underlying array, or `NULL` if the vector is empty.
+
+**Complexity:** O(1)
+
+**Description:**
+
+Returns a direct pointer to the internal array of element pointers. This allows direct access to the storage for performance-critical operations. The returned pointer may be invalidated by any operation that changes the vector's capacity.
+
+**Important:**
+
+-   The pointer is invalidated after operations that cause reallocation (push_back, insert, resize with growth)
+-   Direct modification of the array should be done carefully to avoid breaking vector invariants
+-   Valid only for indices [0, size)
+
+**Example:**
+
+```c
+Vector vec;
+vector_init(&vec, NULL);
+
+vector_push_back(&vec, "a");
+vector_push_back(&vec, "b");
+vector_push_back(&vec, "c");
+
+void** data = vector_data(&vec);
+for (size_t i = 0; i < vector_size(&vec); i++) {
+    printf("%s\n", (char*)data[i]);
+}
+```
+
+---
+
 ## Functions
 
 Public interfaces for vector operations:
@@ -71,131 +200,6 @@ Vector vec;
 vector_init(&vec, NULL);
 // ... use vector ...
 vector_destroy(&vec);
-```
-
----
-
-### vector_size
-
-```c
-size_t vector_size(Vector* vector);
-```
-
-Returns the number of elements in the vector.
-
-**Parameters:**
-
--   `vector` - Pointer to the vector
-
-**Return Value:**
-
-The number of elements currently stored in the vector.
-
-**Complexity:** O(1)
-
----
-
-### vector_capacity
-
-```c
-size_t vector_capacity(Vector* vector);
-```
-
-Returns the number of elements that can be held in currently allocated storage.
-
-**Parameters:**
-
--   `vector` - Pointer to the vector
-
-**Return Value:**
-
-The capacity of the currently allocated storage. This may be greater than or equal to the size.
-
-**Complexity:** O(1)
-
-**Note:** Use `vector_shrink_to_fit()` to reduce capacity to match size.
-
----
-
-### vector_empty
-
-```c
-bool vector_empty(Vector* vector);
-```
-
-Checks if the vector is empty.
-
-**Parameters:**
-
--   `vector` - Pointer to the vector
-
-**Return Value:**
-
-`true` if the vector contains no elements (size == 0), `false` otherwise.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-Vector vec;
-vector_init(&vec, NULL);
-
-if (vector_empty(&vec)) {
-    printf("Vector is empty\n");
-}
-
-vector_push_back(&vec, "element");
-
-if (!vector_empty(&vec)) {
-    printf("Vector has elements\n");
-}
-```
-
----
-
-### vector_data
-
-```c
-void** vector_data(Vector* vector);
-```
-
-Returns a pointer to the underlying array serving as element storage.
-
-**Parameters:**
-
--   `vector` - Pointer to the vector
-
-**Return Value:**
-
-Pointer to the underlying array, or `NULL` if the vector is empty.
-
-**Complexity:** O(1)
-
-**Description:**
-
-Returns a direct pointer to the internal array of element pointers. This allows direct access to the storage for performance-critical operations. The returned pointer may be invalidated by any operation that changes the vector's capacity.
-
-**Important:**
-
--   The pointer is invalidated after operations that cause reallocation (push_back, insert, resize with growth)
--   Direct modification of the array should be done carefully to avoid breaking vector invariants
--   Valid only for indices [0, size)
-
-**Example:**
-
-```c
-Vector vec;
-vector_init(&vec, NULL);
-
-vector_push_back(&vec, "a");
-vector_push_back(&vec, "b");
-vector_push_back(&vec, "c");
-
-void** data = vector_data(&vec);
-for (size_t i = 0; i < vector_size(&vec); i++) {
-    printf("%s\n", (char*)data[i]);
-}
 ```
 
 ---
