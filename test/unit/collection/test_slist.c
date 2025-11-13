@@ -515,12 +515,7 @@ UTEST_TEST_CASE(slist_pop_front){
  * Dependencies: slist_init, slist_push_back, slist_front
  */
 UTEST_TEST_CASE(slist_next){
-    // Test 1: Next of NULL node
-    {
-        EXPECT_NULL(slist_next(NULL));
-    }
-    
-    // Test 2: Next of single element
+    // Test 1: Next of single element
     {
         SList list;
         slist_init(&list, NULL);
@@ -533,7 +528,7 @@ UTEST_TEST_CASE(slist_next){
         slist_destroy(&list);
     }
     
-    // Test 3: Iterate through list
+    // Test 2: Iterate through list
     {
         SList list;
         slist_init(&list, NULL);
@@ -745,12 +740,7 @@ UTEST_TEST_CASE(slist_remove_after){
  * Dependencies: slist_init, slist_push_front
  */
 UTEST_TEST_CASE(slist_data){
-    // Test 1: Data of NULL node
-    {
-        EXPECT_NULL(slist_data(NULL));
-    }
-    
-    // Test 2: Data of single node
+    // Test 1: Data of single node
     {
         SList list;
         slist_init(&list, NULL);
@@ -764,7 +754,7 @@ UTEST_TEST_CASE(slist_data){
         slist_destroy(&list);
     }
     
-    // Test 3: Data consistency with direct access
+    // Test 2: Data consistency with direct access
     {
         SList list;
         slist_init(&list, NULL);

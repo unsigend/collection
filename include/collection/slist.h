@@ -54,12 +54,44 @@ extern void slist_init(SList* slist, void (*destroy)(void *));
 extern void slist_destroy(SList* slist);
 
 /**
+ * Get the next node of a given node.
+ * @param node The node to get the next node of.
+ * @return The next node of the given node.
+ * @complexity O(1)
+ */
+#define slist_next(node) ((node) ? (node)->next : NULL)
+
+/**
+ * Get the data of a given node.
+ * @param node The node to get the data of.
+ * @return The data of the given node.
+ * @complexity O(1)
+ */
+#define slist_data(node) ((node) ? (node)->data : NULL)
+
+/**
+ * Get the head node of a given list.
+ * @param slist The list to get the head node of.
+ * @return The head node of the given list.
+ * @complexity O(1)
+ */
+#define slist_head(slist) ((slist) ? (slist)->head : NULL)
+
+/**
+ * Get the tail node of a given list.
+ * @param slist The list to get the tail node of.
+ * @return The tail node of the given list.
+ * @complexity O(1)
+ */
+#define slist_tail(slist) ((slist) ? (slist)->tail : NULL)
+
+/**
  * Check if the singly linked list is empty.
  * @param slist The singly linked list to check.
  * @return True if the singly linked list is empty, false otherwise.
  * @complexity O(1)
  */
-extern bool slist_empty(SList* slist);
+#define slist_empty(slist) ((slist) ? (slist)->size == 0 : true)
 
 /**
  * Get the size of the singly linked list.
@@ -67,7 +99,7 @@ extern bool slist_empty(SList* slist);
  * @return The size of the singly linked list.
  * @complexity O(1)
  */
-extern size_t slist_size(SList* slist);
+#define slist_size(slist) ((slist) ? (slist)->size : 0)
 
 /**
  * Get the first node of the singly linked list.
@@ -75,7 +107,7 @@ extern size_t slist_size(SList* slist);
  * @return The first node of the singly linked list.
  * @complexity O(1)
  */
-extern SListNode* slist_front(SList* slist);
+#define slist_front(slist) ((slist) ? (slist)->head : NULL)
 
 /**
  * Get the last node of the singly linked list.
@@ -83,7 +115,7 @@ extern SListNode* slist_front(SList* slist);
  * @return The last node of the singly linked list.
  * @complexity O(1)
  */
-extern SListNode* slist_back(SList* slist);
+#define slist_back(slist) ((slist) ? (slist)->tail : NULL)
 
 /**
  * Push an element to the front of the singly linked list.
@@ -129,38 +161,5 @@ extern int slist_insert_after(SList* slist, SListNode* node, void* data);
  * @complexity O(1)
  */
 extern int slist_remove_after(SList* slist, SListNode* node, void** data);
-
-/**
- * Get the next node of a given node.
- * @param node The node to get the next node of.
- * @return The next node of the given node.
- * @complexity O(1)
- */
-extern SListNode* slist_next(SListNode* node);
-
-/**
- * Get the data of a given node.
- * @param node The node to get the data of.
- * @return The data of the given node.
- * @complexity O(1)
- */
-extern void* slist_data(SListNode* node);
-
-/**
- * Get the head node of a given list.
- * @param slist The list to get the head node of.
- * @return The head node of the given list.
- * @complexity O(1)
- */
-extern SListNode* slist_head(SList* slist);
-
-/**
- * Get the tail node of a given list.
- * @param slist The list to get the tail node of.
- * @return The tail node of the given list.
- * @complexity O(1)
- */
-extern SListNode* slist_tail(SList* slist);
-
 
 #endif

@@ -26,38 +26,6 @@ void slist_init(SList* slist, void (*destroy)(void *)){
     slist->destroy = destroy;
 }
 
-SListNode* slist_next(SListNode* node){
-    return node ? node->next : NULL;
-}
-
-void* slist_data(SListNode* node){
-    return node ? node->data : NULL;
-}
-
-SListNode* slist_head(SList* slist){
-    return slist->head;
-}
-
-SListNode* slist_tail(SList* slist){
-    return slist->tail;
-}
-
-bool slist_empty(SList* slist){
-    return slist->size == 0;
-}
-
-size_t slist_size(SList* slist){
-    return slist->size;
-}
-
-SListNode* slist_front(SList* slist){
-    return slist->head;
-}
-
-SListNode* slist_back(SList* slist){
-    return slist->tail;
-}
-
 void slist_destroy(SList* slist){
     SListNode* node = slist->head;
     while (node){
