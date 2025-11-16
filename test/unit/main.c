@@ -8,6 +8,7 @@ extern UTEST_TEST_SUITE(vector);
 extern UTEST_TEST_SUITE(slist);
 extern UTEST_TEST_SUITE(dlist);
 extern UTEST_TEST_SUITE(clist);
+extern UTEST_TEST_SUITE(stack);
 
 //@brief: run all tests
 void all_tests(void){
@@ -15,6 +16,7 @@ void all_tests(void){
     UTEST_RUN_TEST_SUITE(slist);
     UTEST_RUN_TEST_SUITE(dlist);
     UTEST_RUN_TEST_SUITE(clist);
+    UTEST_RUN_TEST_SUITE(stack);
 }
 
 //@brief: dispatch the tests
@@ -27,6 +29,8 @@ void dispatch_tests(char * module){
         UTEST_RUN_TEST_SUITE(dlist);
     } else if (MATCH(module, "clist")) {
         UTEST_RUN_TEST_SUITE(clist);
+    } else if (MATCH(module, "stack")) {
+        UTEST_RUN_TEST_SUITE(stack);
     } else if (MATCH(module, "all")) {
         all_tests();
     }
