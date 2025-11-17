@@ -27,3 +27,6 @@ BUILD_METHOD    :=          static
 
 # library name
 LIBRARY_NAME    :=          collection
+
+# debugger mode
+DEBUG           :=          false
