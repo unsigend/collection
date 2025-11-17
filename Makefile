@@ -34,8 +34,18 @@ CC_FLAGS        +=          -Wno-unused-parameter
 CC_FLAGS        +=          -fPIC
 CC_FLAGS        +=          -O2
 CC_FLAGS        +=          -I$(INCLUDE_PATH)
+ifeq ($(DEBUG), true)
+CC_FLAGS        +=          -fsanitize=address
+CC_FLAGS        +=          -fno-omit-frame-pointer
+CC_FLAGS        +=          -g
+endif
 CC_DEPS_FLAGS   :=          -MMD -MP -MF
 AR_FLAGS        :=          -rcs
+ifeq ($(DEBUG), true)
+LD_FLAGS        :=          -fsanitize=address
+else
+LD_FLAGS        :=
+endif
 
 SRCS            :=          $(shell find $(SRC_PATH) -name "*.c")
 OBJS            :=          $(patsubst $(SRC_PATH)/%.c, $(OBJ_PATH)/%.o, $(SRCS))
@@ -76,6 +86,7 @@ endif
 export STD_C
 export LIBRARY_NAME
 export LIB_POSTFIX
+export DEBUG
 
 # include dependency files
 -include $(DEP_PATH)/*.d

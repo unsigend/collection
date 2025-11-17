@@ -41,8 +41,16 @@ CC_FLAGS      +=          -Wno-unused-function
 CC_FLAGS      +=          -O2
 CC_FLAGS      +=          -I$(INCLUDE_PATH)
 CC_FLAGS      +=          -I$(EXTERNAL_PATH)/include
+ifeq ($(DEBUG), true)
+CC_FLAGS      +=          -fsanitize=address
+CC_FLAGS      +=          -fno-omit-frame-pointer
+CC_FLAGS      +=          -g
+endif
 CC_DEPS_FLAGS :=          -MMD -MP -MF
 LD_FLAGS      :=          -L$(LIB_PATH) -l$(LIBRARY_NAME)
+ifeq ($(DEBUG), true)
+LD_FLAGS      +=          -fsanitize=address
+endif
 
 # source files
 TEST_SRCS           :=          $(shell find $(TESTS_PATH) -name "*.c")
