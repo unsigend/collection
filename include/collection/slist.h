@@ -35,7 +35,9 @@ typedef struct {
     size_t size;
     SListNode* head;
     SListNode* tail;
+    void* context;
     void (*destroy)(void *);
+    void (*destroy_context)(void *, void *);
 } SList;
 
 /**
@@ -45,6 +47,17 @@ typedef struct {
  * @complexity O(1)
  */
 extern void slist_init(SList* slist, void (*destroy)(void *));
+
+/**
+ * Initialize the singly linked list with a context.
+ * @param slist The singly linked list to initialize.
+ * @param context The context to pass to the destroy function.
+ * @param destroy_context The function to destroy the context.
+ * @note Reserved implementation for internal use.
+ * @complexity O(1)
+ */
+extern void slist_init_context(SList* slist, void* context,
+    void (*destroy_context)(void *, void *));
 
 /**
  * Destroy the singly linked list.
