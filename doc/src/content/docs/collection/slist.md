@@ -286,6 +286,27 @@ slist_init(&list2, free);  // Use free() as destructor
 
 ---
 
+### slist_init_context
+
+```c
+void slist_init_context(SList* slist, void* context,
+    void (*destroy_context)(void *, void *));
+```
+
+Initializes a singly linked list with a context-aware destroy function.
+
+**Parameters:**
+
+-   `slist` - Pointer to the list to initialize
+-   `context` - Context pointer to pass to the destroy function
+-   `destroy_context` - Destroy function that takes both data and context parameters
+
+**Complexity:** O(1)
+
+**Note:** This function is reserved for internal implementation use. The destroy function receives both the element data and the context when elements are removed.
+
+---
+
 ### slist_destroy
 
 ```c
@@ -655,6 +676,7 @@ int main(void) {
 | Operation            | Complexity |
 | -------------------- | ---------- |
 | `slist_init`         | O(1)       |
+| `slist_init_context`  | O(1)       |
 | `slist_destroy`      | O(n)       |
 | `slist_size`         | O(1)       |
 | `slist_empty`        | O(1)       |

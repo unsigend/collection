@@ -40,4 +40,5 @@ extern uint32_t hash_str(const char * key);
  * @complexity O(1)
  */
 extern uint32_t hash_int(const int key);
+
 #endif

@@ -15,20 +15,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
 #include <stdlib.h>
 #include <collection/slist.h>
 
 
 void slist_init(SList* slist, void (*destroy)(void *)){
-    slist->size = 0;
-    slist->head = NULL;
-    slist->tail = NULL;
+    memset(slist, 0, sizeof(SList));
     slist->destroy = destroy;
+}
+
+void slist_init_context(SList* slist, void* context,
+    void (*destroy_context)(void *, void *)){
+    memset(slist, 0, sizeof(SList));
+    slist->context = context;
+    slist->destroy_context = destroy_context;
 }
 
 void slist_destroy(SList* slist){
     slist_clear(slist);
-    slist->destroy = NULL;
+    memset(slist, 0, sizeof(SList));
 }
 
 int slist_push_front(SList* slist, void* data){
@@ -78,6 +84,8 @@ int slist_pop_front(SList* slist, void** data){
         *data = node->data;
     }else if (slist->destroy){
         slist->destroy(node->data);
+    }else if (slist->destroy_context){
+        slist->destroy_context(node->data, slist->context);
     }
     free(node);
     slist->size--;
@@ -93,6 +101,8 @@ void slist_clear(SList* slist){
         SListNode* next = node->next;
         if (slist->destroy){
             slist->destroy(node->data);
+        }else if (slist->destroy_context){
+            slist->destroy_context(node->data, slist->context);
         }
         free(node);
         node = next;
@@ -103,7 +113,7 @@ void slist_clear(SList* slist){
 }
 
 int slist_insert_after(SList* slist, SListNode* node, void* data){
-    if (node == NULL){
+    if (!slist || !node){
         return COLLECTION_FAILURE;
     }
     SListNode* new_node = malloc(sizeof(SListNode));
@@ -121,7 +131,7 @@ int slist_insert_after(SList* slist, SListNode* node, void* data){
 }
 
 int slist_remove_after(SList* slist, SListNode* node, void** data){
-    if (!node || !node->next){
+    if (!slist || !node || !node->next){
         return COLLECTION_FAILURE;
     }
     SListNode* removed_node = node->next;
@@ -133,6 +143,8 @@ int slist_remove_after(SList* slist, SListNode* node, void** data){
         *data = removed_node->data;
     }else if (slist->destroy){
         slist->destroy(removed_node->data);
+    }else if (slist->destroy_context){
+        slist->destroy_context(removed_node->data, slist->context);
     }
     free(removed_node);
     slist->size--;

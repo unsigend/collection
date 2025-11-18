@@ -19,6 +19,14 @@ static void destroy_noop(void *data) {
     (void)data;
 }
 
+static void destroy_context_counter(void *data, void *context) {
+    int *counter = (int *)context;
+    if (counter != NULL) {
+        (*counter)++;
+    }
+    (void)data;
+}
+
 /**
  * Test: slist_init
  * Dependencies: None
@@ -55,6 +63,78 @@ UTEST_TEST_CASE(slist_init){
         
         EXPECT_NULL(list1.destroy);
         EXPECT_NOT_NULL(list2.destroy);
+    }
+}
+
+/**
+ * Test: slist_init_context
+ * Dependencies: None
+ * Description: Tests initialization with context-aware destroy function.
+ */
+UTEST_TEST_CASE(slist_init_context){
+    // Test 1: Initialize with context and destroy_context function
+    {
+        int context_value = 42;
+        SList list;
+        slist_init_context(&list, &context_value, destroy_context_counter);
+        
+        EXPECT_EQUAL_UINT64(list.size, 0);
+        EXPECT_NULL(list.head);
+        EXPECT_NULL(list.tail);
+        EXPECT_NULL(list.destroy);
+        EXPECT_NOT_NULL(list.destroy_context);
+        EXPECT_TRUE(list.context == &context_value);
+    }
+    
+    // Test 2: Context destroy is called on pop_front
+    {
+        int destroy_count = 0;
+        SList list;
+        slist_init_context(&list, &destroy_count, destroy_context_counter);
+        
+        slist_push_front(&list, (void *)0x1234);
+        slist_push_front(&list, (void *)0x5678);
+        
+        slist_pop_front(&list, NULL);
+        EXPECT_EQUAL_INT(destroy_count, 1);
+        
+        slist_pop_front(&list, NULL);
+        EXPECT_EQUAL_INT(destroy_count, 2);
+        
+        slist_destroy(&list);
+    }
+    
+    // Test 3: Context destroy is called on clear
+    {
+        int destroy_count = 0;
+        SList list;
+        slist_init_context(&list, &destroy_count, destroy_context_counter);
+        
+        slist_push_back(&list, (void *)0x1111);
+        slist_push_back(&list, (void *)0x2222);
+        slist_push_back(&list, (void *)0x3333);
+        
+        slist_clear(&list);
+        EXPECT_EQUAL_INT(destroy_count, 3);
+        
+        slist_destroy(&list);
+    }
+    
+    // Test 4: Context destroy is called on remove_after
+    {
+        int destroy_count = 0;
+        SList list;
+        slist_init_context(&list, &destroy_count, destroy_context_counter);
+        
+        slist_push_back(&list, (void *)0x1111);
+        slist_push_back(&list, (void *)0x2222);
+        slist_push_back(&list, (void *)0x3333);
+        
+        SListNode* node = slist_front(&list);
+        slist_remove_after(&list, node, NULL);
+        EXPECT_EQUAL_INT(destroy_count, 1);
+        
+        slist_destroy(&list);
     }
 }
 
@@ -968,6 +1048,7 @@ UTEST_TEST_CASE(slist_clear){
  */
 UTEST_TEST_SUITE(slist){
     UTEST_RUN_TEST_CASE(slist_init);
+    UTEST_RUN_TEST_CASE(slist_init_context);
     UTEST_RUN_TEST_CASE(slist_size);
     UTEST_RUN_TEST_CASE(slist_empty);
     UTEST_RUN_TEST_CASE(slist_destroy);
