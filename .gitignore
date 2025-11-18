@@ -4,3 +4,5 @@ build/
 test/build/
 lib/
 RULES.md
+compile_commands.json
+.cache/

@@ -10,6 +10,18 @@ extern UTEST_TEST_SUITE(dlist);
 extern UTEST_TEST_SUITE(clist);
 extern UTEST_TEST_SUITE(stack);
 extern UTEST_TEST_SUITE(queue);
+extern UTEST_TEST_SUITE(hash);
+
+const char * AVAILABLE_MODULES[] = {
+    "vector",
+    "slist",
+    "dlist",
+    "clist",
+    "stack",
+    "queue",
+    "hash",
+    "all",
+};
 
 //@brief: run all tests
 void all_tests(void){
@@ -19,6 +31,7 @@ void all_tests(void){
     UTEST_RUN_TEST_SUITE(clist);
     UTEST_RUN_TEST_SUITE(stack);
     UTEST_RUN_TEST_SUITE(queue);
+    UTEST_RUN_TEST_SUITE(hash);
 }
 
 //@brief: dispatch the tests
@@ -35,11 +48,18 @@ void dispatch_tests(char * module){
         UTEST_RUN_TEST_SUITE(stack);
     } else if (MATCH(module, "queue")) {
         UTEST_RUN_TEST_SUITE(queue);
+    } else if (MATCH(module, "hash")) {
+        UTEST_RUN_TEST_SUITE(hash);
     } else if (MATCH(module, "all")) {
         all_tests();
     }
     else {
         fprintf(stderr, "Unknown module: %s\n", module);
+        fprintf(stderr, "Available modules: ");
+        for (size_t i = 0; i < sizeof(AVAILABLE_MODULES) / sizeof(AVAILABLE_MODULES[0]); i++) {
+            fprintf(stderr, "%s ", AVAILABLE_MODULES[i]);
+        }
+        fprintf(stderr, "\n");
         exit(1);
     }
 }
