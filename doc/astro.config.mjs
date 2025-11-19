@@ -4,6 +4,8 @@ import starlight from "@astrojs/starlight";
 
 // https://astro.build/config
 export default defineConfig({
+    // GitHub Pages base path - required for https://unsigend.github.io/collection/
+    base: "/collection/",
     output: "static",
     integrations: [
         starlight({
