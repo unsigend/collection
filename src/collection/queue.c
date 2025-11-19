@@ -17,6 +17,14 @@
 
 #include <collection/queue.h>
 
+bool queue_empty(const Queue* queue){
+    return slist_empty(&(queue)->slist);
+}
+
+size_t queue_size(const Queue* queue){
+    return slist_size(&(queue)->slist);
+}
+
 void queue_init(Queue* queue, void (*destroy)(void *)){
     slist_init(&(queue)->slist, destroy);
 }

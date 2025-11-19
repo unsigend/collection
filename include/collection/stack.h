@@ -36,7 +36,7 @@ typedef struct {
  * @return True if the stack is empty, false otherwise.
  * @complexity O(1)
  */
-#define stack_empty(stack) (slist_empty(&(stack)->slist))
+extern bool stack_empty(const Stack* stack);
 
 /**
  * Get the size of the stack.
@@ -44,7 +44,7 @@ typedef struct {
  * @return The size of the stack.
  * @complexity O(1)
  */
-#define stack_size(stack) (slist_size(&(stack)->slist))
+extern size_t stack_size(const Stack* stack);
 
 /**
  * Initialize the stack.

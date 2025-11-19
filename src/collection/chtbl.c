@@ -173,6 +173,17 @@ static int _resize(Chtbl* chtbl, size_t nbuckets){
     return COLLECTION_SUCCESS;
 }
 
+bool chtbl_in(const Chtbl* chtbl, const void * key){
+    return chtbl_find((Chtbl*)chtbl, key) != NULL;
+}
+
+size_t chtbl_size(const Chtbl* chtbl){
+    return chtbl ? chtbl->size : 0;
+}
+
+size_t chtbl_buckets(const Chtbl* chtbl){
+    return chtbl ? chtbl->table.size : 0;
+}
 
 int chtbl_init_capacity(Chtbl* chtbl, 
     uint32_t (*hash)(const void * key),
@@ -308,11 +319,6 @@ int chtbl_insert(Chtbl* chtbl, const void * key, const void * value){
     while (node) {
         ChtblEntry* entry = (ChtblEntry*)slist_data(node);
         if (chtbl->match(entry->key, key)){
-            // update the key
-            if (chtbl->destroy_key && entry->key) {
-                chtbl->destroy_key(entry->key);
-            }
-            entry->key = (void*)key;
             // update the value
             if (chtbl->destroy_value && entry->value) {
                 chtbl->destroy_value(entry->value);

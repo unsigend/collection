@@ -60,7 +60,7 @@ extern void dlist_destroy(DList* dlist);
  * @return The next node of the given node.
  * @complexity O(1)
  */
-#define dlist_next(node) ((node) ? (node)->next : NULL)
+extern DListNode* dlist_next(const DListNode* node);
 
 /**
  * Get the previous node of a given node.
@@ -68,7 +68,7 @@ extern void dlist_destroy(DList* dlist);
  * @return The previous node of the given node.
  * @complexity O(1)
  */
-#define dlist_prev(node) ((node) ? (node)->prev : NULL)
+extern DListNode* dlist_prev(const DListNode* node);
 
 /**
  * Get the data of a given node.
@@ -76,7 +76,7 @@ extern void dlist_destroy(DList* dlist);
  * @return The data of the given node.
  * @complexity O(1)
  */
-#define dlist_data(node) ((node) ? (node)->data : NULL)
+extern void* dlist_data(const DListNode* node);
 
 /**
  * Get the head node of a given list.
@@ -84,7 +84,7 @@ extern void dlist_destroy(DList* dlist);
  * @return The head node of the given list.
  * @complexity O(1)
  */
-#define dlist_head(dlist) ((dlist) ? (dlist)->head : NULL)
+extern DListNode* dlist_head(const DList* dlist);
 
 /**
  * Get the tail node of a given list.
@@ -92,7 +92,7 @@ extern void dlist_destroy(DList* dlist);
  * @return The tail node of the given list.
  * @complexity O(1)
  */
-#define dlist_tail(dlist) ((dlist) ? (dlist)->tail : NULL)
+extern DListNode* dlist_tail(const DList* dlist);
 
 /**
  * Check if the doubly linked list is empty.
@@ -100,7 +100,7 @@ extern void dlist_destroy(DList* dlist);
  * @return True if the doubly linked list is empty, false otherwise.
  * @complexity O(1)
  */
-#define dlist_empty(dlist) ((dlist) ? (dlist)->size == 0 : true)
+extern bool dlist_empty(const DList* dlist);
 
 /**
  * Get the size of the doubly linked list.
@@ -108,7 +108,7 @@ extern void dlist_destroy(DList* dlist);
  * @return The size of the doubly linked list.
  * @complexity O(1)
  */
-#define dlist_size(dlist) ((dlist) ? (dlist)->size : 0)
+extern size_t dlist_size(const DList* dlist);
 
 /**
  * Insert an element after a given node.

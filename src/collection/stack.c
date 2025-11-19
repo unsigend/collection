@@ -17,6 +17,14 @@
 
 #include <collection/stack.h>
 
+bool stack_empty(const Stack* stack){
+    return slist_empty(&(stack)->slist);
+}
+
+size_t stack_size(const Stack* stack){
+    return slist_size(&(stack)->slist);
+}
+
 void stack_init(Stack* stack, void (*destroy)(void *)){
     slist_init(&(stack)->slist, destroy);
 }

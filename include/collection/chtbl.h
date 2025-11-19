@@ -113,7 +113,7 @@ extern void chtbl_destroy(Chtbl* chtbl);
  * @return The size of the key-value pairs in the chained hash table.
  * @complexity O(1)
  */
-#define chtbl_size(chtbl) ((chtbl) ? (chtbl)->size : 0)
+extern size_t chtbl_size(const Chtbl* chtbl);
 
 /**
  * Get the number of buckets in the chained hash table.
@@ -121,7 +121,7 @@ extern void chtbl_destroy(Chtbl* chtbl);
  * @return The number of buckets in the chained hash table.
  * @complexity O(1)
  */
-#define chtbl_buckets(chtbl) ((chtbl) ? (chtbl)->table.size : 0)
+extern size_t chtbl_buckets(const Chtbl* chtbl);
 
 /**
  * Check if a key is in the chained hash table.
@@ -130,7 +130,7 @@ extern void chtbl_destroy(Chtbl* chtbl);
  * @return True if the key is in the chained hash table, false otherwise.
  * @complexity O(1)
  */
-#define chtbl_in(chtbl, key) (chtbl_find(chtbl, key) != NULL)
+extern bool chtbl_in(const Chtbl* chtbl, const void * key);
 
 /**
  * Find a key-value pair in the chained hash table by key.

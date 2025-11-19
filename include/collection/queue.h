@@ -36,7 +36,7 @@ typedef struct {
  * @return True if the queue is empty, false otherwise.
  * @complexity O(1)
  */
-#define queue_empty(queue) (slist_empty(&(queue)->slist))
+extern bool queue_empty(const Queue* queue);
 
 /**
  * Get the size of the queue.
@@ -44,7 +44,7 @@ typedef struct {
  * @return The size of the queue.
  * @complexity O(1)
  */
-#define queue_size(queue) (slist_size(&(queue)->slist))
+extern size_t queue_size(const Queue* queue);
 
 /**
  * Initialize the queue.
