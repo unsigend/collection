@@ -300,7 +300,7 @@ Resizes the vector to contain `new_size` elements.
 
 **Return Value:**
 
-Returns `0` on success, `-1` on failure.
+Returns `0` (COLLECTION_SUCCESS) on success, `-1` (COLLECTION_FAILURE) on failure.
 
 **Behavior:**
 
@@ -344,7 +344,7 @@ Reduces capacity to match the current size, freeing unused memory.
 
 **Return Value:**
 
-Returns `0` on success, `-1` on failure.
+Returns `0` (COLLECTION_SUCCESS) on success, `-1` (COLLECTION_FAILURE) on failure.
 
 **Description:**
 
@@ -383,7 +383,7 @@ Appends an element to the end of the vector.
 
 **Return Value:**
 
-Returns `0` on success, `-1` on failure.
+Returns `0` (COLLECTION_SUCCESS) on success, `-1` (COLLECTION_FAILURE) on failure.
 
 **Description:**
 
@@ -421,7 +421,7 @@ Removes the last element from the vector.
 
 **Return Value:**
 
-Returns `0` on success, `-1` on failure.
+Returns `0` (COLLECTION_SUCCESS) on success, `-1` (COLLECTION_FAILURE) on failure.
 
 **Description:**
 
@@ -432,19 +432,23 @@ Removes the last element from the vector. If `data` is not `NULL`, the removed e
 **Example:**
 
 ```c
+#include <collection/vector.h>
+#include <collection/common.h>
+#include <stdlib.h>
+
 // Without retrieving data (destroy function is called)
 vector_push_back(&vec, element);
 vector_pop_back(&vec, NULL);
 
 // With retrieving data (user responsibility to free)
 void* element;
-if (vector_pop_back(&vec, &element) == 0) {
+if (vector_pop_back(&vec, &element) == COLLECTION_SUCCESS) {
     // Use element
     free(element);  // User must free if needed
 }
 
 // Pop from empty vector
-if (vector_pop_back(&vec, NULL) == -1) {
+if (vector_pop_back(&vec, NULL) == COLLECTION_FAILURE) {
     printf("Vector is empty\n");
 }
 ```
@@ -472,7 +476,7 @@ Inserts an element at the specified position.
 
 **Return Value:**
 
-Returns `0` on success, `-1` on failure.
+Returns `0` (COLLECTION_SUCCESS) on success, `-1` (COLLECTION_FAILURE) on failure.
 
 **Description:**
 
@@ -512,7 +516,7 @@ Removes the element at the specified position.
 
 **Return Value:**
 
-Returns `0` on success, `-1` on failure.
+Returns `0` (COLLECTION_SUCCESS) on success, `-1` (COLLECTION_FAILURE) on failure.
 
 **Description:**
 
@@ -591,6 +595,7 @@ vector_clear(&vec);
 
 ```c
 #include <collection/vector.h>
+#include <collection/common.h>
 #include <stdio.h>
 
 int main(void) {
@@ -655,6 +660,7 @@ int main(void) {
 
 ```c
 #include <collection/vector.h>
+#include <collection/common.h>
 
 int main(void) {
     Vector vec;
@@ -675,6 +681,58 @@ int main(void) {
     }
 
     vector_destroy(&vec);
+    return 0;
+}
+```
+
+### Memory Leak Prevention with Destroy Functions
+
+```c
+#include <collection/vector.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Custom structure that needs cleanup
+typedef struct {
+    int id;
+    char* name;
+} Person;
+
+// Destroy function to prevent memory leaks
+void destroy_person(void* data) {
+    if (data != NULL) {
+        Person* p = (Person*)data;
+        free(p->name);  // Free dynamically allocated string
+        free(p);        // Free the structure itself
+    }
+}
+
+int main(void) {
+    Vector vec;
+    vector_init(&vec, destroy_person);
+
+    // Create and add persons
+    for (int i = 0; i < 10; i++) {
+        Person* p = malloc(sizeof(Person));
+        p->id = i;
+        p->name = strdup("Person Name");
+        vector_push_back(&vec, p);
+    }
+
+    // Remove some elements - destroy function is called automatically
+    vector_remove(&vec, 5, NULL);  // destroy_person called for removed element
+    vector_pop_back(&vec, NULL);   // destroy_person called for popped element
+
+    // Retrieve an element - destroy function is NOT called
+    Person* retrieved = NULL;
+    vector_pop_back(&vec, (void**)&retrieved);
+    // Use retrieved person...
+    // Must manually free if not destroyed by vector
+    destroy_person(retrieved);
+
+    // All remaining elements are automatically destroyed
+    vector_destroy(&vec);  // destroy_person called for all remaining elements
+    
     return 0;
 }
 ```
@@ -710,9 +768,20 @@ Where n is the number of elements.
 
 ### Memory Management
 
--   The vector manages its own memory allocation
--   The destroy function is called automatically when elements are removed
+-   The vector manages its own memory allocation for the internal array
+-   The destroy function is called automatically when elements are removed through:
+    -   `vector_destroy()` - destroys all elements
+    -   `vector_clear()` - destroys all elements
+    -   `vector_resize()` (when shrinking) - destroys removed elements
+    -   `vector_pop_back()` (when `data` is `NULL`) - destroys the popped element
+    -   `vector_remove()` (when `data` is `NULL`) - destroys the removed element
+-   The destroy function is **not** called when:
+    -   Elements are retrieved via `vector_pop_back()` or `vector_remove()` with a non-NULL `data` parameter
+    -   Elements are accessed via `vector_at()`, `vector_front()`, or `vector_back()`
+    -   The vector is resized to a larger size
+    -   `vector_shrink_to_fit()` is called (only capacity changes, no elements removed)
 -   The vector never calls `free()` on element pointers unless the destroy function does so
+-   When elements are retrieved (not destroyed), the caller is responsible for freeing memory if needed
 
 ### Thread Safety
 
