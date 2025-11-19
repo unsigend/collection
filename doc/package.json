@@ -7,11 +7,15 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "deploy": "npm run build && gh-pages -d dist",
     "astro": "astro"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.36.2",
     "astro": "^5.6.1",
     "sharp": "^0.34.2"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.1.1"
   }
 }
