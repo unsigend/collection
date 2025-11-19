@@ -59,7 +59,7 @@ extern void clist_destroy(CList* clist);
  * @return The next node of the given node.
  * @complexity O(1)
  */
-#define clist_next(node) ((node) ? (node)->next : NULL)
+extern CListNode* clist_next(const CListNode* node);
 
 /**
  * Get the previous node of a given node.
@@ -67,7 +67,7 @@ extern void clist_destroy(CList* clist);
  * @return The previous node of the given node.
  * @complexity O(1)
  */
-#define clist_prev(node) ((node) ? (node)->prev : NULL)
+extern CListNode* clist_prev(const CListNode* node);
 
 /**
  * Get the data of a given node.
@@ -75,7 +75,7 @@ extern void clist_destroy(CList* clist);
  * @return The data of the given node.
  * @complexity O(1)
  */
-#define clist_data(node) ((node) ? (node)->data : NULL)
+extern void* clist_data(const CListNode* node);
 
 /**
  * Get the head node of a given list.
@@ -83,7 +83,7 @@ extern void clist_destroy(CList* clist);
  * @return The head node of the given list.
  * @complexity O(1)
  */
-#define clist_head(clist) ((clist) ? (clist)->head : NULL)
+extern CListNode* clist_head(const CList* clist);
 
 /**
  * Get the tail node of a given list.
@@ -91,7 +91,7 @@ extern void clist_destroy(CList* clist);
  * @return The tail node of the given list.
  * @complexity O(1)
  */
-#define clist_tail(clist) (((clist) && (clist)->head) ? (clist)->head->prev : NULL)
+extern CListNode* clist_tail(const CList* clist);
 
 /**
  * Check if the circular linked list is empty.
@@ -99,7 +99,7 @@ extern void clist_destroy(CList* clist);
  * @return True if the circular linked list is empty, false otherwise.
  * @complexity O(1)
  */
-#define clist_empty(clist) ((clist) ? (clist)->size == 0 : true)
+extern bool clist_empty(const CList* clist);
 
 /**
  * Get the size of the circular linked list.
@@ -107,7 +107,7 @@ extern void clist_destroy(CList* clist);
  * @return The size of the circular linked list.
  * @complexity O(1)
  */
-#define clist_size(clist) ((clist) ? (clist)->size : 0)
+extern size_t clist_size(const CList* clist);
 
 /**
  * Insert an element after a given node.

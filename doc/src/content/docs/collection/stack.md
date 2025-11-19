@@ -15,67 +15,6 @@ To use the stack in your code, include the header file:
 
 This provides access to the `Stack` type and all stack functions.
 
-## Macros
-
-Efficient inline operations implemented as macros:
-
-### stack_size
-
-```c
-stack_size(stack)
-```
-
-Returns the number of elements in the stack.
-
-**Parameters:**
-
--   `stack` - Pointer to the stack
-
-**Return Value:**
-
-The number of elements currently stored in the stack.
-
-**Complexity:** O(1)
-
----
-
-### stack_empty
-
-```c
-stack_empty(stack)
-```
-
-Checks if the stack is empty.
-
-**Parameters:**
-
--   `stack` - Pointer to the stack
-
-**Return Value:**
-
-`true` if the stack contains no elements (size == 0), `false` otherwise.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-Stack stack;
-stack_init(&stack, NULL);
-
-if (stack_empty(&stack)) {
-    printf("Stack is empty\n");
-}
-
-stack_push(&stack, "element");
-
-if (!stack_empty(&stack)) {
-    printf("Stack has elements\n");
-}
-```
-
----
-
 ## Functions
 
 Public interfaces for stack operations:
@@ -103,6 +42,75 @@ stack_init(&stack, NULL);  // No destructor
 
 Stack stack2;
 stack_init(&stack2, free);  // Use free() as destructor
+```
+
+---
+
+### stack_empty
+
+```c
+bool stack_empty(const Stack* stack);
+```
+
+Checks if the stack is empty.
+
+**Parameters:**
+
+-   `stack` - Pointer to the stack
+
+**Return Value:**
+
+`true` if the stack contains no elements (size == 0), `false` otherwise. Returns `false` if `stack` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+Stack stack;
+stack_init(&stack, NULL);
+
+if (stack_empty(&stack)) {
+    printf("Stack is empty\n");
+}
+
+stack_push(&stack, "element");
+
+if (!stack_empty(&stack)) {
+    printf("Stack has elements\n");
+}
+```
+
+---
+
+### stack_size
+
+```c
+size_t stack_size(const Stack* stack);
+```
+
+Returns the number of elements in the stack.
+
+**Parameters:**
+
+-   `stack` - Pointer to the stack
+
+**Return Value:**
+
+The number of elements currently stored in the stack. Returns `0` if `stack` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+Stack stack;
+stack_init(&stack, NULL);
+stack_push(&stack, "first");
+stack_push(&stack, "second");
+
+size_t count = stack_size(&stack);
+printf("Stack has %zu elements\n", count);
 ```
 
 ---

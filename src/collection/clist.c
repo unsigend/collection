@@ -18,6 +18,34 @@
 #include <stdlib.h>
 #include <collection/clist.h>
 
+CListNode* clist_next(const CListNode* node){
+    return node ? node->next : NULL;
+}
+
+CListNode* clist_prev(const CListNode* node){
+    return node ? node->prev : NULL;
+}
+
+void* clist_data(const CListNode* node){
+    return node ? node->data : NULL;
+}
+
+CListNode* clist_head(const CList* clist){
+    return clist ? clist->head : NULL;
+}
+
+CListNode* clist_tail(const CList* clist){
+    return (clist && clist->head) ? clist->head->prev : NULL;
+}
+
+bool clist_empty(const CList* clist){
+    return clist ? clist->size == 0 : false;
+}
+
+size_t clist_size(const CList* clist){
+    return clist ? clist->size : 0;
+}
+
 void clist_init(CList* clist, void (*destroy)(void *)){
     clist->size = 0;
     clist->head = NULL;

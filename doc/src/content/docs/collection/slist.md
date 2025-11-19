@@ -15,45 +15,56 @@ To use the singly linked list in your code, include the header file:
 
 This provides access to the `SList` and `SListNode` types and all list functions.
 
-## Macros
+## Functions
 
-Efficient inline operations implemented as macros:
+Public interfaces for singly linked list operations:
 
 ### slist_size
 
 ```c
-slist_size(slist)
+size_t slist_size(const SList* slist);
 ```
 
 Returns the number of elements in the list.
 
 **Parameters:**
 
--   `slist` - Pointer to the list
+-   `slist` - Pointer to the list (can be `NULL`)
 
 **Return Value:**
 
-The number of elements currently stored in the list.
+The number of elements currently stored in the list. Returns `0` if `slist` is `NULL`.
 
 **Complexity:** O(1)
+
+**Example:**
+
+```c
+SList list;
+slist_init(&list, NULL);
+size_t size = slist_size(&list);  // Returns 0
+
+slist_push_front(&list, "element");
+size = slist_size(&list);  // Returns 1
+```
 
 ---
 
 ### slist_empty
 
 ```c
-slist_empty(slist)
+bool slist_empty(const SList* slist);
 ```
 
 Checks if the list is empty.
 
 **Parameters:**
 
--   `slist` - Pointer to the list
+-   `slist` - Pointer to the list (can be `NULL`)
 
 **Return Value:**
 
-`true` if the list contains no elements (size == 0), `false` otherwise.
+`true` if the list contains no elements (size == 0), `false` otherwise. Returns `false` if `slist` is `NULL`.
 
 **Complexity:** O(1)
 
@@ -79,18 +90,18 @@ if (!slist_empty(&list)) {
 ### slist_front
 
 ```c
-slist_front(slist)
+SListNode* slist_front(const SList* slist);
 ```
 
 Returns the first node in the list.
 
 **Parameters:**
 
--   `slist` - Pointer to the list
+-   `slist` - Pointer to the list (can be `NULL`)
 
 **Return Value:**
 
-Pointer to the first node, or `NULL` if the list is empty.
+Pointer to the first node, or `NULL` if the list is empty or `slist` is `NULL`.
 
 **Complexity:** O(1)
 
@@ -99,7 +110,7 @@ Pointer to the first node, or `NULL` if the list is empty.
 ```c
 SListNode* node = slist_front(&list);
 if (node != NULL) {
-    printf("First element: %s\n", (char*)node->data);
+    printf("First element: %s\n", (char*)slist_data(node));
 }
 ```
 
@@ -108,18 +119,18 @@ if (node != NULL) {
 ### slist_back
 
 ```c
-slist_back(slist)
+SListNode* slist_back(const SList* slist);
 ```
 
 Returns the last node in the list.
 
 **Parameters:**
 
--   `slist` - Pointer to the list
+-   `slist` - Pointer to the list (can be `NULL`)
 
 **Return Value:**
 
-Pointer to the last node, or `NULL` if the list is empty.
+Pointer to the last node, or `NULL` if the list is empty or `slist` is `NULL`.
 
 **Complexity:** O(1)
 
@@ -128,7 +139,7 @@ Pointer to the last node, or `NULL` if the list is empty.
 ```c
 SListNode* node = slist_back(&list);
 if (node != NULL) {
-    printf("Last element: %s\n", (char*)node->data);
+    printf("Last element: %s\n", (char*)slist_data(node));
 }
 ```
 
@@ -137,18 +148,18 @@ if (node != NULL) {
 ### slist_next
 
 ```c
-slist_next(node)
+SListNode* slist_next(const SListNode* node);
 ```
 
 Gets the next node in the list.
 
 **Parameters:**
 
--   `node` - Pointer to the current node
+-   `node` - Pointer to the current node (can be `NULL`)
 
 **Return Value:**
 
-Pointer to the next node, or `NULL` if this is the last node.
+Pointer to the next node, or `NULL` if this is the last node or `node` is `NULL`.
 
 **Complexity:** O(1)
 
@@ -157,7 +168,7 @@ Pointer to the next node, or `NULL` if this is the last node.
 ```c
 // Iterate through the list
 for (SListNode* node = slist_front(&list); node != NULL; node = slist_next(node)) {
-    printf("%s\n", (char*)node->data);
+    printf("%s\n", (char*)slist_data(node));
 }
 ```
 
@@ -166,18 +177,18 @@ for (SListNode* node = slist_front(&list); node != NULL; node = slist_next(node)
 ### slist_data
 
 ```c
-slist_data(node)
+void* slist_data(const SListNode* node);
 ```
 
 Gets the data stored in a node.
 
 **Parameters:**
 
--   `node` - Pointer to the node
+-   `node` - Pointer to the node (can be `NULL`)
 
 **Return Value:**
 
-Pointer to the data stored in the node.
+Pointer to the data stored in the node, or `NULL` if `node` is `NULL`.
 
 **Complexity:** O(1)
 
@@ -196,29 +207,29 @@ if (node != NULL) {
 ### slist_head
 
 ```c
-slist_head(slist)
+SListNode* slist_head(const SList* slist);
 ```
 
 Returns the head (first) node of the list.
 
 **Parameters:**
 
--   `slist` - Pointer to the list
+-   `slist` - Pointer to the list (can be `NULL`)
 
 **Return Value:**
 
-Pointer to the head node, or `NULL` if the list is empty.
+Pointer to the head node, or `NULL` if the list is empty or `slist` is `NULL`.
 
 **Complexity:** O(1)
 
-**Note:** This macro is equivalent to `slist_front()`.
+**Note:** This function is equivalent to `slist_front()`.
 
 **Example:**
 
 ```c
 SListNode* head = slist_head(&list);
 if (head != NULL) {
-    printf("Head data: %s\n", (char*)head->data);
+    printf("Head data: %s\n", (char*)slist_data(head));
 }
 ```
 
@@ -227,35 +238,33 @@ if (head != NULL) {
 ### slist_tail
 
 ```c
-slist_tail(slist)
+SListNode* slist_tail(const SList* slist);
 ```
 
 Returns the tail (last) node of the list.
 
 **Parameters:**
 
--   `slist` - Pointer to the list
+-   `slist` - Pointer to the list (can be `NULL`)
 
 **Return Value:**
 
-Pointer to the tail node, or `NULL` if the list is empty.
+Pointer to the tail node, or `NULL` if the list is empty or `slist` is `NULL`.
 
 **Complexity:** O(1)
 
-**Note:** This macro is equivalent to `slist_back()`.
+**Note:** This function is equivalent to `slist_back()`.
 
 **Example:**
 
 ```c
 SListNode* tail = slist_tail(&list);
 if (tail != NULL) {
-    printf("Tail data: %s\n", (char*)tail->data);
+    printf("Tail data: %s\n", (char*)slist_data(tail));
 }
 ```
 
 ---
-
-## Functions
 
 Public interfaces for singly linked list operations:
 
@@ -676,7 +685,7 @@ int main(void) {
 | Operation            | Complexity |
 | -------------------- | ---------- |
 | `slist_init`         | O(1)       |
-| `slist_init_context`  | O(1)       |
+| `slist_init_context` | O(1)       |
 | `slist_destroy`      | O(n)       |
 | `slist_size`         | O(1)       |
 | `slist_empty`        | O(1)       |
@@ -715,11 +724,26 @@ Where n is the number of elements.
 
 List operations are **not thread-safe**. External synchronization is required for concurrent access.
 
+### NULL Pointer Handling
+
+The following functions handle `NULL` pointers gracefully:
+
+-   `slist_size(NULL)` returns `0`
+-   `slist_empty(NULL)` returns `false`
+-   `slist_front(NULL)` returns `NULL`
+-   `slist_back(NULL)` returns `NULL`
+-   `slist_head(NULL)` returns `NULL`
+-   `slist_tail(NULL)` returns `NULL`
+-   `slist_next(NULL)` returns `NULL`
+-   `slist_data(NULL)` returns `NULL`
+
+All other functions require a valid non-NULL list pointer. Passing `NULL` to other functions results in undefined behavior.
+
 ### Undefined Behavior
 
 Avoid the following:
 
--   Passing `NULL` list pointers to any function (except `slist_next`)
+-   Passing `NULL` list pointers to functions other than `slist_size()`, `slist_empty()`, `slist_front()`, `slist_back()`, `slist_head()`, `slist_tail()`, `slist_next()`, and `slist_data()`
 -   Using a list after calling `slist_destroy()` without re-initializing
 -   Directly modifying node structure members
 -   Using node pointers after the node has been removed

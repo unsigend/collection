@@ -15,213 +15,6 @@ To use the doubly linked list in your code, include the header file:
 
 This provides access to the `DList` and `DListNode` types and all list functions.
 
-## Macros
-
-Efficient inline operations implemented as macros:
-
-### dlist_size
-
-```c
-dlist_size(dlist)
-```
-
-Returns the number of elements in the list.
-
-**Parameters:**
-
--   `dlist` - Pointer to the list
-
-**Return Value:**
-
-The number of elements currently stored in the list.
-
-**Complexity:** O(1)
-
----
-
-### dlist_empty
-
-```c
-dlist_empty(dlist)
-```
-
-Checks if the list is empty.
-
-**Parameters:**
-
--   `dlist` - Pointer to the list
-
-**Return Value:**
-
-`true` if the list contains no elements (size == 0), `false` otherwise.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-DList list;
-dlist_init(&list, NULL);
-
-if (dlist_empty(&list)) {
-    printf("List is empty\n");
-}
-
-dlist_push_front(&list, "element");
-
-if (!dlist_empty(&list)) {
-    printf("List has elements\n");
-}
-```
-
----
-
-### dlist_next
-
-```c
-dlist_next(node)
-```
-
-Gets the next node in the list.
-
-**Parameters:**
-
--   `node` - Pointer to the current node
-
-**Return Value:**
-
-Pointer to the next node, or `NULL` if this is the last node.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-// Iterate forward through the list
-for (DListNode* node = dlist_head(&list); node != NULL; node = dlist_next(node)) {
-    printf("%s\n", (char*)node->data);
-}
-```
-
----
-
-### dlist_prev
-
-```c
-dlist_prev(node)
-```
-
-Gets the previous node in the list.
-
-**Parameters:**
-
--   `node` - Pointer to the current node
-
-**Return Value:**
-
-Pointer to the previous node, or `NULL` if this is the first node.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-// Iterate backward through the list
-for (DListNode* node = dlist_tail(&list); node != NULL; node = dlist_prev(node)) {
-    printf("%s\n", (char*)node->data);
-}
-```
-
----
-
-### dlist_data
-
-```c
-dlist_data(node)
-```
-
-Gets the data stored in a node.
-
-**Parameters:**
-
--   `node` - Pointer to the node
-
-**Return Value:**
-
-Pointer to the data stored in the node.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-DListNode* node = dlist_head(&list);
-if (node != NULL) {
-    void* data = dlist_data(node);
-    printf("Data: %s\n", (char*)data);
-}
-```
-
----
-
-### dlist_head
-
-```c
-dlist_head(dlist)
-```
-
-Returns the head (first) node of the list.
-
-**Parameters:**
-
--   `dlist` - Pointer to the list
-
-**Return Value:**
-
-Pointer to the head node, or `NULL` if the list is empty.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-DListNode* head = dlist_head(&list);
-if (head != NULL) {
-    printf("Head data: %s\n", (char*)head->data);
-}
-```
-
----
-
-### dlist_tail
-
-```c
-dlist_tail(dlist)
-```
-
-Returns the tail (last) node of the list.
-
-**Parameters:**
-
--   `dlist` - Pointer to the list
-
-**Return Value:**
-
-Pointer to the tail node, or `NULL` if the list is empty.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-DListNode* tail = dlist_tail(&list);
-if (tail != NULL) {
-    printf("Tail data: %s\n", (char*)tail->data);
-}
-```
-
----
-
 ## Functions
 
 Public interfaces for doubly linked list operations:
@@ -249,6 +42,221 @@ dlist_init(&list, NULL);  // No destructor
 
 DList list2;
 dlist_init(&list2, free);  // Use free() as destructor
+```
+
+---
+
+### dlist_next
+
+```c
+DListNode* dlist_next(const DListNode* node);
+```
+
+Gets the next node in the list.
+
+**Parameters:**
+
+-   `node` - Pointer to the current node
+
+**Return Value:**
+
+Pointer to the next node, or `NULL` if this is the last node or if `node` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+// Iterate forward through the list
+for (DListNode* node = dlist_head(&list); node != NULL; node = dlist_next(node)) {
+    printf("%s\n", (char*)dlist_data(node));
+}
+```
+
+---
+
+### dlist_prev
+
+```c
+DListNode* dlist_prev(const DListNode* node);
+```
+
+Gets the previous node in the list.
+
+**Parameters:**
+
+-   `node` - Pointer to the current node
+
+**Return Value:**
+
+Pointer to the previous node, or `NULL` if this is the first node or if `node` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+// Iterate backward through the list
+for (DListNode* node = dlist_tail(&list); node != NULL; node = dlist_prev(node)) {
+    printf("%s\n", (char*)dlist_data(node));
+}
+```
+
+---
+
+### dlist_data
+
+```c
+void* dlist_data(const DListNode* node);
+```
+
+Gets the data stored in a node.
+
+**Parameters:**
+
+-   `node` - Pointer to the node
+
+**Return Value:**
+
+Pointer to the data stored in the node, or `NULL` if `node` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+DListNode* node = dlist_head(&list);
+if (node != NULL) {
+    void* data = dlist_data(node);
+    printf("Data: %s\n", (char*)data);
+}
+```
+
+---
+
+### dlist_head
+
+```c
+DListNode* dlist_head(const DList* dlist);
+```
+
+Returns the head (first) node of the list.
+
+**Parameters:**
+
+-   `dlist` - Pointer to the list
+
+**Return Value:**
+
+Pointer to the head node, or `NULL` if the list is empty or if `dlist` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+DListNode* head = dlist_head(&list);
+if (head != NULL) {
+    printf("Head data: %s\n", (char*)dlist_data(head));
+}
+```
+
+---
+
+### dlist_tail
+
+```c
+DListNode* dlist_tail(const DList* dlist);
+```
+
+Returns the tail (last) node of the list.
+
+**Parameters:**
+
+-   `dlist` - Pointer to the list
+
+**Return Value:**
+
+Pointer to the tail node, or `NULL` if the list is empty or if `dlist` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+DListNode* tail = dlist_tail(&list);
+if (tail != NULL) {
+    printf("Tail data: %s\n", (char*)dlist_data(tail));
+}
+```
+
+---
+
+### dlist_empty
+
+```c
+bool dlist_empty(const DList* dlist);
+```
+
+Checks if the list is empty.
+
+**Parameters:**
+
+-   `dlist` - Pointer to the list
+
+**Return Value:**
+
+`true` if the list contains no elements (size == 0), `false` otherwise. Returns `false` if `dlist` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+DList list;
+dlist_init(&list, NULL);
+
+if (dlist_empty(&list)) {
+    printf("List is empty\n");
+}
+
+dlist_push_front(&list, "element");
+
+if (!dlist_empty(&list)) {
+    printf("List has elements\n");
+}
+```
+
+---
+
+### dlist_size
+
+```c
+size_t dlist_size(const DList* dlist);
+```
+
+Returns the number of elements in the list.
+
+**Parameters:**
+
+-   `dlist` - Pointer to the list
+
+**Return Value:**
+
+The number of elements currently stored in the list. Returns `0` if `dlist` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+DList list;
+dlist_init(&list, NULL);
+dlist_push_back(&list, "first");
+dlist_push_back(&list, "second");
+
+size_t count = dlist_size(&list);
+printf("List has %zu elements\n", count);
 ```
 
 ---
@@ -620,12 +628,12 @@ int main(void) {
 
     // Iterate forward
     for (DListNode* node = dlist_head(&list); node != NULL; node = dlist_next(node)) {
-        printf("%s\n", (char*)node->data);
+        printf("%s\n", (char*)dlist_data(node));
     }
 
     // Iterate backward
     for (DListNode* node = dlist_tail(&list); node != NULL; node = dlist_prev(node)) {
-        printf("%s\n", (char*)node->data);
+        printf("%s\n", (char*)dlist_data(node));
     }
 
     // Cleanup
@@ -718,14 +726,14 @@ int main(void) {
     // Forward traversal
     printf("Forward: ");
     for (DListNode* node = dlist_head(&list); node != NULL; node = dlist_next(node)) {
-        printf("%d ", (int)(long)node->data);
+        printf("%d ", (int)(long)dlist_data(node));
     }
     printf("\n");
 
     // Backward traversal
     printf("Backward: ");
     for (DListNode* node = dlist_tail(&list); node != NULL; node = dlist_prev(node)) {
-        printf("%d ", (int)(long)node->data);
+        printf("%d ", (int)(long)dlist_data(node));
     }
     printf("\n");
 

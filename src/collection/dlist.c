@@ -18,6 +18,34 @@
 #include <stdlib.h>
 #include <collection/dlist.h>
 
+DListNode* dlist_next(const DListNode* node){
+    return node ? node->next : NULL;
+}
+
+DListNode* dlist_prev(const DListNode* node){
+    return node ? node->prev : NULL;
+}
+
+void* dlist_data(const DListNode* node){
+    return node ? node->data : NULL;
+}
+
+DListNode* dlist_head(const DList* dlist){
+    return dlist ? dlist->head : NULL;
+}
+
+DListNode* dlist_tail(const DList* dlist){
+    return dlist ? dlist->tail : NULL;
+}
+
+bool dlist_empty(const DList* dlist){
+    return dlist ? dlist->size == 0 : false;
+}
+
+size_t dlist_size(const DList* dlist){
+    return dlist ? dlist->size : 0;
+}
+
 void dlist_init(DList* dlist, void (*destroy)(void *)){
     dlist->size = 0;
     dlist->head = NULL;

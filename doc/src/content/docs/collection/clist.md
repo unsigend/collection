@@ -15,189 +15,6 @@ To use the circular linked list in your code, include the header file:
 
 This provides access to the `CList` and `CListNode` types and all list functions.
 
-## Macros
-
-Efficient inline operations implemented as macros:
-
-### clist_size
-
-```c
-clist_size(clist)
-```
-
-Returns the number of elements in the list.
-
-**Parameters:**
-
--   `clist` - Pointer to the list
-
-**Return Value:**
-
-The number of elements currently stored in the list.
-
-**Complexity:** O(1)
-
----
-
-### clist_empty
-
-```c
-clist_empty(clist)
-```
-
-Checks if the list is empty.
-
-**Parameters:**
-
--   `clist` - Pointer to the list
-
-**Return Value:**
-
-`true` if the list contains no elements (size == 0), `false` otherwise.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-CList list;
-clist_init(&list, NULL);
-
-if (clist_empty(&list)) {
-    printf("List is empty\n");
-}
-
-clist_push_front(&list, "element");
-
-if (!clist_empty(&list)) {
-    printf("List has elements\n");
-}
-```
-
----
-
-### clist_next
-
-```c
-clist_next(node)
-```
-
-Gets the next node in the list.
-
-**Parameters:**
-
--   `node` - Pointer to the current node
-
-**Return Value:**
-
-Pointer to the next node. For the last node, returns the head (circular).
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-// Traverse one complete circle
-CListNode* start = clist_head(&list);
-CListNode* node = start;
-do {
-    printf("%s\n", (char*)node->data);
-    node = clist_next(node);
-} while (node != start);
-```
-
----
-
-### clist_data
-
-```c
-clist_data(node)
-```
-
-Gets the data stored in a node.
-
-**Parameters:**
-
--   `node` - Pointer to the node
-
-**Return Value:**
-
-Pointer to the data stored in the node.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-CListNode* node = clist_head(&list);
-if (node != NULL) {
-    void* data = clist_data(node);
-    printf("Data: %s\n", (char*)data);
-}
-```
-
----
-
-### clist_head
-
-```c
-clist_head(clist)
-```
-
-Returns the head (first) node of the list.
-
-**Parameters:**
-
--   `clist` - Pointer to the list
-
-**Return Value:**
-
-Pointer to the head node, or `NULL` if the list is empty.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-CListNode* head = clist_head(&list);
-if (head != NULL) {
-    printf("Head data: %s\n", (char*)head->data);
-}
-```
-
----
-
-### clist_tail
-
-```c
-clist_tail(clist)
-```
-
-Returns the tail (last) node of the list.
-
-**Parameters:**
-
--   `clist` - Pointer to the list
-
-**Return Value:**
-
-Pointer to the tail node (the node before head in circular structure), or `NULL` if the list is empty.
-
-**Complexity:** O(1)
-
-**Note:** In a circular list, the tail is `head->prev` (the node whose `next` points to `head`).
-
-**Example:**
-
-```c
-CListNode* tail = clist_tail(&list);
-if (tail != NULL) {
-    printf("Tail data: %s\n", (char*)tail->data);
-}
-```
-
----
-
 ## Functions
 
 Public interfaces for circular linked list operations:
@@ -225,6 +42,229 @@ clist_init(&list, NULL);  // No destructor
 
 CList list2;
 clist_init(&list2, free);  // Use free() as destructor
+```
+
+---
+
+### clist_next
+
+```c
+CListNode* clist_next(const CListNode* node);
+```
+
+Gets the next node in the list.
+
+**Parameters:**
+
+-   `node` - Pointer to the current node
+
+**Return Value:**
+
+Pointer to the next node. For the last node, returns the head (circular). Returns `NULL` if `node` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+// Traverse one complete circle
+CListNode* start = clist_head(&list);
+CListNode* node = start;
+do {
+    printf("%s\n", (char*)clist_data(node));
+    node = clist_next(node);
+} while (node != start);
+```
+
+---
+
+### clist_prev
+
+```c
+CListNode* clist_prev(const CListNode* node);
+```
+
+Gets the previous node in the list.
+
+**Parameters:**
+
+-   `node` - Pointer to the current node
+
+**Return Value:**
+
+Pointer to the previous node. For the head node, returns the tail (circular). Returns `NULL` if `node` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+// Traverse backward one complete circle
+CListNode* start = clist_tail(&list);
+CListNode* node = start;
+do {
+    printf("%s\n", (char*)clist_data(node));
+    node = clist_prev(node);
+} while (node != start);
+```
+
+---
+
+### clist_data
+
+```c
+void* clist_data(const CListNode* node);
+```
+
+Gets the data stored in a node.
+
+**Parameters:**
+
+-   `node` - Pointer to the node
+
+**Return Value:**
+
+Pointer to the data stored in the node, or `NULL` if `node` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+CListNode* node = clist_head(&list);
+if (node != NULL) {
+    void* data = clist_data(node);
+    printf("Data: %s\n", (char*)data);
+}
+```
+
+---
+
+### clist_head
+
+```c
+CListNode* clist_head(const CList* clist);
+```
+
+Returns the head (first) node of the list.
+
+**Parameters:**
+
+-   `clist` - Pointer to the list
+
+**Return Value:**
+
+Pointer to the head node, or `NULL` if the list is empty or if `clist` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+CListNode* head = clist_head(&list);
+if (head != NULL) {
+    printf("Head data: %s\n", (char*)clist_data(head));
+}
+```
+
+---
+
+### clist_tail
+
+```c
+CListNode* clist_tail(const CList* clist);
+```
+
+Returns the tail (last) node of the list.
+
+**Parameters:**
+
+-   `clist` - Pointer to the list
+
+**Return Value:**
+
+Pointer to the tail node (the node before head in circular structure), or `NULL` if the list is empty or if `clist` is `NULL`.
+
+**Complexity:** O(1)
+
+**Note:** In a circular list, the tail is `head->prev` (the node whose `next` points to `head`).
+
+**Example:**
+
+```c
+CListNode* tail = clist_tail(&list);
+if (tail != NULL) {
+    printf("Tail data: %s\n", (char*)clist_data(tail));
+}
+```
+
+---
+
+### clist_empty
+
+```c
+bool clist_empty(const CList* clist);
+```
+
+Checks if the list is empty.
+
+**Parameters:**
+
+-   `clist` - Pointer to the list
+
+**Return Value:**
+
+`true` if the list contains no elements (size == 0), `false` otherwise. Returns `false` if `clist` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+CList list;
+clist_init(&list, NULL);
+
+if (clist_empty(&list)) {
+    printf("List is empty\n");
+}
+
+clist_push_front(&list, "element");
+
+if (!clist_empty(&list)) {
+    printf("List has elements\n");
+}
+```
+
+---
+
+### clist_size
+
+```c
+size_t clist_size(const CList* clist);
+```
+
+Returns the number of elements in the list.
+
+**Parameters:**
+
+-   `clist` - Pointer to the list
+
+**Return Value:**
+
+The number of elements currently stored in the list. Returns `0` if `clist` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+CList list;
+clist_init(&list, NULL);
+clist_push_back(&list, "first");
+clist_push_back(&list, "second");
+
+size_t count = clist_size(&list);
+printf("List has %zu elements\n", count);
 ```
 
 ---
@@ -598,7 +638,7 @@ int main(void) {
     CListNode* start = clist_head(&list);
     CListNode* node = start;
     do {
-        printf("%s\n", (char*)node->data);
+        printf("%s\n", (char*)clist_data(node));
         node = clist_next(node);
     } while (node != start);
 
@@ -664,7 +704,7 @@ int main(void) {
     for (int lap = 0; lap < 3; lap++) {
         printf("Lap %d: ", lap + 1);
         for (int i = 0; i < 5; i++) {
-            printf("%d ", (int)(long)node->data);
+            printf("%d ", (int)(long)clist_data(node));
             node = clist_next(node);
         }
         printf("\n");
@@ -729,6 +769,7 @@ int main(void) {
 | `clist_insert_before`| O(1)       |
 | `clist_remove`       | O(1)       |
 | `clist_next`         | O(1)       |
+| `clist_prev`         | O(1)       |
 | `clist_data`         | O(1)       |
 | `clist_head`         | O(1)       |
 | `clist_tail`         | O(1)       |
@@ -768,7 +809,7 @@ List operations are **not thread-safe**. External synchronization is required fo
 
 Avoid the following:
 
--   Passing `NULL` list pointers to any function (except `clist_next`, `clist_data`)
+-   Passing `NULL` list pointers to any function (except `clist_next`, `clist_prev`, `clist_data`)
 -   Using a list after calling `clist_destroy()` without re-initializing
 -   Directly modifying node structure members
 -   Using node pointers after the node has been removed

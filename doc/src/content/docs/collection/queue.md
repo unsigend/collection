@@ -15,67 +15,6 @@ To use the queue in your code, include the header file:
 
 This provides access to the `Queue` type and all queue functions.
 
-## Macros
-
-Efficient inline operations implemented as macros:
-
-### queue_size
-
-```c
-queue_size(queue)
-```
-
-Returns the number of elements in the queue.
-
-**Parameters:**
-
--   `queue` - Pointer to the queue
-
-**Return Value:**
-
-The number of elements currently stored in the queue.
-
-**Complexity:** O(1)
-
----
-
-### queue_empty
-
-```c
-queue_empty(queue)
-```
-
-Checks if the queue is empty.
-
-**Parameters:**
-
--   `queue` - Pointer to the queue
-
-**Return Value:**
-
-`true` if the queue contains no elements (size == 0), `false` otherwise.
-
-**Complexity:** O(1)
-
-**Example:**
-
-```c
-Queue queue;
-queue_init(&queue, NULL);
-
-if (queue_empty(&queue)) {
-    printf("Queue is empty\n");
-}
-
-queue_enqueue(&queue, "element");
-
-if (!queue_empty(&queue)) {
-    printf("Queue has elements\n");
-}
-```
-
----
-
 ## Functions
 
 Public interfaces for queue operations:
@@ -103,6 +42,75 @@ queue_init(&queue, NULL);  // No destructor
 
 Queue queue2;
 queue_init(&queue2, free);  // Use free() as destructor
+```
+
+---
+
+### queue_empty
+
+```c
+bool queue_empty(const Queue* queue);
+```
+
+Checks if the queue is empty.
+
+**Parameters:**
+
+-   `queue` - Pointer to the queue
+
+**Return Value:**
+
+`true` if the queue contains no elements (size == 0), `false` otherwise. Returns `false` if `queue` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+Queue queue;
+queue_init(&queue, NULL);
+
+if (queue_empty(&queue)) {
+    printf("Queue is empty\n");
+}
+
+queue_enqueue(&queue, "element");
+
+if (!queue_empty(&queue)) {
+    printf("Queue has elements\n");
+}
+```
+
+---
+
+### queue_size
+
+```c
+size_t queue_size(const Queue* queue);
+```
+
+Returns the number of elements in the queue.
+
+**Parameters:**
+
+-   `queue` - Pointer to the queue
+
+**Return Value:**
+
+The number of elements currently stored in the queue. Returns `0` if `queue` is `NULL`.
+
+**Complexity:** O(1)
+
+**Example:**
+
+```c
+Queue queue;
+queue_init(&queue, NULL);
+queue_enqueue(&queue, "first");
+queue_enqueue(&queue, "second");
+
+size_t count = queue_size(&queue);
+printf("Queue has %zu elements\n", count);
 ```
 
 ---

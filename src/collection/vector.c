@@ -63,6 +63,22 @@ static int _vector_resize_capacity(Vector* vector, size_t new_capacity){
     return COLLECTION_SUCCESS;
 }
 
+bool vector_empty(const Vector* vector){
+    return vector ? vector->size == 0 : false;
+}
+
+void** vector_data(const Vector* vector){
+    return vector ? vector->data : NULL;
+}
+
+size_t vector_size(const Vector* vector){
+    return vector ? vector->size : 0;
+}
+
+size_t vector_capacity(const Vector* vector){
+    return vector ? vector->capacity : 0;
+}
+
 int vector_shrink_to_fit(Vector* vector){
     return _vector_resize_capacity(vector, vector->size);
 }

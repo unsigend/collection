@@ -15,67 +15,89 @@ To use the vector in your code, include the header file:
 
 This provides access to the `Vector` type and all vector functions.
 
-## Macros
+## Functions
 
-Efficient inline operations implemented as macros:
+Public interfaces for vector operations:
 
 ### vector_size
 
 ```c
-vector_size(vector)
+size_t vector_size(const Vector* vector);
 ```
 
 Returns the number of elements in the vector.
 
 **Parameters:**
 
--   `vector` - Pointer to the vector
+-   `vector` - Pointer to the vector (can be `NULL`)
 
 **Return Value:**
 
-The number of elements currently stored in the vector.
+The number of elements currently stored in the vector. Returns `0` if `vector` is `NULL`.
 
 **Complexity:** O(1)
+
+**Example:**
+
+```c
+Vector vec;
+vector_init(&vec, NULL);
+size_t size = vector_size(&vec);  // Returns 0
+
+vector_push_back(&vec, "element");
+size = vector_size(&vec);  // Returns 1
+```
 
 ---
 
 ### vector_capacity
 
 ```c
-vector_capacity(vector)
+size_t vector_capacity(const Vector* vector);
 ```
 
 Returns the number of elements that can be held in currently allocated storage.
 
 **Parameters:**
 
--   `vector` - Pointer to the vector
+-   `vector` - Pointer to the vector (can be `NULL`)
 
 **Return Value:**
 
-The capacity of the currently allocated storage. This may be greater than or equal to the size.
+The capacity of the currently allocated storage. This may be greater than or equal to the size. Returns `0` if `vector` is `NULL`.
 
 **Complexity:** O(1)
 
 **Note:** Use `vector_shrink_to_fit()` to reduce capacity to match size.
+
+**Example:**
+
+```c
+Vector vec;
+vector_init(&vec, NULL);
+size_t cap = vector_capacity(&vec);  // Returns 0
+
+vector_resize(&vec, 10);
+cap = vector_capacity(&vec);  // Returns >= 10
+```
 
 ---
 
 ### vector_empty
 
 ```c
-vector_empty(vector)
+bool vector_empty(const Vector* vector);
 ```
 
 Checks if the vector is empty.
 
 **Parameters:**
 
--   `vector` - Pointer to the vector
+-   `vector` - Pointer to the vector (can be `NULL`)
 
 **Return Value:**
 
-`true` if the vector contains no elements (size == 0), `false` otherwise.
+`true` if the vector contains no elements (size == 0), `false` otherwise. Returns `false` if `vector` is `NULL`.
 
 **Complexity:** O(1)
 
@@ -101,18 +123,18 @@ if (!vector_empty(&vec)) {
 ### vector_data
 
 ```c
-vector_data(vector)
+void** vector_data(const Vector* vector);
 ```
 
 Returns a pointer to the underlying array serving as element storage.
 
 **Parameters:**
 
--   `vector` - Pointer to the vector
+-   `vector` - Pointer to the vector (can be `NULL`)
 
 **Return Value:**
 
-Pointer to the underlying array, or `NULL` if the vector is empty.
+Pointer to the underlying array, or `NULL` if the vector is empty or `vector` is `NULL`.
 
 **Complexity:** O(1)
 
@@ -125,6 +147,7 @@ Returns a direct pointer to the internal array of element pointers. This allows 
 -   The pointer is invalidated after operations that cause reallocation (push_back, insert, resize with growth)
 -   Direct modification of the array should be done carefully to avoid breaking vector invariants
 -   Valid only for indices [0, size)
+-   Returns `NULL` if `vector` is `NULL` or if the vector is empty
 
 **Example:**
 
@@ -143,10 +166,6 @@ for (size_t i = 0; i < vector_size(&vec); i++) {
 ```
 
 ---
-
-## Functions
-
-Public interfaces for vector operations:
 
 ### vector_init
 
@@ -350,7 +369,7 @@ Returns `0` (COLLECTION_SUCCESS) on success, `-1` (COLLECTION_FAILURE) on failur
 
 Attempts to reduce the allocated memory to match the current size. If memory allocation fails during the shrinking operation, the vector remains unchanged with its original capacity and `-1` is returned. The vector contents are never lost.
 
-**Complexity:** O(n) where n is the number of elements
+**Complexity:** O(1)
 
 **Example:**
 
@@ -732,7 +751,7 @@ int main(void) {
 
     // All remaining elements are automatically destroyed
     vector_destroy(&vec);  // destroy_person called for all remaining elements
-    
+
     return 0;
 }
 ```
@@ -787,11 +806,22 @@ Where n is the number of elements.
 
 Vector operations are **not thread-safe**. External synchronization is required for concurrent access.
 
+### NULL Pointer Handling
+
+The following functions handle `NULL` vector pointers gracefully:
+
+-   `vector_size(NULL)` returns `0`
+-   `vector_capacity(NULL)` returns `0`
+-   `vector_empty(NULL)` returns `false`
+-   `vector_data(NULL)` returns `NULL`
+
+All other functions require a valid non-NULL vector pointer. Passing `NULL` to other functions results in undefined behavior.
+
 ### Undefined Behavior
 
 Avoid the following:
 
--   Passing `NULL` vector pointers to any function
+-   Passing `NULL` vector pointers to functions other than `vector_size()`, `vector_capacity()`, `vector_empty()`, and `vector_data()`
 -   Accessing elements at index >= size
 -   Using a vector after calling `vector_destroy()` without re-initializing
 -   Directly modifying `size` or `capacity` members

@@ -20,6 +20,38 @@
 #include <collection/slist.h>
 
 
+SListNode* slist_next(const SListNode* node){
+    return node ? node->next : NULL;
+}
+
+void* slist_data(const SListNode* node){
+    return node ? node->data : NULL;
+}
+
+SListNode* slist_head(const SList* slist){
+    return slist ? slist->head : NULL;
+}
+
+SListNode* slist_tail(const SList* slist){
+    return slist ? slist->tail : NULL;
+}
+
+bool slist_empty(const SList* slist){
+    return slist ? slist->size == 0 : false;
+}
+
+size_t slist_size(const SList* slist){
+    return slist ? slist->size : 0;
+}
+
+SListNode* slist_front(const SList* slist){
+    return slist ? slist->head : NULL;
+}
+
+SListNode* slist_back(const SList* slist){
+    return slist ? slist->tail : NULL;
+}
+
 void slist_init(SList* slist, void (*destroy)(void *)){
     memset(slist, 0, sizeof(SList));
     slist->destroy = destroy;

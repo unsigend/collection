@@ -15,14 +15,14 @@ To use the chained hash table in your code, include the header file:
 
 This provides access to the `Chtbl` and `ChtblEntry` types and all hash table functions.
 
-## Macros
+## Functions
 
-Efficient inline operations implemented as macros:
+Public interfaces for chained hash table operations:
 
 ### chtbl_size
 
 ```c
-chtbl_size(chtbl)
+size_t chtbl_size(const Chtbl* chtbl);
 ```
 
 Returns the number of key-value pairs in the hash table.
@@ -33,7 +33,7 @@ Returns the number of key-value pairs in the hash table.
 
 **Return Value:**
 
-The number of key-value pairs currently stored in the hash table.
+The number of key-value pairs currently stored in the hash table. Returns `0` if `chtbl` is `NULL`.
 
 **Complexity:** O(1)
 
@@ -54,7 +54,7 @@ printf("Size: %zu\n", chtbl_size(&chtbl));  // Prints "Size: 1"
 ### chtbl_buckets
 
 ```c
-chtbl_buckets(chtbl)
+size_t chtbl_buckets(const Chtbl* chtbl);
 ```
 
 Returns the number of buckets in the hash table.
@@ -65,7 +65,7 @@ Returns the number of buckets in the hash table.
 
 **Return Value:**
 
-The number of buckets in the hash table.
+The number of buckets in the hash table. Returns `0` if `chtbl` is `NULL`.
 
 **Complexity:** O(1)
 
@@ -83,7 +83,7 @@ printf("Buckets: %zu\n", chtbl_buckets(&chtbl));  // Prints "Buckets: 32"
 ### chtbl_in
 
 ```c
-chtbl_in(chtbl, key)
+bool chtbl_in(const Chtbl* chtbl, const void * key);
 ```
 
 Checks if a key exists in the hash table.
@@ -95,9 +95,9 @@ Checks if a key exists in the hash table.
 
 **Return Value:**
 
-`true` if the key exists in the hash table, `false` otherwise.
+`true` if the key exists in the hash table, `false` otherwise. Returns `false` if `chtbl` or `key` is `NULL`.
 
-**Complexity:** O(1)
+**Complexity:** O(1) average case
 
 **Example:**
 
@@ -117,10 +117,6 @@ if (!chtbl_in(&chtbl, "nonexistent")) {
 ```
 
 ---
-
-## Functions
-
-Public interfaces for chained hash table operations:
 
 ### chtbl_init
 
