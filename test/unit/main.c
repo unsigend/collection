@@ -11,6 +11,7 @@ extern UTEST_TEST_SUITE(clist);
 extern UTEST_TEST_SUITE(stack);
 extern UTEST_TEST_SUITE(queue);
 extern UTEST_TEST_SUITE(hash);
+extern UTEST_TEST_SUITE(chtbl);
 
 const char * AVAILABLE_MODULES[] = {
     "vector",
@@ -20,6 +21,7 @@ const char * AVAILABLE_MODULES[] = {
     "stack",
     "queue",
     "hash",
+    "chtbl",
     "all",
 };
 
@@ -32,6 +34,7 @@ void all_tests(void){
     UTEST_RUN_TEST_SUITE(stack);
     UTEST_RUN_TEST_SUITE(queue);
     UTEST_RUN_TEST_SUITE(hash);
+    UTEST_RUN_TEST_SUITE(chtbl);
 }
 
 //@brief: dispatch the tests
@@ -50,6 +53,8 @@ void dispatch_tests(char * module){
         UTEST_RUN_TEST_SUITE(queue);
     } else if (MATCH(module, "hash")) {
         UTEST_RUN_TEST_SUITE(hash);
+    } else if (MATCH(module, "chtbl")) {
+        UTEST_RUN_TEST_SUITE(chtbl);
     } else if (MATCH(module, "all")) {
         all_tests();
     }
