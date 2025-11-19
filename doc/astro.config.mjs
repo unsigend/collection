@@ -4,8 +4,6 @@ import starlight from "@astrojs/starlight";
 
 // https://astro.build/config
 export default defineConfig({
-    // GitHub Pages base path - required for https://unsigend.github.io/collection/
-    base: "/collection/",
     output: "static",
     integrations: [
         starlight({
@@ -14,7 +12,11 @@ export default defineConfig({
                 "A generic data structure and algorithms library for modern C",
             customCss: ["./src/custom.css"],
             social: [
-                { icon: "github", label: "GitHub", href: "https://github.com" },
+                {
+                    icon: "github",
+                    label: "GitHub",
+                    href: "https://github.com/unsigend/collection",
+                },
             ],
             sidebar: [
                 {
