@@ -4,6 +4,13 @@ import starlight from "@astrojs/starlight";
 
 // https://astro.build/config
 export default defineConfig({
+    // GitHub Pages configuration
+    // Update these values to match your repository:
+    // - If repo is "username/collection", use: site: "https://username.github.io/collection/", base: "/collection/"
+    // - If deploying to user page (username.github.io), use: site: "https://username.github.io", base: "/"
+    site: process.env.GITHUB_PAGES_URL || "https://<username>.github.io/collection/",
+    base: process.env.GITHUB_PAGES_BASE || "/collection/",
+    output: "static",
     integrations: [
         starlight({
             title: "collection",
