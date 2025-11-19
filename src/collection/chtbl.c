@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "collection/vector.h"
+#include <collection/vector.h>
 #include <collection/common.h>
 #include <algorithm/hash.h>
 #include <collection/slist.h>
@@ -155,6 +155,9 @@ static int _resize(Chtbl* chtbl, size_t nbuckets){
             SList* new_bucket = (SList*)vector_at(&new_table, index);
 
             if (slist_push_back(new_bucket, entry) != COLLECTION_SUCCESS) {
+                // explicitly set the destroy function to NULL to 
+                // avoid destroying the entries in old table
+                new_table.destroy = NULL;
                 vector_destroy(&new_table);
                 return COLLECTION_FAILURE;
             }
@@ -305,11 +308,17 @@ int chtbl_insert(Chtbl* chtbl, const void * key, const void * value){
     while (node) {
         ChtblEntry* entry = (ChtblEntry*)slist_data(node);
         if (chtbl->match(entry->key, key)){
+            // update the key
+            if (chtbl->destroy_key && entry->key) {
+                chtbl->destroy_key(entry->key);
+            }
+            entry->key = (void*)key;
             // update the value
             if (chtbl->destroy_value && entry->value) {
                 chtbl->destroy_value(entry->value);
             }
             entry->value = (void*)value;
+            
             return COLLECTION_SUCCESS;
         }
         node = slist_next(node);
@@ -330,7 +339,7 @@ int chtbl_insert(Chtbl* chtbl, const void * key, const void * value){
     // check if the load factor is exceeded
     float load_factor = chtbl_load_factor(chtbl);
     if (load_factor > chtbl->load_factor_threshold) {
-        _resize(chtbl, chtbl_buckets(chtbl) * RESIZE_FACTOR);
+        return _resize(chtbl, chtbl_buckets(chtbl) * RESIZE_FACTOR);
     }
     return COLLECTION_SUCCESS;
 }
