@@ -1023,6 +1023,18 @@ UTEST_TEST_CASE(vector_memory_leak){
         vector_destroy(&vec);
         EXPECT_EQUAL_INT(destroy_count, 10);
     }
+    // Test 6: Elements freed by free
+    {
+        Vector vec;
+        vector_init(&vec, free);
+        for (int i = 0; i < 10; i++) {
+            int* value = malloc(sizeof(int));
+            *value = i;
+            vector_push_back(&vec, value);
+        }
+        EXPECT_EQUAL_UINT64(vector_size(&vec), 10);
+        vector_destroy(&vec);
+    }
 }
 
 /**

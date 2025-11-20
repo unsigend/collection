@@ -2009,6 +2009,20 @@ UTEST_TEST_CASE(chtbl_memory_leak){
         EXPECT_EQUAL_INT(destroy_key_count, 3);
         EXPECT_EQUAL_INT(destroy_value_count, 3);
     }
+    // Test 9: Elements freed by free
+    {
+        Chtbl chtbl;
+        chtbl_init(&chtbl, NULL, NULL, free, free);
+        for (int i = 0; i < 10; i++) {
+            char* key = malloc(32);
+            char* value = malloc(32);
+            snprintf(key, 32, "key%d", i);
+            snprintf(value, 32, "value%d", i);
+            chtbl_insert(&chtbl, key, value);
+        }
+        EXPECT_EQUAL_UINT64(chtbl_size(&chtbl), 10);
+        chtbl_destroy(&chtbl);
+    }
 }
 
 /**

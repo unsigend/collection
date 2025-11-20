@@ -517,6 +517,18 @@ UTEST_TEST_CASE(queue_memory_leak){
         queue_destroy(&queue);
         EXPECT_EQUAL_INT(destroy_count, 10);
     }
+    // Test 4: Elements freed by free
+    {
+        Queue queue;
+        queue_init(&queue, free);
+        for (int i = 0; i < 10; i++) {
+            int* value = malloc(sizeof(int));
+            *value = i;
+            queue_enqueue(&queue, value);
+        }
+        EXPECT_EQUAL_UINT(queue_size(&queue), 10);
+        queue_destroy(&queue);
+    }
 }
 
 /**
