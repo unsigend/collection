@@ -27,22 +27,37 @@ LIB_PATH 		:= 			$(CUR_DIR)/lib
 # include config
 include $(CONFIG_PATH)/config.mk
 
+# variables for host OS
+HOST_OS         :=          $(shell uname -s)
+
 # variables for flags
 CC_FLAGS        :=          -std=$(STD_C)
 CC_FLAGS        +=          -Wall -Wextra -Werror
 CC_FLAGS        +=          -Wno-unused-parameter
 CC_FLAGS        +=          -fPIC
-CC_FLAGS        +=          -O2
 CC_FLAGS        +=          -I$(INCLUDE_PATH)
 ifeq ($(DEBUG), true)
 CC_FLAGS        +=          -fsanitize=address
+CC_FLAGS        +=          -fsanitize=undefined
+CC_FLAGS        +=          -fsanitize=bounds
 CC_FLAGS        +=          -fno-omit-frame-pointer
 CC_FLAGS        +=          -g
+CC_FLAGS        +=          -O0
+else
+CC_FLAGS        +=          -O2
 endif
+
+# dependencies flags
 CC_DEPS_FLAGS   :=          -MMD -MP -MF
+
+# archive flags
 AR_FLAGS        :=          -rcs
+
+# linker flags
 ifeq ($(DEBUG), true)
 LD_FLAGS        :=          -fsanitize=address
+LD_FLAGS        +=          -fsanitize=undefined
+LD_FLAGS        +=          -fsanitize=bounds
 else
 LD_FLAGS        :=
 endif
@@ -50,9 +65,6 @@ endif
 SRCS            :=          $(shell find $(SRC_PATH) -name "*.c")
 OBJS            :=          $(patsubst $(SRC_PATH)/%.c, $(OBJ_PATH)/%.o, $(SRCS))
 DEPS            :=          $(patsubst $(SRC_PATH)/%.c, $(DEP_PATH)/%.d, $(SRCS))
-
-# variables for host OS
-HOST_OS         :=          $(shell uname -s)
 
 # variable for dynamic library postfix
 # for now it supports only Linux and macOS
@@ -92,7 +104,7 @@ export DEBUG
 -include $(DEP_PATH)/*.d
 
 .DEFAULT_GOAL := help
-.PHONY: all clean test help create_build_dir lib test-bench docker
+.PHONY: all clean test help create_build_dir lib test-bench docker flags
 
 # lib target
 lib: create_build_dir $(LIB_PATH)/lib$(LIBRARY_NAME)$(LIB_POSTFIX)
@@ -137,6 +149,7 @@ help:
 	@echo "\tmake test-bench  	- Run the benchmark tests"
 	@echo "\tmake help        	- Show this help message"
 	@echo "\tmake docker      	- Build and Run the Docker container"
+	@echo "\tmake flags       	- Show the compile and link flags"
 	@echo ""
 
 # generate dir
@@ -156,3 +169,9 @@ docker:
 		docker rm -f $(DOCKER_IMAGE)-container 2>/dev/null || true; \
 	fi
 	@docker run -it --name $(DOCKER_IMAGE)-container -v $(CUR_DIR):/workspace $(DOCKER_IMAGE) /bin/bash
+
+# flags target
+flags:
+	@echo "CC_FLAGS: $(CC_FLAGS)\n"
+	@echo "LD_FLAGS: $(LD_FLAGS)\n"
+	@$(MAKE) -C $(TEST_PATH) flags

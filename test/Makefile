@@ -19,6 +19,9 @@ CXX           :=          g++
 LD            :=          gcc
 AR            :=          ar
 
+# host OS
+HOST_OS         :=          $(shell uname -s)
+
 # variables for paths
 CUR_DIR       		:=          .
 ROOT_DIR      		:=          ..
@@ -38,18 +41,33 @@ CC_FLAGS      +=  		  -Wall -Wextra -Werror
 CC_FLAGS      +=          -Wno-unused-parameter
 CC_FLAGS      +=          -Wno-unused-variable
 CC_FLAGS      +=          -Wno-unused-function
-CC_FLAGS      +=          -O2
 CC_FLAGS      +=          -I$(INCLUDE_PATH)
 CC_FLAGS      +=          -I$(EXTERNAL_PATH)/include
 ifeq ($(DEBUG), true)
 CC_FLAGS      +=          -fsanitize=address
+CC_FLAGS      +=          -fsanitize=undefined
+CC_FLAGS      +=          -fsanitize=bounds
 CC_FLAGS      +=          -fno-omit-frame-pointer
 CC_FLAGS      +=          -g
+CC_FLAGS      +=          -O0
+else
+CC_FLAGS      +=          -O2
 endif
+ifeq ($(HOST_OS), Linux)
+CC_FLAGS        +=          -D_GNU_SOURCE
+CC_FLAGS        +=          -Wno-type-limits
+CC_FLAGS        +=          -Wno-sign-compare
+endif
+
+# dependencies flags
 CC_DEPS_FLAGS :=          -MMD -MP -MF
+
+# linker flags
 LD_FLAGS      :=          -L$(LIB_PATH) -l$(LIBRARY_NAME)
 ifeq ($(DEBUG), true)
 LD_FLAGS      +=          -fsanitize=address
+LD_FLAGS      +=          -fsanitize=undefined
+LD_FLAGS      +=          -fsanitize=bounds
 endif
 
 # source files
@@ -93,7 +111,7 @@ $(OBJ_PATH)/%.o: $(EXTERNAL_PATH)/src/%.c
 -include $(BENCHMARK_DEPS)
 
 .DEFAULT_GOAL := test
-.PHONY: test benchmark create_build_dir
+.PHONY: test benchmark create_build_dir flags
 
 # create build directory target
 create_build_dir:
@@ -123,3 +141,8 @@ benchmark: create_build_dir $(OBJS_BENCHMARK)
 	$(LIB_PATH)/lib$(LIBRARY_NAME)$(LIB_POSTFIX)
 	@echo " + LD\t$(CUR_DIR_NAME)/$(notdir $(BUILD_PATH))/benchmark"
 	@echo "Build benchmark test ./test/build/$@\n"
+
+# flags target
+flags:
+	@echo "TEST_CC_FLAGS: $(CC_FLAGS)\n"
+	@echo "TEST_LD_FLAGS: $(LD_FLAGS)\n"

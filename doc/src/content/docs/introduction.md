@@ -115,6 +115,7 @@ make test
 | `make test-bench`    | Build and run benchmarks                          |
 | `make docker`        | Run Docker container with development environment |
 | `make clean`         | Remove all build artifacts                        |
+| `make flags`         | Show the compile and link flags                   |
 
 ## Contributing
 
