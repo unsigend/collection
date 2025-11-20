@@ -517,6 +517,18 @@ UTEST_TEST_CASE(stack_memory_leak){
         stack_destroy(&stack);
         EXPECT_EQUAL_INT(destroy_count, 10);
     }
+    // Test 4: Elements freed by free
+    {
+        Stack stack;
+        stack_init(&stack, free);
+        for (int i = 0; i < 10; i++) {
+            int* value = malloc(sizeof(int));
+            *value = i;
+            stack_push(&stack, value);
+        }
+        EXPECT_EQUAL_UINT(stack_size(&stack), 10);
+        stack_destroy(&stack);
+    }
 }
 
 /**

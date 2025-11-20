@@ -1183,6 +1183,18 @@ UTEST_TEST_CASE(dlist_memory_leak){
         dlist_destroy(&list);
         EXPECT_EQUAL_INT(destroy_count, 10);
     }
+    // Test 6: Elements freed by free
+    {
+        DList list;
+        dlist_init(&list, free);
+        for (int i = 0; i < 10; i++) {
+            int* value = malloc(sizeof(int));
+            *value = i;
+            dlist_push_back(&list, value);
+        }
+        EXPECT_EQUAL_UINT64(dlist_size(&list), 10);
+        dlist_destroy(&list);
+    }
 }
 
 /**
