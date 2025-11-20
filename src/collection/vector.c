@@ -87,6 +87,7 @@ int vector_shrink_to_fit(Vector* vector){
 }
 
 int vector_resize(Vector* vector, size_t new_size){
+    if (!vector) return COLLECTION_FAILURE;
     if (new_size == vector->size) {
         return COLLECTION_SUCCESS;
     }
@@ -113,6 +114,7 @@ int vector_resize(Vector* vector, size_t new_size){
 }
 
 void vector_init(Vector* vector, void (*destroy)(void *)){
+    if (!vector) return;
     vector->data = NULL;
     vector->size = 0;
     vector->capacity = 0;
@@ -120,6 +122,7 @@ void vector_init(Vector* vector, void (*destroy)(void *)){
 }
 
 void vector_destroy(Vector* vector){
+    if (!vector) return;
     if (vector->data){
         _vector_destroy_range(vector, 0, vector->size);
         free(vector->data);
@@ -131,6 +134,7 @@ void vector_destroy(Vector* vector){
 }
 
 void* vector_at(const Vector* vector, size_t index){
+    if (!vector) return NULL;
     if (index >= vector->size){
         return NULL;
     }
@@ -138,6 +142,7 @@ void* vector_at(const Vector* vector, size_t index){
 }
 
 void* vector_back(const Vector* vector){
+    if (!vector) return NULL;
     if (vector->size == 0){
         return NULL;
     }
@@ -145,6 +150,7 @@ void* vector_back(const Vector* vector){
 }
 
 void* vector_front(const Vector* vector){
+    if (!vector) return NULL;
     if (vector->size == 0){
         return NULL;
     }
@@ -152,6 +158,7 @@ void* vector_front(const Vector* vector){
 }
 
 int vector_push_back(Vector* vector, void* element){
+    if (!vector) return COLLECTION_FAILURE;
     if (vector->size >= vector->capacity) {
         const size_t new_capacity = vector->capacity ? 
         vector->capacity * VECTOR_RESIZE_FACTOR : 1;
@@ -164,6 +171,7 @@ int vector_push_back(Vector* vector, void* element){
 }
 
 int vector_pop_back(Vector* vector, void** data){
+    if (!vector) return COLLECTION_FAILURE;
     if (vector->size == 0){
         return COLLECTION_FAILURE;
     }
@@ -179,6 +187,7 @@ int vector_pop_back(Vector* vector, void** data){
 }
 
 void vector_clear(Vector* vector){
+    if (!vector || !vector->data) return;
     if (vector->destroy) {
         _vector_destroy_range(vector, 0, vector->size);
     }
@@ -187,6 +196,7 @@ void vector_clear(Vector* vector){
 }
 
 int vector_insert(Vector* vector, size_t index, void* element){
+    if (!vector) return COLLECTION_FAILURE;
     if (index > vector->size){
         return COLLECTION_FAILURE;
     }
@@ -212,6 +222,7 @@ int vector_insert(Vector* vector, size_t index, void* element){
 }
 
 int vector_remove(Vector* vector, size_t index, void** data){
+    if (!vector) return COLLECTION_FAILURE;
     if (index >= vector->size){
         return COLLECTION_FAILURE;
     }
