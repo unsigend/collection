@@ -30,3 +30,6 @@ LIBRARY_NAME    :=          collection
 
 # debugger mode
 DEBUG           :=          false
+
+# docker config
+DOCKER_IMAGE    :=          collection

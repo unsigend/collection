@@ -76,17 +76,45 @@ make clean
 make lib
 ```
 
+## Docker Development Environment
+
+For a consistent development environment across different platforms, you can use Docker:
+
+```bash
+make docker
+```
+
+This command will:
+
+-   Check if the Docker image exists, and build it if needed (Ubuntu-based with GCC and C development tools)
+-   Remove any existing container with the same name
+-   Start an interactive container with your project directory mounted at `/workspace`
+
+The Docker image includes:
+
+-   Ubuntu Linux
+-   GCC (GNU Compiler Collection)
+-   Make and build-essential tools
+
+Once inside the container, you can build and test the library:
+
+```bash
+make lib
+make test
+```
+
 ## Available Make Targets
 
-| Target               | Description                   |
-| -------------------- | ----------------------------- |
-| `make help`          | Show available commands       |
-| `make lib`           | Build the library             |
-| `make all`           | Build library                 |
-| `make test`          | Build and run all tests       |
-| `make test-[module]` | Run tests for specific module |
-| `make test-bench`    | Build and run benchmarks      |
-| `make clean`         | Remove all build artifacts    |
+| Target               | Description                                       |
+| -------------------- | ------------------------------------------------- |
+| `make help`          | Show available commands                           |
+| `make lib`           | Build the library                                 |
+| `make all`           | Build library                                     |
+| `make test`          | Build and run all tests                           |
+| `make test-[module]` | Run tests for specific module                     |
+| `make test-bench`    | Build and run benchmarks                          |
+| `make docker`        | Run Docker container with development environment |
+| `make clean`         | Remove all build artifacts                        |
 
 ## Contributing
 
