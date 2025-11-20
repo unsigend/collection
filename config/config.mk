@@ -29,7 +29,7 @@ BUILD_METHOD    :=          static
 LIBRARY_NAME    :=          collection
 
 # debugger mode
-DEBUG           :=          false
+DEBUG           :=          true
 
 # docker config
 DOCKER_IMAGE    :=          collection
