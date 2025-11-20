@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <collection/vector.h>
 
 // the factor to resize the capacity of the vector
@@ -80,6 +79,10 @@ size_t vector_capacity(const Vector* vector){
 }
 
 int vector_shrink_to_fit(Vector* vector){
+    if (!vector)
+        return COLLECTION_FAILURE;
+    if (vector->size == vector->capacity)
+        return COLLECTION_SUCCESS;
     return _vector_resize_capacity(vector, vector->size);
 }
 
@@ -129,8 +132,7 @@ void vector_destroy(Vector* vector){
 
 void* vector_at(const Vector* vector, size_t index){
     if (index >= vector->size){
-        fprintf(stderr, "FATAL: Index out of bounds\n");
-        exit(COLLECTION_FAILURE);
+        return NULL;
     }
     return vector->data[index];
 }
@@ -196,7 +198,12 @@ int vector_insert(Vector* vector, size_t index, void* element){
     if (vector->size >= vector->capacity){
         const size_t new_capacity = vector->capacity ? 
         vector->capacity * VECTOR_RESIZE_FACTOR : 1;
-        _vector_resize_capacity(vector, new_capacity);
+        // overflow check
+        if (new_capacity < vector->capacity)
+            return COLLECTION_FAILURE;
+        if (_vector_resize_capacity(vector, new_capacity) != COLLECTION_SUCCESS){
+            return COLLECTION_FAILURE;
+        }
     }
     memmove(vector->data + index + 1, vector->data + index, (vector->size - index) * sizeof(void *));
     vector->data[index] = element;
