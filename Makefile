@@ -92,7 +92,7 @@ export DEBUG
 -include $(DEP_PATH)/*.d
 
 .DEFAULT_GOAL := help
-.PHONY: all clean test help create_build_dir lib test-bench
+.PHONY: all clean test help create_build_dir lib test-bench docker
 
 # lib target
 lib: create_build_dir $(LIB_PATH)/lib$(LIBRARY_NAME)$(LIB_POSTFIX)
@@ -136,6 +136,7 @@ help:
 	@echo "\tmake test-[module] \t- Run the tests for a specific module"
 	@echo "\tmake test-bench  	- Run the benchmark tests"
 	@echo "\tmake help        	- Show this help message"
+	@echo "\tmake docker      	- Build and Run the Docker container"
 	@echo ""
 
 # generate dir
@@ -144,3 +145,14 @@ create_build_dir:
 	@mkdir -p $(OBJ_PATH)
 	@mkdir -p $(DEP_PATH)
 	@mkdir -p $(LIB_PATH)
+
+# docker target
+docker:
+	@if [ -z "$$(docker images -q $(DOCKER_IMAGE) 2>/dev/null)" ]; then \
+		echo "Building Docker image $(DOCKER_IMAGE)..."; \
+		docker build -t $(DOCKER_IMAGE) -f Dockerfile .; \
+	fi
+	@if [ -n "$$(docker ps -aq -f name=$(DOCKER_IMAGE)-container 2>/dev/null)" ]; then \
+		docker rm -f $(DOCKER_IMAGE)-container 2>/dev/null || true; \
+	fi
+	@docker run -it --name $(DOCKER_IMAGE)-container -v $(CUR_DIR):/workspace $(DOCKER_IMAGE) /bin/bash
