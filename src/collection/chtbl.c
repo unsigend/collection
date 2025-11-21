@@ -174,7 +174,7 @@ static int _resize(Chtbl* chtbl, size_t nbuckets){
 }
 
 bool chtbl_in(const Chtbl* chtbl, const void * key){
-    return chtbl_find((Chtbl*)chtbl, key) != NULL;
+    return chtbl_find_entry((Chtbl*)chtbl, key) != NULL;
 }
 
 size_t chtbl_size(const Chtbl* chtbl){
