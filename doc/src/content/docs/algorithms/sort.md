@@ -1,0 +1,228 @@
+---
+title: Sort
+description: Sorting algorithms for generic data types
+---
+
+The sort module provides efficient sorting algorithms for generic data types. The algorithms work with any data type by using a comparison function, making them suitable for sorting arrays of integers, floating-point numbers, strings, structures, and other custom types.
+
+## Header Files
+
+To use the sorting functions in your code, include the header file:
+
+```c
+#include <algorithm/sort.h>
+```
+
+This provides access to all sorting functions.
+
+## Functions
+
+Public interfaces for sorting operations:
+
+### sort_insertion
+
+```c
+int sort_insertion(void * data, size_t n, size_t size,
+    int (*compare)(const void *, const void *));
+```
+
+Sorts an array using the insertion sort algorithm.
+
+**Parameters:**
+
+-   `data` - Pointer to the array to sort
+-   `n` - Number of elements in the array
+-   `size` - Size of each element in bytes
+-   `compare` - Comparison function that returns negative if first argument is less than second, zero if equal, positive if greater
+
+**Return Value:**
+
+Returns `0` (`COLLECTION_SUCCESS`) if successful, `-1` (`COLLECTION_FAILURE`) if failed.
+
+**Description:**
+
+Sorts the array in-place using insertion sort. The algorithm is stable and works well for small arrays or arrays that are already partially sorted.
+
+**Complexity:** O(n²)
+
+**Example:**
+
+```c
+#include <algorithm/sort.h>
+#include <stdio.h>
+
+int compare_int(const void *a, const void *b) {
+    int ia = *(const int *)a;
+    int ib = *(const int *)b;
+    if (ia < ib) return -1;
+    if (ia > ib) return 1;
+    return 0;
+}
+
+int main(void) {
+    int arr[] = {64, 34, 25, 12, 22, 11, 90};
+    size_t n = sizeof(arr) / sizeof(arr[0]);
+
+    sort_insertion(arr, n, sizeof(int), compare_int);
+
+    for (size_t i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    // Prints: 11 12 22 25 34 64 90
+    return 0;
+}
+```
+
+**Notes:**
+
+-   The function sorts the array in-place, modifying the original array
+-   Empty arrays (n = 0) are handled correctly and return success
+-   Single-element arrays are already sorted and return success
+-   The comparison function must not be `NULL`
+-   The data pointer must not be `NULL` (unless n is 0)
+-   For large elements (greater than 512 bytes), temporary heap memory may be allocated during sorting
+
+---
+
+## Usage Examples
+
+### Basic Usage
+
+```c
+#include <algorithm/sort.h>
+#include <stdio.h>
+
+int compare_int(const void *a, const void *b) {
+    int ia = *(const int *)a;
+    int ib = *(const int *)b;
+    if (ia < ib) return -1;
+    if (ia > ib) return 1;
+    return 0;
+}
+
+int main(void) {
+    int arr[] = {5, 2, 8, 1, 3};
+    size_t n = sizeof(arr) / sizeof(arr[0]);
+
+    sort_insertion(arr, n, sizeof(int), compare_int);
+
+    for (size_t i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    // Prints: 1 2 3 5 8
+    return 0;
+}
+```
+
+### Sorting Strings
+
+```c
+#include <algorithm/sort.h>
+#include <stdio.h>
+#include <string.h>
+
+int compare_string(const void *a, const void *b) {
+    return strcmp(*(const char **)a, *(const char **)b);
+}
+
+int main(void) {
+    const char *arr[] = {"banana", "apple", "cherry", "date"};
+    size_t n = sizeof(arr) / sizeof(arr[0]);
+
+    sort_insertion(arr, n, sizeof(char *), compare_string);
+
+    for (size_t i = 0; i < n; i++) {
+        printf("%s ", arr[i]);
+    }
+    // Prints: apple banana cherry date
+    return 0;
+}
+```
+
+---
+
+## Complexity
+
+| Operation        | Complexity |
+| ---------------- | ---------- |
+| `sort_insertion` | O(n²)      |
+
+Where n is the number of elements to sort.
+
+---
+
+## Important Notes
+
+### Comparison Function
+
+All sorting functions use the same comparison function interface, following the standard C library `qsort` convention:
+
+-   Return a negative value if the first argument should come before the second
+-   Return zero if the arguments are equal
+-   Return a positive value if the first argument should come after the second
+
+### Common Behavior
+
+All sorting functions share the following characteristics:
+
+-   Functions sort the array in-place, modifying the original array
+-   Empty arrays (n = 0) are handled correctly and return success
+-   Single-element arrays are already sorted and return success
+-   The comparison function must not be `NULL`
+-   The data pointer must not be `NULL` (unless n is 0)
+-   For large elements (greater than 512 bytes), temporary heap memory may be allocated during sorting
+-   The temporary memory is automatically freed before the function returns
+
+### Error Handling
+
+All sorting functions return `COLLECTION_FAILURE` (`-1`) in the following cases:
+
+-   `data` is `NULL` and `n` is greater than 0
+-   `compare` is `NULL`
+-   `size` is 0
+-   Memory allocation fails (for large elements)
+
+### Thread Safety
+
+Sorting functions are **not thread-safe** if multiple threads access the same array concurrently. However, different threads can safely sort different arrays simultaneously.
+
+### Undefined Behavior
+
+Avoid the following:
+
+-   Passing `NULL` as `data` when `n` is greater than 0
+-   Passing `NULL` as `compare`
+-   Passing `size` as 0
+-   Modifying the array during sorting
+-   Accessing array elements outside the valid range [0, n-1] during sorting
+
+---
+
+## Performance Considerations
+
+### General Guidelines
+
+When choosing a sorting algorithm, consider:
+
+-   **Array size:** Some algorithms perform better on small arrays, others on large arrays
+-   **Data distribution:** Some algorithms are adaptive and perform well on partially sorted data
+-   **Stability:** Whether equal elements must maintain their relative order
+-   **Memory constraints:** Some algorithms require additional memory proportional to array size
+-   **Worst-case performance:** Consider worst-case scenarios for your use case
+
+### Memory Usage
+
+-   For small elements (less than 512 bytes), algorithms use stack-allocated temporary memory
+-   For large elements (512 bytes or more), algorithms may allocate temporary memory on the heap
+-   Temporary memory is automatically freed before the function returns
+-   Space complexity varies by algorithm (see individual function documentation)
+
+### Algorithm Selection
+
+Different algorithms are optimized for different scenarios:
+
+-   **Small arrays:** Simple algorithms like insertion sort may be faster due to low overhead
+-   **Large arrays:** More complex algorithms like quicksort or mergesort typically perform better
+-   **Partially sorted data:** Adaptive algorithms can take advantage of existing order
+-   **Stability requirements:** Choose a stable algorithm if relative order of equal elements matters
+-   **Worst-case guarantees:** Some algorithms provide guaranteed worst-case performance bounds
