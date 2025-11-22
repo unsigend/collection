@@ -1,0 +1,31 @@
+/* collection - A generic data structure and algorithms library for modern C
+ * Copyright (C) 2025 Yixiang Qiu
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include <algorithm/hash.h>
+#include <stdint.h>
+
+/**
+ * Hash an integer. This hash function is based on 
+ * the multiplication method.
+ */
+uint32_t hash_int(const int key){
+    const double A = 0.61803398874989484820;
+    uint32_t k = (uint32_t)key;
+    double d = k * A;
+    double frac = d - (uint32_t)d;
+    return (uint32_t)(frac * UINT32_MAX);
+}

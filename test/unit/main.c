@@ -14,6 +14,7 @@ extern UTEST_TEST_SUITE(hash);
 extern UTEST_TEST_SUITE(chtbl);
 extern UTEST_TEST_SUITE(set);
 extern UTEST_TEST_SUITE(sort);
+extern UTEST_TEST_SUITE(util);
 
 const char * AVAILABLE_MODULES[] = {
     "vector",
@@ -26,11 +27,13 @@ const char * AVAILABLE_MODULES[] = {
     "chtbl",
     "set",
     "sort",
+    "util",
     "all",
 };
 
 //@brief: run all tests
 void all_tests(void){
+    UTEST_RUN_TEST_SUITE(util);
     UTEST_RUN_TEST_SUITE(vector);
     UTEST_RUN_TEST_SUITE(slist);
     UTEST_RUN_TEST_SUITE(dlist);
@@ -65,6 +68,8 @@ void dispatch_tests(char * module){
         UTEST_RUN_TEST_SUITE(set);
     } else if (MATCH(module, "sort")) {
         UTEST_RUN_TEST_SUITE(sort);
+    } else if (MATCH(module, "util")) {
+        UTEST_RUN_TEST_SUITE(util);
     } else if (MATCH(module, "all")) {
         all_tests();
     }

@@ -15,7 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <algorithm/search.h>
-#include <stddef.h>
+#include <algorithm/hash.h>
 #include <stdint.h>
-#include <stdlib.h>
+
+/**
+ * Hash a string. This hash function is based on 
+ * "Compilers: Principles, Techniques, and Tools" by Aho, Sethi, and Ullman.
+ * @note: PWJ hash
+ */
+uint32_t hash_str(const char * key){
+    uint32_t hash = 0;
+
+    while (*key) {
+        uint32_t c;
+        hash = (hash << 4) + (*key++);
+        if ((c = (hash & 0xF0000000)) != 0) {
+            hash ^= c >> 24;
+            hash ^= c;
+        }
+    }
+
+    return hash;
+}

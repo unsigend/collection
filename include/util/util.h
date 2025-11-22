@@ -15,37 +15,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <algorithm/hash.h>
-#include <stdint.h>
+#ifndef UTIL_UTIL_H
+#define UTIL_UTIL_H
+
+#include <collection/common.h>
 
 /**
- * Hash a string. This hash function is based on 
- * "Compilers: Principles, Techniques, and Tools" by Aho, Sethi, and Ullman.
- * @note: PWJ hash
+ * Swap two elements.
+ * @param a The first element.
+ * @param b The second element.
+ * @param size The size of the elements.
+ * @return 0 if successful, -1 if failed.
+ * @complexity O(1)
  */
-uint32_t hash_str(const char * key){
-    uint32_t hash = 0;
-
-    while (*key) {
-        uint32_t c;
-        hash = (hash << 4) + (*key++);
-        if ((c = (hash & 0xF0000000)) != 0) {
-            hash ^= c >> 24;
-            hash ^= c;
-        }
-    }
-
-    return hash;
-}
+extern int util_swap(void * a, void * b, size_t size);
 
 /**
- * Hash an integer. This hash function is based on 
- * the multiplication method.
+ * Generate a random integer between min and max.
+ * @param min The minimum value.
+ * @param max The maximum value.
+ * @return The random integer.
+ * @complexity O(1)
  */
-uint32_t hash_int(const int key){
-    const double A = 0.61803398874989484820;
-    uint32_t k = (uint32_t)key;
-    double d = k * A;
-    double frac = d - (uint32_t)d;
-    return (uint32_t)(frac * UINT32_MAX);
-}
+extern int util_random(int min, int max);
+
+#endif
