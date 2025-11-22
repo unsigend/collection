@@ -163,9 +163,7 @@ static int arrays_equal_int(const int *arr1, const int *arr2, size_t n) {
  * Tests basic sorting functionality with various data types and edge cases.
  */
 static void test_sort_generic(
-    int (*sort_func)(void *, size_t, size_t, int (*)(const void *, const void *)),
-    const char *sort_name
-) {
+    int (*sort_func)(void *, size_t, size_t, int (*)(const void *, const void *))){
     // Test 1: Empty array
     {
         int empty[] = {};
@@ -516,12 +514,10 @@ static void test_sort_generic(
     {
         int arr[] = {9, 8, 7, 3, 2, 1, 6, 5, 4};
         
-        // Sort first 3 elements
         int result1 = sort_func(arr, 3, sizeof(int), compare_int);
         EXPECT_EQUAL_INT(result1, COLLECTION_SUCCESS);
         EXPECT_TRUE(is_sorted_int(arr, 3));
-        
-        // Sort last 3 elements
+
         int result2 = sort_func(arr + 6, 3, sizeof(int), compare_int);
         EXPECT_EQUAL_INT(result2, COLLECTION_SUCCESS);
         EXPECT_TRUE(is_sorted_int(arr + 6, 3));
@@ -529,26 +525,496 @@ static void test_sort_generic(
 
     // Test 32: Edge case combinations
     {
-        // Empty array
         int empty[] = {};
         sort_func(empty, 0, sizeof(int), compare_int);
         
-        // Single element
         int single[] = {42};
         sort_func(single, 1, sizeof(int), compare_int);
         EXPECT_EQUAL_INT(single[0], 42);
         
-        // Two elements
         int two[] = {2, 1};
         sort_func(two, 2, sizeof(int), compare_int);
         EXPECT_EQUAL_INT(two[0], 1);
         EXPECT_EQUAL_INT(two[1], 2);
         
-        // All same
         int same[] = {5, 5, 5};
         sort_func(same, 3, sizeof(int), compare_int);
         EXPECT_EQUAL_INT(same[0], 5);
         EXPECT_EQUAL_INT(same[2], 5);
+    }
+
+    // Test 33: Array with only two distinct values (binary pattern)
+    {
+        int arr[] = {1, 0, 1, 0, 1, 0, 1, 0};
+        int original[] = {1, 0, 1, 0, 1, 0, 1, 0};
+        int result = sort_func(arr, 8, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 8));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 8));
+    }
+
+    // Test 34: Alternating pattern (worst case for some algorithms)
+    {
+        int arr[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7};
+        int original[] = {1, 3, 2, 4, 3, 5, 4, 6, 5, 7};
+        int result = sort_func(arr, 10, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 10));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 10));
+    }
+
+    // Test 35: Sawtooth pattern
+    {
+        int arr[] = {1, 2, 3, 1, 2, 3, 1, 2, 3};
+        int original[] = {1, 2, 3, 1, 2, 3, 1, 2, 3};
+        int result = sort_func(arr, 9, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 9));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 9));
+    }
+
+    // Test 36: Moderate sized array (not too large for unit tests)
+    {
+        const size_t moderate_size = 500;
+        int *arr = malloc(moderate_size * sizeof(int));
+        int *original = malloc(moderate_size * sizeof(int));
+        
+        if (arr && original) {
+            for (size_t i = 0; i < moderate_size; i++) {
+                arr[i] = (int)(moderate_size - i);
+                original[i] = (int)(moderate_size - i);
+            }
+            
+            int result = sort_func(arr, moderate_size, sizeof(int), compare_int);
+            EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+            EXPECT_TRUE(is_sorted_int(arr, moderate_size));
+            EXPECT_TRUE(arrays_equal_int(arr, original, moderate_size));
+        }
+        
+        free(arr);
+        free(original);
+    }
+
+    // Test 37: Power-of-two sized arrays (common edge case)
+    {
+        for (int pow = 1; pow <= 8; pow++) {
+            size_t size = 1U << pow; // 2, 4, 8, 16, 32, 64, 128, 256
+            int *arr = malloc(size * sizeof(int));
+            if (!arr) continue;
+            
+            for (size_t i = 0; i < size; i++) {
+                arr[i] = (int)(size - i);
+            }
+            
+            int result = sort_func(arr, size, sizeof(int), compare_int);
+            EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+            EXPECT_TRUE(is_sorted_int(arr, size));
+            
+            free(arr);
+        }
+    }
+
+    // Test 38: Odd-sized arrays
+    {
+        for (int size = 3; size <= 21; size += 2) {
+            int *arr = malloc(size * sizeof(int));
+            if (!arr) continue;
+            
+            for (int i = 0; i < size; i++) {
+                arr[i] = size - i;
+            }
+            
+            int result = sort_func(arr, size, sizeof(int), compare_int);
+            EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+            EXPECT_TRUE(is_sorted_int(arr, size));
+            
+            free(arr);
+        }
+    }
+
+    // Test 39: Even-sized arrays
+    {
+        for (int size = 2; size <= 20; size += 2) {
+            int *arr = malloc(size * sizeof(int));
+            if (!arr) continue;
+            
+            for (int i = 0; i < size; i++) {
+                arr[i] = size - i;
+            }
+            
+            int result = sort_func(arr, size, sizeof(int), compare_int);
+            EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+            EXPECT_TRUE(is_sorted_int(arr, size));
+            
+            free(arr);
+        }
+    }
+
+    // Test 40: Array with many duplicates (few unique values)
+    {
+        int arr[] = {5, 2, 5, 2, 5, 2, 5, 2, 5, 2};
+        int original[] = {5, 2, 5, 2, 5, 2, 5, 2, 5, 2};
+        int result = sort_func(arr, 10, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 10));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 10));
+    }
+
+    // Test 41: Array with three distinct values
+    {
+        int arr[] = {3, 1, 2, 3, 1, 2, 3, 1, 2};
+        int original[] = {3, 1, 2, 3, 1, 2, 3, 1, 2};
+        int result = sort_func(arr, 9, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 9));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 9));
+    }
+
+    // Test 42: Extreme value distribution (most values are same)
+    {
+        int arr[] = {1, 100, 1, 1, 1, 1, 1, 1, 1, 1};
+        int original[] = {1, 100, 1, 1, 1, 1, 1, 1, 1, 1};
+        int result = sort_func(arr, 10, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 10));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 10));
+    }
+
+    // Test 43: Array with zeros
+    {
+        int arr[] = {0, 0, 0, 5, 0, 3, 0, 1, 0};
+        int original[] = {0, 0, 0, 5, 0, 3, 0, 1, 0};
+        int result = sort_func(arr, 9, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 9));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 9));
+    }
+
+    // Test 44: Array with all zeros
+    {
+        int arr[] = {0, 0, 0, 0, 0};
+        int result = sort_func(arr, 5, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 5));
+        for (int i = 0; i < 5; i++) {
+            EXPECT_EQUAL_INT(arr[i], 0);
+        }
+    }
+
+    // Test 45: Array with one unique value and rest duplicates
+    {
+        int arr[] = {42, 1, 1, 1, 1, 1, 1, 1};
+        int original[] = {42, 1, 1, 1, 1, 1, 1, 1};
+        int result = sort_func(arr, 8, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 8));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 8));
+    }
+
+    // Test 46: Multiple consecutive sorts (idempotency)
+    {
+        int arr[] = {5, 2, 8, 1, 3};
+        int original[] = {5, 2, 8, 1, 3};
+        
+        for (int i = 0; i < 5; i++) {
+            int result = sort_func(arr, 5, sizeof(int), compare_int);
+            EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+            EXPECT_TRUE(is_sorted_int(arr, 5));
+        }
+        
+        EXPECT_TRUE(arrays_equal_int(arr, original, 5));
+    }
+
+    // Test 47: Sort already sorted array multiple times
+    {
+        int arr[] = {1, 2, 3, 4, 5};
+        
+        for (int i = 0; i < 10; i++) {
+            int result = sort_func(arr, 5, sizeof(int), compare_int);
+            EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+            EXPECT_TRUE(is_sorted_int(arr, 5));
+            EXPECT_EQUAL_INT(arr[0], 1);
+            EXPECT_EQUAL_INT(arr[4], 5);
+        }
+    }
+
+    // Test 48: String array with empty strings
+    {
+        const char *arr[] = {"", "banana", "", "apple", "cherry", ""};
+        int result = sort_func(arr, 6, sizeof(char *), compare_string);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_EQUAL_STRING(arr[0], "");
+        EXPECT_EQUAL_STRING(arr[1], "");
+        EXPECT_EQUAL_STRING(arr[2], "");
+    }
+
+    // Test 49: String array with single character strings
+    {
+        const char *arr[] = {"z", "a", "m", "b", "y"};
+        int result = sort_func(arr, 5, sizeof(char *), compare_string);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_EQUAL_STRING(arr[0], "a");
+        EXPECT_EQUAL_STRING(arr[1], "b");
+        EXPECT_EQUAL_STRING(arr[4], "z");
+    }
+
+    // Test 50: String array with duplicates
+    {
+        const char *arr[] = {"banana", "apple", "banana", "cherry", "apple"};
+        int result = sort_func(arr, 5, sizeof(char *), compare_string);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_EQUAL_STRING(arr[0], "apple");
+        EXPECT_EQUAL_STRING(arr[1], "apple");
+        EXPECT_EQUAL_STRING(arr[2], "banana");
+        EXPECT_EQUAL_STRING(arr[3], "banana");
+        EXPECT_EQUAL_STRING(arr[4], "cherry");
+    }
+
+    // Test 51: Double array with very small values
+    {
+        double arr[] = {1e-10, 1e-20, 1e-30, 1e-15, 1e-25};
+        int result = sort_func(arr, 5, sizeof(double), compare_double);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        for (size_t i = 1; i < 5; i++) {
+            EXPECT_TRUE(arr[i - 1] <= arr[i]);
+        }
+    }
+
+    // Test 52: Double array with very large values
+    {
+        double arr[] = {1e10, 1e20, 1e15, 1e25, 1e5};
+        int result = sort_func(arr, 5, sizeof(double), compare_double);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        for (size_t i = 1; i < 5; i++) {
+            EXPECT_TRUE(arr[i - 1] <= arr[i]);
+        }
+    }
+
+    // Test 53: Double array with mixed magnitudes
+    {
+        double arr[] = {1e10, 1e-10, 1.0, 1e5, 1e-5};
+        int result = sort_func(arr, 5, sizeof(double), compare_double);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        for (size_t i = 1; i < 5; i++) {
+            EXPECT_TRUE(arr[i - 1] <= arr[i]);
+        }
+    }
+
+    // Test 54: Array near MAX_STACK_SIZE boundary (512 bytes)
+    {
+        // Test with element size just below MAX_STACK_SIZE
+        struct {
+            int key;
+            char padding[500]; 
+        } arr[3];
+        
+        int keys[] = {3, 1, 2};
+        for (int i = 0; i < 3; i++) {
+            arr[i].key = keys[i];
+            memset(arr[i].padding, 0, 500);
+        }
+        
+        int result = sort_func(arr, 3, sizeof(arr[0]), compare_struct_large);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        for (int i = 1; i < 3; i++) {
+            EXPECT_TRUE(arr[i - 1].key <= arr[i].key);
+        }
+    }
+
+    // Test 55: Array at MAX_STACK_SIZE boundary (512 bytes)
+    {
+        struct {
+            int key;
+            char padding[508];
+        } arr[3];
+        
+        int keys[] = {3, 1, 2};
+        for (int i = 0; i < 3; i++) {
+            arr[i].key = keys[i];
+            memset(arr[i].padding, 0, 508);
+        }
+        
+        int result = sort_func(arr, 3, sizeof(arr[0]), compare_struct_large);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        for (int i = 1; i < 3; i++) {
+            EXPECT_TRUE(arr[i - 1].key <= arr[i].key);
+        }
+    }
+
+    // Test 56: Array above MAX_STACK_SIZE boundary (triggers heap allocation)
+    {
+        struct {
+            int key;
+            char padding[520];
+        } arr[3];
+        
+        int keys[] = {3, 1, 2};
+        for (int i = 0; i < 3; i++) {
+            arr[i].key = keys[i];
+            memset(arr[i].padding, 0, 520);
+        }
+        
+        int result = sort_func(arr, 3, sizeof(arr[0]), compare_struct_large);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        for (int i = 1; i < 3; i++) {
+            EXPECT_TRUE(arr[i - 1].key <= arr[i].key);
+        }
+    }
+
+    // Test 57: Array with sequential duplicates
+    {
+        int arr[] = {1, 1, 1, 2, 2, 2, 3, 3, 3};
+        int result = sort_func(arr, 9, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 9));
+        EXPECT_EQUAL_INT(arr[0], 1);
+        EXPECT_EQUAL_INT(arr[2], 1);
+        EXPECT_EQUAL_INT(arr[3], 2);
+        EXPECT_EQUAL_INT(arr[5], 2);
+        EXPECT_EQUAL_INT(arr[6], 3);
+        EXPECT_EQUAL_INT(arr[8], 3);
+    }
+
+    // Test 58: Array with scattered duplicates
+    {
+        int arr[] = {3, 1, 2, 3, 1, 2, 3, 1, 2, 3};
+        int original[] = {3, 1, 2, 3, 1, 2, 3, 1, 2, 3};
+        int result = sort_func(arr, 10, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 10));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 10));
+    }
+
+    // Test 59: Array with extreme negative values
+    {
+        int arr[] = {INT_MIN, INT_MIN + 1, -1000000, -1000, -1};
+        int original[] = {INT_MIN, INT_MIN + 1, -1000000, -1000, -1};
+        int result = sort_func(arr, 5, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 5));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 5));
+        EXPECT_EQUAL_INT(arr[0], INT_MIN);
+    }
+
+    // Test 60: Array with extreme positive values
+    {
+        int arr[] = {1, 1000, 1000000, INT_MAX - 1, INT_MAX};
+        int original[] = {1, 1000, 1000000, INT_MAX - 1, INT_MAX};
+        int result = sort_func(arr, 5, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 5));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 5));
+        EXPECT_EQUAL_INT(arr[4], INT_MAX);
+    }
+
+    // Test 61: Array with values spanning full int range
+    {
+        int arr[] = {INT_MIN, -1000, 0, 1000, INT_MAX};
+        int original[] = {INT_MIN, -1000, 0, 1000, INT_MAX};
+        int result = sort_func(arr, 5, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 5));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 5));
+    }
+
+    // Test 62: Descending sort with duplicates
+    {
+        int arr[] = {5, 2, 5, 2, 1, 1, 3, 3};
+        int result = sort_func(arr, 8, sizeof(int), compare_int_desc);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int_desc(arr, 8));
+        EXPECT_EQUAL_INT(arr[0], 5);
+        EXPECT_EQUAL_INT(arr[7], 1);
+    }
+
+    // Test 63: Array sorted in reverse, then sorted again
+    {
+        int arr[] = {5, 4, 3, 2, 1};
+        int result1 = sort_func(arr, 5, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result1, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 5));
+        
+        // Reverse it manually
+        for (int i = 0; i < 2; i++) {
+            int temp = arr[i];
+            arr[i] = arr[4 - i];
+            arr[4 - i] = temp;
+        }
+        
+        int result2 = sort_func(arr, 5, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result2, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 5));
+    }
+
+    // Test 64: Array with pattern that requires many swaps
+    {
+        int arr[] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+        int original[] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+        int result = sort_func(arr, 10, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 10));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 10));
+    }
+
+    // Test 65: Array with almost sorted pattern (one element out of place)
+    {
+        int arr[] = {1, 2, 3, 4, 0, 5, 6, 7, 8, 9};
+        int original[] = {1, 2, 3, 4, 0, 5, 6, 7, 8, 9};
+        int result = sort_func(arr, 10, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 10));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 10));
+    }
+
+    // Test 66: Array with almost sorted pattern (last element out of place)
+    {
+        int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+        int original[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+        int result = sort_func(arr, 10, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 10));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 10));
+    }
+
+    // Test 67: Array with almost sorted pattern (first element out of place)
+    {
+        int arr[] = {10, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        int original[] = {10, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        int result = sort_func(arr, 10, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 10));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 10));
+    }
+
+    // Test 68: Array with values in specific range
+    {
+        int arr[100];
+        for (int i = 0; i < 100; i++) {
+            arr[i] = (i * 7) % 100; // Pseudo-random but deterministic
+        }
+        int result = sort_func(arr, 100, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 100));
+    }
+
+    // Test 69: Array with specific pattern (hill pattern)
+    {
+        int arr[] = {1, 2, 3, 4, 5, 4, 3, 2, 1};
+        int original[] = {1, 2, 3, 4, 5, 4, 3, 2, 1};
+        int result = sort_func(arr, 9, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 9));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 9));
+    }
+
+    // Test 70: Array with specific pattern (valley pattern)
+    {
+        int arr[] = {5, 4, 3, 2, 1, 2, 3, 4, 5};
+        int original[] = {5, 4, 3, 2, 1, 2, 3, 4, 5};
+        int result = sort_func(arr, 9, sizeof(int), compare_int);
+        EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
+        EXPECT_TRUE(is_sorted_int(arr, 9));
+        EXPECT_TRUE(arrays_equal_int(arr, original, 9));
     }
 }
 
@@ -558,7 +1024,7 @@ static void test_sort_generic(
  * Description: Tests the sort_insertion function using generalized sort tests.
  */
 UTEST_TEST_CASE(sort_insertion) {
-    test_sort_generic(sort_insertion, "insertion");
+    test_sort_generic(sort_insertion);
 }
 
 /**
@@ -567,7 +1033,16 @@ UTEST_TEST_CASE(sort_insertion) {
  * Description: Tests the sort_selection function using generalized sort tests.
  */
 UTEST_TEST_CASE(sort_selection) {
-    test_sort_generic(sort_selection, "selection");
+    test_sort_generic(sort_selection);
+}
+
+/**
+ * Test: sort_bubble
+ * Dependencies: None
+ * Description: Tests the sort_bubble function using generalized sort tests.
+ */
+UTEST_TEST_CASE(sort_bubble) {
+    test_sort_generic(sort_bubble);
 }
 
 /**
@@ -577,4 +1052,5 @@ UTEST_TEST_CASE(sort_selection) {
 UTEST_TEST_SUITE(sort) {
     UTEST_RUN_TEST_CASE(sort_insertion);
     UTEST_RUN_TEST_CASE(sort_selection);
+    UTEST_RUN_TEST_CASE(sort_bubble);
 }

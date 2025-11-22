@@ -80,7 +80,134 @@ int main(void) {
 -   Single-element arrays are already sorted and return success
 -   The comparison function must not be `NULL`
 -   The data pointer must not be `NULL` (unless n is 0)
--   For large elements (greater than 512 bytes), temporary heap memory may be allocated during sorting
+
+---
+
+### sort_selection
+
+```c
+int sort_selection(void * data, size_t n, size_t size,
+    int (*compare)(const void *, const void *));
+```
+
+Sorts an array using the selection sort algorithm.
+
+**Parameters:**
+
+-   `data` - Pointer to the array to sort
+-   `n` - Number of elements in the array
+-   `size` - Size of each element in bytes
+-   `compare` - Comparison function that returns negative if first argument is less than second, zero if equal, positive if greater
+
+**Return Value:**
+
+Returns `0` (`COLLECTION_SUCCESS`) if successful, `-1` (`COLLECTION_FAILURE`) if failed.
+
+**Description:**
+
+Sorts the array in-place using selection sort. The algorithm repeatedly finds the minimum element from the unsorted portion and places it at the beginning.
+
+**Complexity:** O(n²)
+
+**Example:**
+
+```c
+#include <algorithm/sort.h>
+#include <stdio.h>
+
+int compare_int(const void *a, const void *b) {
+    int ia = *(const int *)a;
+    int ib = *(const int *)b;
+    if (ia < ib) return -1;
+    if (ia > ib) return 1;
+    return 0;
+}
+
+int main(void) {
+    int arr[] = {64, 34, 25, 12, 22, 11, 90};
+    size_t n = sizeof(arr) / sizeof(arr[0]);
+
+    sort_selection(arr, n, sizeof(int), compare_int);
+
+    for (size_t i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    // Prints: 11 12 22 25 34 64 90
+    return 0;
+}
+```
+
+**Notes:**
+
+-   The function sorts the array in-place, modifying the original array
+-   Empty arrays (n = 0) are handled correctly and return success
+-   Single-element arrays are already sorted and return success
+-   The comparison function must not be `NULL`
+-   The data pointer must not be `NULL` (unless n is 0)
+
+---
+
+### sort_bubble
+
+```c
+int sort_bubble(void * data, size_t n, size_t size,
+    int (*compare)(const void *, const void *));
+```
+
+Sorts an array using the bubble sort algorithm.
+
+**Parameters:**
+
+-   `data` - Pointer to the array to sort
+-   `n` - Number of elements in the array
+-   `size` - Size of each element in bytes
+-   `compare` - Comparison function that returns negative if first argument is less than second, zero if equal, positive if greater
+
+**Return Value:**
+
+Returns `0` (`COLLECTION_SUCCESS`) if successful, `-1` (`COLLECTION_FAILURE`) if failed.
+
+**Description:**
+
+Sorts the array in-place using bubble sort. The algorithm repeatedly steps through the array, compares adjacent elements and swaps them if they are in the wrong order.
+
+**Complexity:** O(n²)
+
+**Example:**
+
+```c
+#include <algorithm/sort.h>
+#include <stdio.h>
+
+int compare_int(const void *a, const void *b) {
+    int ia = *(const int *)a;
+    int ib = *(const int *)b;
+    if (ia < ib) return -1;
+    if (ia > ib) return 1;
+    return 0;
+}
+
+int main(void) {
+    int arr[] = {64, 34, 25, 12, 22, 11, 90};
+    size_t n = sizeof(arr) / sizeof(arr[0]);
+
+    sort_bubble(arr, n, sizeof(int), compare_int);
+
+    for (size_t i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    // Prints: 11 12 22 25 34 64 90
+    return 0;
+}
+```
+
+**Notes:**
+
+-   The function sorts the array in-place, modifying the original array
+-   Empty arrays (n = 0) are handled correctly and return success
+-   Single-element arrays are already sorted and return success
+-   The comparison function must not be `NULL`
+-   The data pointer must not be `NULL` (unless n is 0)
 
 ---
 
@@ -146,6 +273,8 @@ int main(void) {
 | Operation        | Complexity |
 | ---------------- | ---------- |
 | `sort_insertion` | O(n²)      |
+| `sort_selection` | O(n²)      |
+| `sort_bubble`    | O(n²)      |
 
 Where n is the number of elements to sort.
 
@@ -170,8 +299,6 @@ All sorting functions share the following characteristics:
 -   Single-element arrays are already sorted and return success
 -   The comparison function must not be `NULL`
 -   The data pointer must not be `NULL` (unless n is 0)
--   For large elements (greater than 512 bytes), temporary heap memory may be allocated during sorting
--   The temporary memory is automatically freed before the function returns
 
 ### Error Handling
 
@@ -180,7 +307,6 @@ All sorting functions return `COLLECTION_FAILURE` (`-1`) in the following cases:
 -   `data` is `NULL` and `n` is greater than 0
 -   `compare` is `NULL`
 -   `size` is 0
--   Memory allocation fails (for large elements)
 
 ### Thread Safety
 
@@ -212,10 +338,8 @@ When choosing a sorting algorithm, consider:
 
 ### Memory Usage
 
--   For small elements (less than 512 bytes), algorithms use stack-allocated temporary memory
--   For large elements (512 bytes or more), algorithms may allocate temporary memory on the heap
--   Temporary memory is automatically freed before the function returns
--   Space complexity varies by algorithm (see individual function documentation)
+-   All sorting algorithms use O(1) additional space complexity
+-   Temporary memory used during sorting is automatically managed
 
 ### Algorithm Selection
 
