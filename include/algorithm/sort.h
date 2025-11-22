@@ -38,4 +38,16 @@
 int sort_insertion(void * data, size_t n, size_t size, 
     int (*compare)(const void *, const void *));
 
+/**
+ * Sort the data using selection sort.
+ * @param data The data to sort.
+ * @param n The number of elements to sort.
+ * @param size The size of the element.
+ * @param compare The function to compare two elements.
+ * @return 0 if successful, -1 if failed.
+ * @complexity O(n^2)
+ */
+int sort_selection(void * data, size_t n, size_t size, 
+    int (*compare)(const void *, const void *));
+
 #endif

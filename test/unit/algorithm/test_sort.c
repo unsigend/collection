@@ -562,9 +562,19 @@ UTEST_TEST_CASE(sort_insertion) {
 }
 
 /**
+ * Test: sort_selection
+ * Dependencies: None
+ * Description: Tests the sort_selection function using generalized sort tests.
+ */
+UTEST_TEST_CASE(sort_selection) {
+    test_sort_generic(sort_selection, "selection");
+}
+
+/**
  * Test suite: sort
  * Description: Test suite for sort algorithm function
  */
 UTEST_TEST_SUITE(sort) {
     UTEST_RUN_TEST_CASE(sort_insertion);
+    UTEST_RUN_TEST_CASE(sort_selection);
 }
