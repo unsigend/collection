@@ -1046,6 +1046,15 @@ UTEST_TEST_CASE(sort_bubble) {
 }
 
 /**
+ * Test: sort_quick
+ * Dependencies: None
+ * Description: Tests the sort_quick function using generalized sort tests.
+ */
+UTEST_TEST_CASE(sort_quick) {
+    test_sort_generic(sort_quick);
+}
+
+/**
  * Test suite: sort
  * Description: Test suite for sort algorithm function
  */
@@ -1053,4 +1062,5 @@ UTEST_TEST_SUITE(sort) {
     UTEST_RUN_TEST_CASE(sort_insertion);
     UTEST_RUN_TEST_CASE(sort_selection);
     UTEST_RUN_TEST_CASE(sort_bubble);
+    UTEST_RUN_TEST_CASE(sort_quick);
 }
