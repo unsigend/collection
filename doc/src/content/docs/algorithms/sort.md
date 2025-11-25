@@ -275,6 +275,70 @@ int main(void) {
 
 ---
 
+### sort_merge
+
+```c
+int sort_merge(void * data, size_t n, size_t size,
+    int (*compare)(const void *, const void *));
+```
+
+Sorts an array using the merge sort algorithm.
+
+**Parameters:**
+
+-   `data` - Pointer to the array to sort
+-   `n` - Number of elements in the array
+-   `size` - Size of each element in bytes
+-   `compare` - Comparison function that returns negative if first argument is less than second, zero if equal, positive if greater
+
+**Return Value:**
+
+Returns `0` (`COLLECTION_SUCCESS`) if successful, `-1` (`COLLECTION_FAILURE`) if failed.
+
+**Description:**
+
+Sorts the array in-place using merge sort. The algorithm uses a divide-and-conquer approach, recursively dividing the array into smaller sub-arrays, sorting them, and then merging them back together. Merge sort is stable and provides guaranteed O(n log n) performance in all cases.
+
+**Complexity:** O(n log n)
+
+**Example:**
+
+```c
+#include <algorithm/sort.h>
+#include <stdio.h>
+
+int compare_int(const void *a, const void *b) {
+    int ia = *(const int *)a;
+    int ib = *(const int *)b;
+    if (ia < ib) return -1;
+    if (ia > ib) return 1;
+    return 0;
+}
+
+int main(void) {
+    int arr[] = {64, 34, 25, 12, 22, 11, 90};
+    size_t n = sizeof(arr) / sizeof(arr[0]);
+
+    sort_merge(arr, n, sizeof(int), compare_int);
+
+    for (size_t i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    // Prints: 11 12 22 25 34 64 90
+    return 0;
+}
+```
+
+**Notes:**
+
+-   The function sorts the array in-place, modifying the original array
+-   Empty arrays (n = 0) are handled correctly and return success
+-   Single-element arrays are already sorted and return success
+-   The comparison function must not be `NULL`
+-   The data pointer must not be `NULL` (unless n is 0)
+
+---
+
 ## Usage Examples
 
 ### Basic Usage
@@ -340,6 +404,7 @@ int main(void) {
 | `sort_selection` | O(n²)      |
 | `sort_bubble`    | O(n²)      |
 | `sort_quick`     | O(n log n) |
+| `sort_merge`     | O(n log n) |
 
 Where n is the number of elements to sort.
 
@@ -411,7 +476,7 @@ When choosing a sorting algorithm, consider:
 Different algorithms are optimized for different scenarios:
 
 -   **Small arrays:** Simple algorithms like insertion sort may be faster due to low overhead
--   **Large arrays:** More complex algorithms like quicksort or mergesort typically perform better
+-   **Large arrays:** More complex algorithms like quicksort or merge sort typically perform better
 -   **Partially sorted data:** Adaptive algorithms can take advantage of existing order
 -   **Stability requirements:** Choose a stable algorithm if relative order of equal elements matters
 -   **Worst-case guarantees:** Some algorithms provide guaranteed worst-case performance bounds

@@ -1055,6 +1055,14 @@ UTEST_TEST_CASE(sort_quick) {
 }
 
 /**
+ * Test: sort_merge
+ * Dependencies: None
+ * Description: Tests the sort_merge function using generalized sort tests.
+ */
+UTEST_TEST_CASE(sort_merge) {
+    test_sort_generic(sort_merge);
+}
+/**
  * Test suite: sort
  * Description: Test suite for sort algorithm function
  */
@@ -1063,4 +1071,5 @@ UTEST_TEST_SUITE(sort) {
     UTEST_RUN_TEST_CASE(sort_selection);
     UTEST_RUN_TEST_CASE(sort_bubble);
     UTEST_RUN_TEST_CASE(sort_quick);
+    UTEST_RUN_TEST_CASE(sort_merge);
 }
