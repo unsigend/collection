@@ -21,7 +21,6 @@
 
 #define ARRAY_INDEX(data, i, size) ((char *)data + (i) * (size))
 
-
 /**
  * Partition the data into two parts.
  * @note: the pivot is based on median of three algorithm
