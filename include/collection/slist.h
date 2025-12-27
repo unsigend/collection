@@ -131,6 +131,13 @@ extern SListNode* slist_front(const SList* slist);
 extern SListNode* slist_back(const SList* slist);
 
 /**
+ * Reverse the singly linked list.
+ * @param slist The singly linked list to reverse.
+ * @complexity O(n)
+ */
+extern void slist_reverse(SList* slist);
+
+/**
  * Push an element to the front of the singly linked list.
  * @param slist The singly linked list to push the element to.
  * @param data The element to push.
