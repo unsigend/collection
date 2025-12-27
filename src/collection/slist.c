@@ -52,6 +52,21 @@ SListNode* slist_back(const SList* slist){
     return slist ? slist->tail : NULL;
 }
 
+void slist_reverse(SList* slist){
+    if (!slist || slist_empty(slist)) return;
+    SListNode* prev = NULL;
+    SListNode* current = slist->head;
+    SListNode* next = NULL;
+    while (current){
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    }
+    slist->tail = slist->head;
+    slist->head = prev;
+}
+
 void slist_init(SList* slist, void (*destroy)(void *)){
     memset(slist, 0, sizeof(SList));
     slist->destroy = destroy;

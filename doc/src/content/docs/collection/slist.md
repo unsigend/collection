@@ -588,6 +588,49 @@ if (slist_remove_after(&list, node, &removed_element) == 0) {
 
 ---
 
+### slist_reverse
+
+```c
+void slist_reverse(SList* slist);
+```
+
+Reverses the order of elements in the singly linked list in-place.
+
+**Parameters:**
+
+-   `slist` - Pointer to the list to reverse
+
+**Description:**
+
+Reverses the order of all elements in the list. The first element becomes the last, and the last element becomes the first. This operation modifies the list structure by reversing the links between nodes. The head and tail pointers are updated accordingly.
+
+**Complexity:** O(n) where n is the number of elements
+
+**Example:**
+
+```c
+SList list;
+slist_init(&list, NULL);
+
+slist_push_back(&list, "first");
+slist_push_back(&list, "second");
+slist_push_back(&list, "third");
+// List: ["first", "second", "third"]
+
+slist_reverse(&list);
+// List: ["third", "second", "first"]
+
+slist_destroy(&list);
+```
+
+**Note:**
+
+-   Reversing an empty list or a list with a single element has no effect
+-   After reversing, the head and tail pointers are swapped
+-   All node pointers remain valid after reversal
+
+---
+
 ## Usage Examples
 
 ### Basic Usage
@@ -697,6 +740,7 @@ int main(void) {
 | `slist_clear`        | O(n)       |
 | `slist_insert_after` | O(1)       |
 | `slist_remove_after` | O(1)       |
+| `slist_reverse`      | O(n)       |
 | `slist_next`         | O(1)       |
 | `slist_data`         | O(1)       |
 | `slist_head`         | O(1)       |

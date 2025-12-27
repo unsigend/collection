@@ -1107,6 +1107,178 @@ UTEST_TEST_CASE(slist_integration){
         
         slist_destroy(&list);
     }
+
+    // Test 5: Reverse with other operations
+    {
+        SList list;
+        slist_init(&list, NULL);
+        
+        int values[5] = {1, 2, 3, 4, 5};
+        for (int i = 0; i < 5; i++) {
+            slist_push_back(&list, &values[i]);
+        }
+        
+        slist_reverse(&list);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_front(&list)), 5);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_back(&list)), 1);
+        
+        void* popped = NULL;
+        EXPECT_EQUAL_INT(slist_pop_front(&list, &popped), COLLECTION_SUCCESS);
+        EXPECT_EQUAL_UINT(*(int*)popped, 5);
+        EXPECT_EQUAL_UINT(slist_size(&list), 4);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_front(&list)), 4);
+        
+        slist_reverse(&list);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_front(&list)), 1);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_back(&list)), 4);
+        
+        slist_destroy(&list);
+    }
+}
+
+/**
+ * Test: slist_reverse
+ * Dependencies: slist_init, slist_push_back, slist_push_front, slist_size, slist_front, slist_back, slist_head, slist_tail
+ * Description: Tests reversing the singly linked list.
+ */
+UTEST_TEST_CASE(slist_reverse){
+    // Test 1: Reverse empty list
+    {
+        SList list;
+        slist_init(&list, NULL);
+        slist_reverse(&list);
+        EXPECT_EQUAL_UINT(slist_size(&list), 0);
+        EXPECT_TRUE(slist_empty(&list));
+        EXPECT_NULL(slist_head(&list));
+        EXPECT_NULL(slist_tail(&list));
+        slist_destroy(&list);
+    }
+
+    // Test 2: Reverse single element list
+    {
+        SList list;
+        slist_init(&list, NULL);
+        int a = 1;
+        slist_push_back(&list, &a);
+        slist_reverse(&list);
+        EXPECT_EQUAL_UINT(slist_size(&list), 1);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_front(&list)), 1);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_back(&list)), 1);
+        EXPECT_EQUAL_UINT(slist_head(&list), slist_tail(&list));
+        slist_destroy(&list);
+    }
+
+    // Test 3: Reverse two element list
+    {
+        SList list;
+        slist_init(&list, NULL);
+        int a = 1, b = 2;
+        slist_push_back(&list, &a);
+        slist_push_back(&list, &b);
+        slist_reverse(&list);
+        EXPECT_EQUAL_UINT(slist_size(&list), 2);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_front(&list)), 2);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_back(&list)), 1);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_head(&list)), 2);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_tail(&list)), 1);
+        slist_destroy(&list);
+    }
+
+    // Test 4: Reverse multiple elements
+    {
+        SList list;
+        slist_init(&list, NULL);
+        int values[] = {1, 2, 3, 4, 5};
+        for (int i = 0; i < 5; i++) {
+            slist_push_back(&list, &values[i]);
+        }
+        slist_reverse(&list);
+        EXPECT_EQUAL_UINT(slist_size(&list), 5);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_front(&list)), 5);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_back(&list)), 1);
+        int expected[] = {5, 4, 3, 2, 1};
+        int count = 0;
+        for (SListNode* node = slist_front(&list); node != NULL; node = slist_next(node)) {
+            EXPECT_EQUAL_UINT(*(int*)slist_data(node), expected[count]);
+            count++;
+        }
+        EXPECT_EQUAL_UINT(count, 5);
+        slist_destroy(&list);
+    }
+
+    // Test 5: Reverse list with push_front elements
+    {
+        SList list;
+        slist_init(&list, NULL);
+        int a = 1, b = 2, c = 3;
+        slist_push_front(&list, &a);
+        slist_push_front(&list, &b);
+        slist_push_front(&list, &c);
+        slist_reverse(&list);
+        EXPECT_EQUAL_UINT(slist_size(&list), 3);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_front(&list)), 1);
+        EXPECT_EQUAL_UINT(*(int*)slist_data(slist_back(&list)), 3);
+        int expected[] = {1, 2, 3};
+        int count = 0;
+        for (SListNode* node = slist_front(&list); node != NULL; node = slist_next(node)) {
+            EXPECT_EQUAL_UINT(*(int*)slist_data(node), expected[count]);
+            count++;
+        }
+        EXPECT_EQUAL_UINT(count, 3);
+        slist_destroy(&list);
+    }
+
+    // Test 6: Reverse multiple times
+    {
+        SList list;
+        slist_init(&list, NULL);
+        int values[] = {1, 2, 3, 4};
+        for (int i = 0; i < 4; i++) {
+            slist_push_back(&list, &values[i]);
+        }
+        slist_reverse(&list);
+        slist_reverse(&list);
+        EXPECT_EQUAL_UINT(slist_size(&list), 4);
+        int expected[] = {1, 2, 3, 4};
+        int count = 0;
+        for (SListNode* node = slist_front(&list); node != NULL; node = slist_next(node)) {
+            EXPECT_EQUAL_UINT(*(int*)slist_data(node), expected[count]);
+            count++;
+        }
+        EXPECT_EQUAL_UINT(count, 4);
+        slist_destroy(&list);
+    }
+
+    // Test 7: Head and tail pointers updated correctly
+    {
+        SList list;
+        slist_init(&list, NULL);
+        int a = 1, b = 2, c = 3;
+        slist_push_back(&list, &a);
+        slist_push_back(&list, &b);
+        slist_push_back(&list, &c);
+        SListNode* old_head = slist_head(&list);
+        SListNode* old_tail = slist_tail(&list);
+        slist_reverse(&list);
+        EXPECT_NOT_EQUAL_UINT(slist_head(&list), old_head);
+        EXPECT_NOT_EQUAL_UINT(slist_tail(&list), old_tail);
+        EXPECT_EQUAL_UINT(slist_head(&list), old_tail);
+        EXPECT_EQUAL_UINT(slist_tail(&list), old_head);
+        slist_destroy(&list);
+    }
+
+    // Test 8: Reverse with NULL elements
+    {
+        SList list;
+        slist_init(&list, NULL);
+        slist_push_back(&list, NULL);
+        slist_push_back(&list, NULL);
+        slist_reverse(&list);
+        EXPECT_EQUAL_UINT(slist_size(&list), 2);
+        EXPECT_NULL(slist_data(slist_front(&list)));
+        EXPECT_NULL(slist_data(slist_back(&list)));
+        slist_destroy(&list);
+    }
 }
 
 /**
@@ -1131,6 +1303,7 @@ UTEST_TEST_SUITE(slist){
     UTEST_RUN_TEST_CASE(slist_clear);
     UTEST_RUN_TEST_CASE(slist_insert_after);
     UTEST_RUN_TEST_CASE(slist_remove_after);
+    UTEST_RUN_TEST_CASE(slist_reverse);
     UTEST_RUN_TEST_CASE(slist_memory_leak);
     UTEST_RUN_TEST_CASE(slist_integration);
 }
