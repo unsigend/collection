@@ -15,206 +15,198 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
 #include <collection/dlist.h>
+#include <stdlib.h>
 
-DListNode* dlist_next(const DListNode* node){
-    return node ? node->next : NULL;
+DListNode *dlist_next(const DListNode *node) {
+  return node ? node->next : NULL;
 }
 
-DListNode* dlist_prev(const DListNode* node){
-    return node ? node->prev : NULL;
+DListNode *dlist_prev(const DListNode *node) {
+  return node ? node->prev : NULL;
 }
 
-void* dlist_data(const DListNode* node){
-    return node ? node->data : NULL;
+void *dlist_data(const DListNode *node) { return node ? node->data : NULL; }
+
+DListNode *dlist_head(const DList *dlist) { return dlist ? dlist->head : NULL; }
+
+DListNode *dlist_tail(const DList *dlist) { return dlist ? dlist->tail : NULL; }
+
+bool dlist_empty(const DList *dlist) {
+  return dlist ? dlist->size == 0 : false;
 }
 
-DListNode* dlist_head(const DList* dlist){
-    return dlist ? dlist->head : NULL;
+size_t dlist_size(const DList *dlist) { return dlist ? dlist->size : 0; }
+
+void dlist_init(DList *dlist, void (*destroy)(void *)) {
+  dlist->size = 0;
+  dlist->head = NULL;
+  dlist->tail = NULL;
+  dlist->destroy = destroy;
 }
 
-DListNode* dlist_tail(const DList* dlist){
-    return dlist ? dlist->tail : NULL;
+void dlist_destroy(DList *dlist) {
+  dlist_clear(dlist);
+  dlist->destroy = NULL;
 }
 
-bool dlist_empty(const DList* dlist){
-    return dlist ? dlist->size == 0 : false;
-}
-
-size_t dlist_size(const DList* dlist){
-    return dlist ? dlist->size : 0;
-}
-
-void dlist_init(DList* dlist, void (*destroy)(void *)){
-    dlist->size = 0;
-    dlist->head = NULL;
-    dlist->tail = NULL;
-    dlist->destroy = destroy;
-}
-
-void dlist_destroy(DList* dlist){
-    dlist_clear(dlist);
-    dlist->destroy = NULL;
-}
-
-void dlist_clear(DList* dlist){
-    if (!dlist || dlist_empty(dlist)){
-        return;
+void dlist_clear(DList *dlist) {
+  if (!dlist || dlist_empty(dlist)) {
+    return;
+  }
+  DListNode *node = dlist->head;
+  while (node) {
+    DListNode *next = node->next;
+    if (dlist->destroy) {
+      dlist->destroy(node->data);
     }
-    DListNode* node = dlist->head;
-    while (node){
-        DListNode* next = node->next;
-        if (dlist->destroy){
-            dlist->destroy(node->data);
-        }
-        free(node);
-        node = next;
-    }
-    dlist->size = 0;
-    dlist->head = NULL;
-    dlist->tail = NULL;
+    free(node);
+    node = next;
+  }
+  dlist->size = 0;
+  dlist->head = NULL;
+  dlist->tail = NULL;
 }
 
-int dlist_push_front(DList* dlist, void* data){
-    if (!dlist)
-        return COLLECTION_FAILURE;
-    DListNode* node = malloc(sizeof(DListNode));
-    if (!node)
-        return COLLECTION_FAILURE;
-    node->data = data;
-    node->prev = NULL;
-    node->next = dlist->head;
-    if (dlist->head)
-        dlist->head->prev = node;
-    dlist->head = node;
-    if (!dlist->tail)
-        dlist->tail = node;
-    dlist->size++;
-    return COLLECTION_SUCCESS;
-}
-
-int dlist_push_back(DList* dlist, void* data){
-    if (!dlist)
-        return COLLECTION_FAILURE;
-    DListNode* node = malloc(sizeof(DListNode));
-    if (!node)
-        return COLLECTION_FAILURE;
-    node->data = data;
-    node->prev = dlist->tail;
-    node->next = NULL;
-    if (dlist->tail)
-        dlist->tail->next = node;
+int dlist_push_front(DList *dlist, void *data) {
+  if (!dlist)
+    return COLLECTION_FAILURE;
+  DListNode *node = malloc(sizeof(DListNode));
+  if (!node)
+    return COLLECTION_FAILURE;
+  node->data = data;
+  node->prev = NULL;
+  node->next = dlist->head;
+  if (dlist->head)
+    dlist->head->prev = node;
+  dlist->head = node;
+  if (!dlist->tail)
     dlist->tail = node;
-    if (!dlist->head)
-        dlist->head = node;
-    dlist->size++;
-    return COLLECTION_SUCCESS;
+  dlist->size++;
+  return COLLECTION_SUCCESS;
 }
 
-int dlist_pop_front(DList* dlist, void** data){
-    if (!dlist || dlist_empty(dlist))
-        return COLLECTION_FAILURE;
-    DListNode* node = dlist->head;
-    dlist->head = node->next;
-    if (dlist->head){
-        dlist->head->prev = NULL;
-    }else{
-        dlist->tail = NULL;
-    }
-    if (data){
-        *data = node->data;
-    }else if (dlist->destroy){
-        dlist->destroy(node->data);
-    }
-    free(node);
-    dlist->size--;
-    return COLLECTION_SUCCESS;
+int dlist_push_back(DList *dlist, void *data) {
+  if (!dlist)
+    return COLLECTION_FAILURE;
+  DListNode *node = malloc(sizeof(DListNode));
+  if (!node)
+    return COLLECTION_FAILURE;
+  node->data = data;
+  node->prev = dlist->tail;
+  node->next = NULL;
+  if (dlist->tail)
+    dlist->tail->next = node;
+  dlist->tail = node;
+  if (!dlist->head)
+    dlist->head = node;
+  dlist->size++;
+  return COLLECTION_SUCCESS;
 }
 
-int dlist_pop_back(DList* dlist, void** data){
-    if (!dlist || dlist_empty(dlist))
-        return COLLECTION_FAILURE;
-    DListNode* node = dlist->tail;
-    dlist->tail = node->prev;
-    if (dlist->tail){
-        dlist->tail->next = NULL;
-    }else{
-        dlist->head = NULL;
-    }
-    if (data){
-        *data = node->data;
-    }else if (dlist->destroy){
-        dlist->destroy(node->data);
-    }
-    free(node);
-    dlist->size--;
-    return COLLECTION_SUCCESS;
+int dlist_pop_front(DList *dlist, void **data) {
+  if (!dlist || dlist_empty(dlist))
+    return COLLECTION_FAILURE;
+  DListNode *node = dlist->head;
+  dlist->head = node->next;
+  if (dlist->head) {
+    dlist->head->prev = NULL;
+  } else {
+    dlist->tail = NULL;
+  }
+  if (data) {
+    *data = node->data;
+  } else if (dlist->destroy) {
+    dlist->destroy(node->data);
+  }
+  free(node);
+  dlist->size--;
+  return COLLECTION_SUCCESS;
 }
 
-int dlist_insert_after(DList* dlist, DListNode* node, void* data){
-    if (!dlist || !node)
-        return COLLECTION_FAILURE;
-    DListNode* new_node = malloc(sizeof(DListNode));
-    if (!new_node)
-        return COLLECTION_FAILURE;
-
-    new_node->data = data;
-    new_node->prev = node;
-    new_node->next = node->next;
-
-    if (node->next){
-        node->next->prev = new_node;
-    }else{
-        dlist->tail = new_node;
-    }
-    node->next = new_node;
-    dlist->size++;
-    return COLLECTION_SUCCESS;
+int dlist_pop_back(DList *dlist, void **data) {
+  if (!dlist || dlist_empty(dlist))
+    return COLLECTION_FAILURE;
+  DListNode *node = dlist->tail;
+  dlist->tail = node->prev;
+  if (dlist->tail) {
+    dlist->tail->next = NULL;
+  } else {
+    dlist->head = NULL;
+  }
+  if (data) {
+    *data = node->data;
+  } else if (dlist->destroy) {
+    dlist->destroy(node->data);
+  }
+  free(node);
+  dlist->size--;
+  return COLLECTION_SUCCESS;
 }
 
-int dlist_insert_before(DList* dlist, DListNode* node, void* data){
-    if (!dlist || !node)
-        return COLLECTION_FAILURE;
-    DListNode* new_node = malloc(sizeof(DListNode));
-    if (!new_node)
-        return COLLECTION_FAILURE;
+int dlist_insert_after(DList *dlist, DListNode *node, void *data) {
+  if (!dlist || !node)
+    return COLLECTION_FAILURE;
+  DListNode *new_node = malloc(sizeof(DListNode));
+  if (!new_node)
+    return COLLECTION_FAILURE;
 
-    new_node->data = data;
-    new_node->prev = node->prev;
-    new_node->next = node;
-    if (node->prev){
-        node->prev->next = new_node;
-    }else{
-        dlist->head = new_node;
-    }
-    node->prev = new_node;
-    dlist->size++;
-    return COLLECTION_SUCCESS;
+  new_node->data = data;
+  new_node->prev = node;
+  new_node->next = node->next;
+
+  if (node->next) {
+    node->next->prev = new_node;
+  } else {
+    dlist->tail = new_node;
+  }
+  node->next = new_node;
+  dlist->size++;
+  return COLLECTION_SUCCESS;
 }
 
-int dlist_remove(DList* dlist, DListNode* node, void** data){
-    if (!dlist || !node)
-        return COLLECTION_FAILURE;
-    DListNode* prev = node->prev;
-    DListNode* next = node->next;
+int dlist_insert_before(DList *dlist, DListNode *node, void *data) {
+  if (!dlist || !node)
+    return COLLECTION_FAILURE;
+  DListNode *new_node = malloc(sizeof(DListNode));
+  if (!new_node)
+    return COLLECTION_FAILURE;
 
-    if (prev){
-        prev->next = next;
-    }else{
-        dlist->head = next;
-    }
-    if (next){
-        next->prev = prev;
-    }else{
-        dlist->tail = prev;
-    }
-    if (data){
-        *data = node->data;
-    }else if (dlist->destroy){
-        dlist->destroy(node->data);
-    }
-    free(node);
-    dlist->size--;
-    return COLLECTION_SUCCESS;
+  new_node->data = data;
+  new_node->prev = node->prev;
+  new_node->next = node;
+  if (node->prev) {
+    node->prev->next = new_node;
+  } else {
+    dlist->head = new_node;
+  }
+  node->prev = new_node;
+  dlist->size++;
+  return COLLECTION_SUCCESS;
+}
+
+int dlist_remove(DList *dlist, DListNode *node, void **data) {
+  if (!dlist || !node)
+    return COLLECTION_FAILURE;
+  DListNode *prev = node->prev;
+  DListNode *next = node->next;
+
+  if (prev) {
+    prev->next = next;
+  } else {
+    dlist->head = next;
+  }
+  if (next) {
+    next->prev = prev;
+  } else {
+    dlist->tail = prev;
+  }
+  if (data) {
+    *data = node->data;
+  } else if (dlist->destroy) {
+    dlist->destroy(node->data);
+  }
+  free(node);
+  dlist->size--;
+  return COLLECTION_SUCCESS;
 }

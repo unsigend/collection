@@ -21,9 +21,8 @@
 /**
  * This file contains collection for search algorithms.
  */
-#include <collection/common.h>
+#include <common.h>
 #include <stdbool.h>
 #include <stdint.h>
-
 
 #endif

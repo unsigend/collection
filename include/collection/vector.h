@@ -22,15 +22,15 @@
  * This file contains the interface for dynamic arrays.
  * API reference and inspired by C++ std::vector.
  */
-#include <collection/common.h>
+#include <common.h>
 #include <stdbool.h>
 
 // internal struct for Vector
 typedef struct {
-    void **data;
-    size_t size;
-    size_t capacity;
-    void (*destroy)(void *);
+  void **data;
+  size_t size;
+  size_t capacity;
+  void (*destroy)(void *);
 } Vector;
 
 /**
@@ -39,14 +39,14 @@ typedef struct {
  * @param destroy The function to destroy the elements.
  * @complexity O(1)
  */
-extern void vector_init(Vector* vector, void (*destroy)(void *));
+extern void vector_init(Vector *vector, void (*destroy)(void *));
 
 /**
  * Destroy the vector.
  * @param vector The vector to destroy.
  * @complexity O(n)
  */
-extern void vector_destroy(Vector* vector);
+extern void vector_destroy(Vector *vector);
 
 /**
  * Check if the vector is empty.
@@ -54,7 +54,7 @@ extern void vector_destroy(Vector* vector);
  * @return True if the vector is empty, false otherwise.
  * @complexity O(1)
  */
-extern bool vector_empty(const Vector* vector);
+extern bool vector_empty(const Vector *vector);
 
 /**
  * Get the data of the vector.
@@ -62,7 +62,7 @@ extern bool vector_empty(const Vector* vector);
  * @return The data of the vector.
  * @complexity O(1)
  */
-extern void** vector_data(const Vector* vector);
+extern void **vector_data(const Vector *vector);
 
 /**
  * Get the size of the vector.
@@ -70,7 +70,7 @@ extern void** vector_data(const Vector* vector);
  * @return The size of the vector.
  * @complexity O(1)
  */
-extern size_t vector_size(const Vector* vector);
+extern size_t vector_size(const Vector *vector);
 
 /**
  * Get the capacity of the vector.
@@ -78,7 +78,7 @@ extern size_t vector_size(const Vector* vector);
  * @return The capacity of the vector.
  * @complexity O(1)
  */
-extern size_t vector_capacity(const Vector* vector);
+extern size_t vector_capacity(const Vector *vector);
 
 /**
  * Get the element at the given index.
@@ -87,7 +87,7 @@ extern size_t vector_capacity(const Vector* vector);
  * @return The element at the given index.
  * @complexity O(1)
  */
-extern void* vector_at(const Vector* vector, size_t index);
+extern void *vector_at(const Vector *vector, size_t index);
 
 /**
  * Get the last element of the vector.
@@ -95,7 +95,7 @@ extern void* vector_at(const Vector* vector, size_t index);
  * @return The last element of the vector, or NULL if the vector is empty.
  * @complexity O(1)
  */
-extern void* vector_back(const Vector* vector);
+extern void *vector_back(const Vector *vector);
 
 /**
  * Get the first element of the vector.
@@ -103,7 +103,7 @@ extern void* vector_back(const Vector* vector);
  * @return The first element of the vector, or NULL if the vector is empty.
  * @complexity O(1)
  */
-extern void* vector_front(const Vector* vector);
+extern void *vector_front(const Vector *vector);
 
 /**
  * Resize the vector to the given size.
@@ -112,7 +112,7 @@ extern void* vector_front(const Vector* vector);
  * @return 0 if successful, -1 if failed
  * @complexity O(n)
  */
-extern int vector_resize(Vector* vector, size_t new_size);
+extern int vector_resize(Vector *vector, size_t new_size);
 
 /**
  * Shrink the vector to the size of the elements.
@@ -120,7 +120,7 @@ extern int vector_resize(Vector* vector, size_t new_size);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int vector_shrink_to_fit(Vector* vector);
+extern int vector_shrink_to_fit(Vector *vector);
 
 /**
  * Push an element to the back of the vector.
@@ -129,7 +129,7 @@ extern int vector_shrink_to_fit(Vector* vector);
  * @return 0 if successful, -1 if failed
  * @complexity O(1) amortized, O(n) worst case when reallocation occurs
  */
-extern int vector_push_back(Vector* vector, void* element);
+extern int vector_push_back(Vector *vector, void *element);
 
 /**
  * Pop an element from the back of the vector.
@@ -138,7 +138,7 @@ extern int vector_push_back(Vector* vector, void* element);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int vector_pop_back(Vector* vector, void** data);
+extern int vector_pop_back(Vector *vector, void **data);
 
 /**
  * Insert an element at the given index.
@@ -148,7 +148,7 @@ extern int vector_pop_back(Vector* vector, void** data);
  * @return 0 if successful, -1 if failed
  * @complexity O(n)
  */
-extern int vector_insert(Vector* vector, size_t index, void* element);
+extern int vector_insert(Vector *vector, size_t index, void *element);
 
 /**
  * Remove an element from the vector at the given index.
@@ -158,13 +158,13 @@ extern int vector_insert(Vector* vector, size_t index, void* element);
  * @return 0 if successful, -1 if failed
  * @complexity O(n)
  */
-extern int vector_remove(Vector* vector, size_t index, void** data);
+extern int vector_remove(Vector *vector, size_t index, void **data);
 
 /**
  * Remove all elements from the vector.
  * @param vector The vector to remove the elements from.
  * @complexity O(n)
  */
-extern void vector_clear(Vector* vector);
+extern void vector_clear(Vector *vector);
 
 #endif

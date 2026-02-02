@@ -17,39 +17,44 @@
 
 #include <collection/queue.h>
 
-bool queue_empty(const Queue* queue){
-    if (!queue) return false;
-    return slist_empty(&(queue)->slist);
+bool queue_empty(const Queue *queue) {
+  if (!queue)
+    return false;
+  return slist_empty(&(queue)->slist);
 }
 
-size_t queue_size(const Queue* queue){
-    if (!queue) return 0;
-    return slist_size(&(queue)->slist);
+size_t queue_size(const Queue *queue) {
+  if (!queue)
+    return 0;
+  return slist_size(&(queue)->slist);
 }
 
-void queue_init(Queue* queue, void (*destroy)(void *)){
-    if (!queue) return;
-    slist_init(&(queue)->slist, destroy);
+void queue_init(Queue *queue, void (*destroy)(void *)) {
+  if (!queue)
+    return;
+  slist_init(&(queue)->slist, destroy);
 }
 
-void queue_destroy(Queue* queue){
-    if (!queue) return;
-    slist_destroy(&(queue)->slist);
+void queue_destroy(Queue *queue) {
+  if (!queue)
+    return;
+  slist_destroy(&(queue)->slist);
 }
 
-int queue_enqueue(Queue* queue, void* data){
-    return queue ? slist_push_back(&(queue)->slist, data) : COLLECTION_FAILURE;
+int queue_enqueue(Queue *queue, void *data) {
+  return queue ? slist_push_back(&(queue)->slist, data) : COLLECTION_FAILURE;
 }
 
-int queue_dequeue(Queue* queue, void** data){
-    return queue ? slist_pop_front(&(queue)->slist, data) : COLLECTION_FAILURE;
+int queue_dequeue(Queue *queue, void **data) {
+  return queue ? slist_pop_front(&(queue)->slist, data) : COLLECTION_FAILURE;
 }
 
-void* queue_peek(Queue* queue){
-    return queue ? slist_data(slist_front(&(queue)->slist)) : NULL;
+void *queue_peek(Queue *queue) {
+  return queue ? slist_data(slist_front(&(queue)->slist)) : NULL;
 }
 
-void queue_clear(Queue* queue){
-    if (!queue) return;
-    slist_clear(&(queue)->slist);
+void queue_clear(Queue *queue) {
+  if (!queue)
+    return;
+  slist_clear(&(queue)->slist);
 }

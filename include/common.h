@@ -29,5 +29,4 @@
 #define COLLECTION_MIN(a, b) ((a) < (b) ? (a) : (b))
 #define COLLECTION_MAX(a, b) ((a) > (b) ? (a) : (b))
 
-
 #endif

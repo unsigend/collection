@@ -21,13 +21,13 @@
 /**
  * This file contains the interface for stack.
  */
-#include <collection/common.h>
 #include <collection/slist.h>
+#include <common.h>
 #include <stdbool.h>
 
 // internal struct for Stack
 typedef struct {
-    SList slist;
+  SList slist;
 } Stack;
 
 /**
@@ -36,7 +36,7 @@ typedef struct {
  * @return True if the stack is empty, false otherwise.
  * @complexity O(1)
  */
-extern bool stack_empty(const Stack* stack);
+extern bool stack_empty(const Stack *stack);
 
 /**
  * Get the size of the stack.
@@ -44,7 +44,7 @@ extern bool stack_empty(const Stack* stack);
  * @return The size of the stack.
  * @complexity O(1)
  */
-extern size_t stack_size(const Stack* stack);
+extern size_t stack_size(const Stack *stack);
 
 /**
  * Initialize the stack.
@@ -52,14 +52,14 @@ extern size_t stack_size(const Stack* stack);
  * @param destroy The function to destroy the elements.
  * @complexity O(1)
  */
-extern void stack_init(Stack* stack, void (*destroy)(void *));
+extern void stack_init(Stack *stack, void (*destroy)(void *));
 
 /**
  * Destroy the stack.
  * @param stack The stack to destroy.
  * @complexity O(n)
  */
-extern void stack_destroy(Stack* stack);
+extern void stack_destroy(Stack *stack);
 
 /**
  * Push an element onto the stack.
@@ -68,7 +68,7 @@ extern void stack_destroy(Stack* stack);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int stack_push(Stack* stack, void* data);
+extern int stack_push(Stack *stack, void *data);
 
 /**
  * Pop an element from the stack.
@@ -77,7 +77,7 @@ extern int stack_push(Stack* stack, void* data);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int stack_pop(Stack* stack, void** data);
+extern int stack_pop(Stack *stack, void **data);
 
 /**
  * Peek at the top element of the stack.
@@ -85,13 +85,13 @@ extern int stack_pop(Stack* stack, void** data);
  * @return The top element of the stack, or NULL if the stack is empty.
  * @complexity O(1)
  */
-extern void* stack_peek(Stack* stack);
+extern void *stack_peek(Stack *stack);
 
 /**
  * Clear the stack.
  * @param stack The stack to clear.
  * @complexity O(n)
  */
-extern void stack_clear(Stack* stack);
+extern void stack_clear(Stack *stack);
 
 #endif

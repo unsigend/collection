@@ -22,14 +22,14 @@
  * This file contains the interface for set.
  * Which is a unordered collection of unique elements.
  */
-#include <collection/common.h>
 #include <collection/chtbl.h>
+#include <common.h>
 #include <stdbool.h>
 
 // internal struct for Set
 typedef struct {
-    /* hash table */ 
-    Chtbl chtbl;
+  /* hash table */
+  Chtbl chtbl;
 } Set;
 
 /**
@@ -40,16 +40,16 @@ typedef struct {
  * @param destroy The function to destroy the elements.
  * @complexity O(1)
  */
-extern int set_init(Set* set, uint32_t (*hash)(const void * key), 
-    bool (*match)(const void * key1, const void * key2), 
-    void (*destroy)(void *));
+extern int set_init(Set *set, uint32_t (*hash)(const void *key),
+                    bool (*match)(const void *key1, const void *key2),
+                    void (*destroy)(void *));
 
 /**
  * Destroy the set.
  * @param set The set to destroy.
  * @complexity O(n)
  */
-extern void set_destroy(Set* set);
+extern void set_destroy(Set *set);
 
 /**
  * Check if the set is empty.
@@ -57,7 +57,7 @@ extern void set_destroy(Set* set);
  * @return True if the set is empty, false otherwise.
  * @complexity O(1)
  */
-extern bool set_empty(const Set* set);
+extern bool set_empty(const Set *set);
 
 /**
  * Get the size of the set.
@@ -65,7 +65,7 @@ extern bool set_empty(const Set* set);
  * @return The size of the set.
  * @complexity O(1)
  */
-extern size_t set_size(const Set* set);
+extern size_t set_size(const Set *set);
 
 /**
  * Insert an element into the set.
@@ -74,7 +74,7 @@ extern size_t set_size(const Set* set);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int set_insert(Set* set, const void * data);
+extern int set_insert(Set *set, const void *data);
 
 /**
  * Remove an element from the set.
@@ -83,14 +83,14 @@ extern int set_insert(Set* set, const void * data);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int set_remove(Set* set, const void * data);
+extern int set_remove(Set *set, const void *data);
 
 /**
  * Clear the set.
  * @param set The set to clear.
  * @complexity O(n)
  */
-extern void set_clear(Set* set);
+extern void set_clear(Set *set);
 
 /**
  * Check if the set contains an element.
@@ -99,7 +99,7 @@ extern void set_clear(Set* set);
  * @return True if the set contains the element, false otherwise.
  * @complexity O(1)
  */
-extern bool set_contains(const Set* set, const void * data);
+extern bool set_contains(const Set *set, const void *data);
 
 /**
  * Get the intersection of two sets.
@@ -107,10 +107,11 @@ extern bool set_contains(const Set* set, const void * data);
  * @param set2 The second set.
  * @param result The result set.
  * @return 0 if successful, -1 if failed
- * @note The result set will be cleared before the operation and keep a shadow copy.
+ * @note The result set will be cleared before the operation and keep a shadow
+ * copy.
  * @complexity O(n)
  */
-extern int set_intersection(Set* result, const Set* set1, const Set* set2);
+extern int set_intersection(Set *result, const Set *set1, const Set *set2);
 
 /**
  * Get the union of two sets.
@@ -118,10 +119,11 @@ extern int set_intersection(Set* result, const Set* set1, const Set* set2);
  * @param set2 The second set.
  * @param result The result set.
  * @return 0 if successful, -1 if failed
- * @note The result set will be cleared before the operation and keep a shadow copy.
+ * @note The result set will be cleared before the operation and keep a shadow
+ * copy.
  * @complexity O(n + m)
  */
-extern int set_union(Set* result, const Set* set1, const Set* set2);
+extern int set_union(Set *result, const Set *set1, const Set *set2);
 
 /**
  * Get the difference of two sets.
@@ -129,10 +131,11 @@ extern int set_union(Set* result, const Set* set1, const Set* set2);
  * @param set2 The second set.
  * @param result The result set.
  * @return 0 if successful, -1 if failed
- * @note The result set will be cleared before the operation and keep a shadow copy.
+ * @note The result set will be cleared before the operation and keep a shadow
+ * copy.
  * @complexity O(n)
  */
-extern int set_difference(Set* result, const Set* set1, const Set* set2);
+extern int set_difference(Set *result, const Set *set1, const Set *set2);
 
 /**
  * Check if two sets are equal.
@@ -141,7 +144,7 @@ extern int set_difference(Set* result, const Set* set1, const Set* set2);
  * @return True if the two sets are equal, false otherwise.
  * @complexity O(n)
  */
-extern bool set_equal(const Set* set1, const Set* set2);
+extern bool set_equal(const Set *set1, const Set *set2);
 
 /**
  * Check if one set is a subset of another.
@@ -150,6 +153,6 @@ extern bool set_equal(const Set* set1, const Set* set2);
  * @return True if the first set is a subset of the second set, false otherwise.
  * @complexity O(n)
  */
-extern bool set_subset(const Set* set1, const Set* set2);
+extern bool set_subset(const Set *set1, const Set *set2);
 
 #endif

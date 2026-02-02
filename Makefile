@@ -150,6 +150,7 @@ help:
 	@echo "\tmake help        	- Show this help message"
 	@echo "\tmake docker      	- Build and Run the Docker container"
 	@echo "\tmake flags       	- Show the compile and link flags"
+	@echo "\tmake clang       	- Build Clang compilation database"
 	@echo ""
 
 # generate dir
@@ -175,3 +176,7 @@ flags:
 	@echo "CC_FLAGS: $(CC_FLAGS)\n"
 	@echo "LD_FLAGS: $(LD_FLAGS)\n"
 	@$(MAKE) -C $(TEST_PATH) flags
+
+# clang target
+clang:
+	@bear -- make test

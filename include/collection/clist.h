@@ -21,21 +21,21 @@
 /**
  * This file contains the interface for circular linked list.
  */
-#include <collection/common.h>
+#include <common.h>
 #include <stdbool.h>
 
 // internal struct for CListNode
 typedef struct CListNode {
-    void* data;
-    struct CListNode* next;
-    struct CListNode* prev;
+  void *data;
+  struct CListNode *next;
+  struct CListNode *prev;
 } CListNode;
 
 // internal struct for CList
 typedef struct {
-    size_t size;
-    CListNode* head;
-    void (*destroy)(void *);
+  size_t size;
+  CListNode *head;
+  void (*destroy)(void *);
 } CList;
 
 /**
@@ -44,14 +44,14 @@ typedef struct {
  * @param destroy The function to destroy the elements.
  * @complexity O(1)
  */
-extern void clist_init(CList* clist, void (*destroy)(void *));
+extern void clist_init(CList *clist, void (*destroy)(void *));
 
 /**
  * Destroy the circular linked list.
  * @param clist The circular linked list to destroy.
  * @complexity O(n)
  */
-extern void clist_destroy(CList* clist);
+extern void clist_destroy(CList *clist);
 
 /**
  * Get the next node of a given node.
@@ -59,7 +59,7 @@ extern void clist_destroy(CList* clist);
  * @return The next node of the given node.
  * @complexity O(1)
  */
-extern CListNode* clist_next(const CListNode* node);
+extern CListNode *clist_next(const CListNode *node);
 
 /**
  * Get the previous node of a given node.
@@ -67,7 +67,7 @@ extern CListNode* clist_next(const CListNode* node);
  * @return The previous node of the given node.
  * @complexity O(1)
  */
-extern CListNode* clist_prev(const CListNode* node);
+extern CListNode *clist_prev(const CListNode *node);
 
 /**
  * Get the data of a given node.
@@ -75,7 +75,7 @@ extern CListNode* clist_prev(const CListNode* node);
  * @return The data of the given node.
  * @complexity O(1)
  */
-extern void* clist_data(const CListNode* node);
+extern void *clist_data(const CListNode *node);
 
 /**
  * Get the head node of a given list.
@@ -83,7 +83,7 @@ extern void* clist_data(const CListNode* node);
  * @return The head node of the given list.
  * @complexity O(1)
  */
-extern CListNode* clist_head(const CList* clist);
+extern CListNode *clist_head(const CList *clist);
 
 /**
  * Get the tail node of a given list.
@@ -91,7 +91,7 @@ extern CListNode* clist_head(const CList* clist);
  * @return The tail node of the given list.
  * @complexity O(1)
  */
-extern CListNode* clist_tail(const CList* clist);
+extern CListNode *clist_tail(const CList *clist);
 
 /**
  * Check if the circular linked list is empty.
@@ -99,7 +99,7 @@ extern CListNode* clist_tail(const CList* clist);
  * @return True if the circular linked list is empty, false otherwise.
  * @complexity O(1)
  */
-extern bool clist_empty(const CList* clist);
+extern bool clist_empty(const CList *clist);
 
 /**
  * Get the size of the circular linked list.
@@ -107,7 +107,7 @@ extern bool clist_empty(const CList* clist);
  * @return The size of the circular linked list.
  * @complexity O(1)
  */
-extern size_t clist_size(const CList* clist);
+extern size_t clist_size(const CList *clist);
 
 /**
  * Insert an element after a given node.
@@ -117,7 +117,7 @@ extern size_t clist_size(const CList* clist);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int clist_insert_after(CList* clist, CListNode* node, void* data);
+extern int clist_insert_after(CList *clist, CListNode *node, void *data);
 
 /**
  * Insert an element before a given node.
@@ -127,7 +127,7 @@ extern int clist_insert_after(CList* clist, CListNode* node, void* data);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int clist_insert_before(CList* clist, CListNode* node, void* data);
+extern int clist_insert_before(CList *clist, CListNode *node, void *data);
 
 /**
  * Remove an element from the circular linked list.
@@ -137,7 +137,7 @@ extern int clist_insert_before(CList* clist, CListNode* node, void* data);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int clist_remove(CList* clist, CListNode* node, void** data);
+extern int clist_remove(CList *clist, CListNode *node, void **data);
 
 /**
  * Pop an element from the front of the circular linked list.
@@ -146,7 +146,7 @@ extern int clist_remove(CList* clist, CListNode* node, void** data);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int clist_pop_front(CList* clist, void** data);
+extern int clist_pop_front(CList *clist, void **data);
 
 /**
  * Pop an element from the back of the circular linked list.
@@ -155,7 +155,7 @@ extern int clist_pop_front(CList* clist, void** data);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int clist_pop_back(CList* clist, void** data);
+extern int clist_pop_back(CList *clist, void **data);
 
 /**
  * Push an element to the front of the circular linked list.
@@ -164,7 +164,7 @@ extern int clist_pop_back(CList* clist, void** data);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int clist_push_front(CList* clist, void* data);
+extern int clist_push_front(CList *clist, void *data);
 
 /**
  * Push an element to the back of the circular linked list.
@@ -173,13 +173,13 @@ extern int clist_push_front(CList* clist, void* data);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int clist_push_back(CList* clist, void* data);
+extern int clist_push_back(CList *clist, void *data);
 
 /**
  * Clear the circular linked list.
  * @param clist The circular linked list to clear.
  * @complexity O(n)
  */
-extern void clist_clear(CList* clist);
+extern void clist_clear(CList *clist);
 
 #endif

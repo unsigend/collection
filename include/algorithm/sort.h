@@ -21,7 +21,7 @@
 /**
  * This file contains collection for sorting algorithms.
  */
-#include <collection/common.h>
+#include <common.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -35,8 +35,8 @@
  * @return 0 if successful, -1 if failed.
  * @complexity O(n^2)
  */
-extern int sort_insertion(void * data, size_t n, size_t size, 
-    int (*compare)(const void *, const void *));
+extern int sort_insertion(void *data, size_t n, size_t size,
+                          int (*compare)(const void *, const void *));
 
 /**
  * Sort the data using selection sort.
@@ -47,8 +47,8 @@ extern int sort_insertion(void * data, size_t n, size_t size,
  * @return 0 if successful, -1 if failed.
  * @complexity O(n^2)
  */
-extern int sort_selection(void * data, size_t n, size_t size, 
-    int (*compare)(const void *, const void *));
+extern int sort_selection(void *data, size_t n, size_t size,
+                          int (*compare)(const void *, const void *));
 
 /**
  * Sort the data using bubble sort.
@@ -59,8 +59,8 @@ extern int sort_selection(void * data, size_t n, size_t size,
  * @return 0 if successful, -1 if failed.
  * @complexity O(n^2)
  */
-extern int sort_bubble(void * data, size_t n, size_t size, 
-    int (*compare)(const void *, const void *));
+extern int sort_bubble(void *data, size_t n, size_t size,
+                       int (*compare)(const void *, const void *));
 
 /**
  * Sort the data using quick sort.
@@ -71,9 +71,8 @@ extern int sort_bubble(void * data, size_t n, size_t size,
  * @return 0 if successful, -1 if failed.
  * @complexity O(n log n)
  */
-extern int sort_quick(void * data, size_t n, size_t size, 
-    int (*compare)(const void *, const void *));
-
+extern int sort_quick(void *data, size_t n, size_t size,
+                      int (*compare)(const void *, const void *));
 
 /**
  * Sort the data using merge sort.
@@ -84,7 +83,7 @@ extern int sort_quick(void * data, size_t n, size_t size,
  * @return 0 if successful, -1 if failed.
  * @complexity O(n log n)
  */
-extern int sort_merge(void * data, size_t n, size_t size, 
-    int (*compare)(const void *, const void *));
+extern int sort_merge(void *data, size_t n, size_t size,
+                      int (*compare)(const void *, const void *));
 
 #endif

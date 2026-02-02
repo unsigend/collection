@@ -15,9 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <util/util.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include <util/util.h>
 
 #define MAX_STACK_SIZE 512
 
@@ -26,21 +26,24 @@
  *        the elements are swapped using a temporary array in stack.
  *        Otherwise, the elements are swapped by a buffer in heap.
  */
-int util_swap(void * a, void * b, size_t size){
-    if (!a || !b || size == 0) return COLLECTION_FAILURE;
-    if (a == b) return COLLECTION_SUCCESS;
-    if (size < MAX_STACK_SIZE){
-        char temp[size];
-        memcpy(temp, a, size);
-        memcpy(a, b, size);
-        memcpy(b, temp, size);
-        return COLLECTION_SUCCESS;
-    }
-    void * temp = malloc(size);
-    if (!temp) return COLLECTION_FAILURE;
+int util_swap(void *a, void *b, size_t size) {
+  if (!a || !b || size == 0)
+    return COLLECTION_FAILURE;
+  if (a == b)
+    return COLLECTION_SUCCESS;
+  if (size < MAX_STACK_SIZE) {
+    char temp[size];
     memcpy(temp, a, size);
     memcpy(a, b, size);
     memcpy(b, temp, size);
-    free(temp);
     return COLLECTION_SUCCESS;
+  }
+  void *temp = malloc(size);
+  if (!temp)
+    return COLLECTION_FAILURE;
+  memcpy(temp, a, size);
+  memcpy(a, b, size);
+  memcpy(b, temp, size);
+  free(temp);
+  return COLLECTION_SUCCESS;
 }

@@ -21,13 +21,13 @@
 /**
  * This file contains the interface for queue.
  */
-#include <collection/common.h>
 #include <collection/slist.h>
+#include <common.h>
 #include <stdbool.h>
 
 // internal struct for Queue
 typedef struct {
-    SList slist;
+  SList slist;
 } Queue;
 
 /**
@@ -36,7 +36,7 @@ typedef struct {
  * @return True if the queue is empty, false otherwise.
  * @complexity O(1)
  */
-extern bool queue_empty(const Queue* queue);
+extern bool queue_empty(const Queue *queue);
 
 /**
  * Get the size of the queue.
@@ -44,7 +44,7 @@ extern bool queue_empty(const Queue* queue);
  * @return The size of the queue.
  * @complexity O(1)
  */
-extern size_t queue_size(const Queue* queue);
+extern size_t queue_size(const Queue *queue);
 
 /**
  * Initialize the queue.
@@ -52,14 +52,14 @@ extern size_t queue_size(const Queue* queue);
  * @param destroy The function to destroy the elements.
  * @complexity O(1)
  */
-extern void queue_init(Queue* queue, void (*destroy)(void *));
+extern void queue_init(Queue *queue, void (*destroy)(void *));
 
 /**
  * Destroy the queue.
  * @param queue The queue to destroy.
  * @complexity O(n)
  */
-extern void queue_destroy(Queue* queue);
+extern void queue_destroy(Queue *queue);
 
 /**
  * Enqueue an element into the queue.
@@ -68,7 +68,7 @@ extern void queue_destroy(Queue* queue);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int queue_enqueue(Queue* queue, void* data);
+extern int queue_enqueue(Queue *queue, void *data);
 
 /**
  * Dequeue an element from the queue.
@@ -77,7 +77,7 @@ extern int queue_enqueue(Queue* queue, void* data);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int queue_dequeue(Queue* queue, void** data);
+extern int queue_dequeue(Queue *queue, void **data);
 
 /**
  * Peek at the front element of the queue.
@@ -85,13 +85,13 @@ extern int queue_dequeue(Queue* queue, void** data);
  * @return The front element of the queue, or NULL if the queue is empty.
  * @complexity O(1)
  */
-extern void* queue_peek(Queue* queue);
+extern void *queue_peek(Queue *queue);
 
 /**
  * Clear the queue.
  * @param queue The queue to clear.
  * @complexity O(n)
  */
-extern void queue_clear(Queue* queue);
+extern void queue_clear(Queue *queue);
 
 #endif

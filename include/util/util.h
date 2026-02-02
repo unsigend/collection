@@ -18,7 +18,7 @@
 #ifndef UTIL_UTIL_H
 #define UTIL_UTIL_H
 
-#include <collection/common.h>
+#include <common.h>
 
 /**
  * Swap two elements.
@@ -28,7 +28,7 @@
  * @return 0 if successful, -1 if failed.
  * @complexity O(1)
  */
-extern int util_swap(void * a, void * b, size_t size);
+extern int util_swap(void *a, void *b, size_t size);
 
 /**
  * Generate a random integer between min and max.
