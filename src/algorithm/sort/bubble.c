@@ -16,31 +16,31 @@
  */
 
 #include <algorithm/sort.h>
-#include <util/util.h>
 #include <stddef.h>
+#include <util/util.h>
 
 #define ARRAY_INDEX(data, i, size) ((char *)data + (i) * (size))
 
 /**
- * @note: swap based heavy IO 
+ * @note: swap based heavy IO
  */
-int sort_bubble(void * data, size_t n, size_t size,
-    int (*compare)(const void *, const void *)){
-    if (!data || !compare || size == 0)
-        return COLLECTION_FAILURE;
+int sort_bubble(void *data, size_t n, size_t size,
+                int (*compare)(const void *, const void *)) {
+  if (!data || !compare || size == 0)
+    return COLLECTION_FAILURE;
 
-    if (n == 1 || n == 0)
-        return COLLECTION_SUCCESS;
-
-    for (size_t i = 0; i < n - 1; i++){
-        for (size_t j = 0; j < n - i - 1; j++){
-            if (compare(ARRAY_INDEX(data, j, size), 
-            ARRAY_INDEX(data, j + 1, size)) > 0){
-                if (util_swap(ARRAY_INDEX(data, j, size), 
-                ARRAY_INDEX(data, j + 1, size), size))
-                    return COLLECTION_FAILURE;
-            }
-        }
-    }
+  if (n == 1 || n == 0)
     return COLLECTION_SUCCESS;
+
+  for (size_t i = 0; i < n - 1; i++) {
+    for (size_t j = 0; j < n - i - 1; j++) {
+      if (compare(ARRAY_INDEX(data, j, size), ARRAY_INDEX(data, j + 1, size)) >
+          0) {
+        if (util_swap(ARRAY_INDEX(data, j, size),
+                      ARRAY_INDEX(data, j + 1, size), size))
+          return COLLECTION_FAILURE;
+      }
+    }
+  }
+  return COLLECTION_SUCCESS;
 }

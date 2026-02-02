@@ -21,7 +21,7 @@
 /**
  * This file contains the interface for hash functions.
  */
-#include <collection/common.h>
+#include <common.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -31,7 +31,7 @@
  * @return The hash of the string.
  * @complexity O(n)
  */
-extern uint32_t hash_str(const char * key);
+extern uint32_t hash_str(const char *key);
 
 /**
  * Hash an integer.

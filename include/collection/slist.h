@@ -21,23 +21,23 @@
 /**
  * This file contains the interface for singly linked list.
  */
-#include <collection/common.h>
+#include <common.h>
 #include <stdbool.h>
 
 // internal struct for SListNode
 typedef struct SListNode {
-    void* data;
-    struct SListNode* next;
+  void *data;
+  struct SListNode *next;
 } SListNode;
 
 // internal struct for SList
 typedef struct {
-    size_t size;
-    SListNode* head;
-    SListNode* tail;
-    void* context;
-    void (*destroy)(void *);
-    void (*destroy_context)(void *, void *);
+  size_t size;
+  SListNode *head;
+  SListNode *tail;
+  void *context;
+  void (*destroy)(void *);
+  void (*destroy_context)(void *, void *);
 } SList;
 
 /**
@@ -46,7 +46,7 @@ typedef struct {
  * @param destroy The function to destroy the elements.
  * @complexity O(1)
  */
-extern void slist_init(SList* slist, void (*destroy)(void *));
+extern void slist_init(SList *slist, void (*destroy)(void *));
 
 /**
  * Initialize the singly linked list with a context.
@@ -56,15 +56,15 @@ extern void slist_init(SList* slist, void (*destroy)(void *));
  * @note Reserved implementation for internal use.
  * @complexity O(1)
  */
-extern void slist_init_context(SList* slist, void* context,
-    void (*destroy_context)(void *, void *));
+extern void slist_init_context(SList *slist, void *context,
+                               void (*destroy_context)(void *, void *));
 
 /**
  * Destroy the singly linked list.
  * @param slist The singly linked list to destroy.
  * @complexity O(n)
  */
-extern void slist_destroy(SList* slist);
+extern void slist_destroy(SList *slist);
 
 /**
  * Get the next node of a given node.
@@ -72,7 +72,7 @@ extern void slist_destroy(SList* slist);
  * @return The next node of the given node.
  * @complexity O(1)
  */
-extern SListNode* slist_next(const SListNode* node);
+extern SListNode *slist_next(const SListNode *node);
 
 /**
  * Get the data of a given node.
@@ -80,7 +80,7 @@ extern SListNode* slist_next(const SListNode* node);
  * @return The data of the given node.
  * @complexity O(1)
  */
-extern void* slist_data(const SListNode* node);
+extern void *slist_data(const SListNode *node);
 
 /**
  * Get the head node of a given list.
@@ -88,7 +88,7 @@ extern void* slist_data(const SListNode* node);
  * @return The head node of the given list.
  * @complexity O(1)
  */
-extern SListNode* slist_head(const SList* slist);
+extern SListNode *slist_head(const SList *slist);
 
 /**
  * Get the tail node of a given list.
@@ -96,7 +96,7 @@ extern SListNode* slist_head(const SList* slist);
  * @return The tail node of the given list.
  * @complexity O(1)
  */
-extern SListNode* slist_tail(const SList* slist);
+extern SListNode *slist_tail(const SList *slist);
 
 /**
  * Check if the singly linked list is empty.
@@ -104,7 +104,7 @@ extern SListNode* slist_tail(const SList* slist);
  * @return True if the singly linked list is empty, false otherwise.
  * @complexity O(1)
  */
-extern bool slist_empty(const SList* slist);
+extern bool slist_empty(const SList *slist);
 
 /**
  * Get the size of the singly linked list.
@@ -112,7 +112,7 @@ extern bool slist_empty(const SList* slist);
  * @return The size of the singly linked list.
  * @complexity O(1)
  */
-extern size_t slist_size(const SList* slist);
+extern size_t slist_size(const SList *slist);
 
 /**
  * Get the first node of the singly linked list.
@@ -120,7 +120,7 @@ extern size_t slist_size(const SList* slist);
  * @return The first node of the singly linked list.
  * @complexity O(1)
  */
-extern SListNode* slist_front(const SList* slist);
+extern SListNode *slist_front(const SList *slist);
 
 /**
  * Get the last node of the singly linked list.
@@ -128,14 +128,14 @@ extern SListNode* slist_front(const SList* slist);
  * @return The last node of the singly linked list.
  * @complexity O(1)
  */
-extern SListNode* slist_back(const SList* slist);
+extern SListNode *slist_back(const SList *slist);
 
 /**
  * Reverse the singly linked list.
  * @param slist The singly linked list to reverse.
  * @complexity O(n)
  */
-extern void slist_reverse(SList* slist);
+extern void slist_reverse(SList *slist);
 
 /**
  * Push an element to the front of the singly linked list.
@@ -144,7 +144,7 @@ extern void slist_reverse(SList* slist);
  * @return 0 if successful, -1 if failed (memory allocation failure)
  * @complexity O(1)
  */
-extern int slist_push_front(SList* slist, void* data);
+extern int slist_push_front(SList *slist, void *data);
 
 /**
  * Push an element to the back of the singly linked list.
@@ -153,7 +153,7 @@ extern int slist_push_front(SList* slist, void* data);
  * @return 0 if successful, -1 if failed (memory allocation failure)
  * @complexity O(1)
  */
-extern int slist_push_back(SList* slist, void* data);
+extern int slist_push_back(SList *slist, void *data);
 
 /**
  * Pop an element from the front of the singly linked list.
@@ -162,14 +162,14 @@ extern int slist_push_back(SList* slist, void* data);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int slist_pop_front(SList* slist, void** data);
+extern int slist_pop_front(SList *slist, void **data);
 
 /**
  * Clear the singly linked list.
  * @param slist The singly linked list to clear.
  * @complexity O(n)
  */
-extern void slist_clear(SList* slist);
+extern void slist_clear(SList *slist);
 
 /**
  * Insert an element after a given node.
@@ -179,7 +179,7 @@ extern void slist_clear(SList* slist);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int slist_insert_after(SList* slist, SListNode* node, void* data);
+extern int slist_insert_after(SList *slist, SListNode *node, void *data);
 
 /**
  * Remove the element after a given node and return it.
@@ -189,6 +189,6 @@ extern int slist_insert_after(SList* slist, SListNode* node, void* data);
  * @return 0 if successful, -1 if failed
  * @complexity O(1)
  */
-extern int slist_remove_after(SList* slist, SListNode* node, void** data);
+extern int slist_remove_after(SList *slist, SListNode *node, void **data);
 
 #endif

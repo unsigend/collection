@@ -16,9 +16,9 @@
  */
 
 #include <algorithm/sort.h>
-#include <util/util.h>
 #include <stddef.h>
 #include <string.h>
+#include <util/util.h>
 
 #if defined(__linux__)
 #include <sys/types.h>
@@ -27,26 +27,25 @@
 #define ARRAY_INDEX(data, i, size) ((char *)data + (i) * (size))
 
 /**
- * @note: swap based heavy IO 
+ * @note: swap based heavy IO
  */
-int sort_insertion(void * data, size_t n, size_t size,
-    int (*compare)(const void *, const void *)){
-    if (!data || !compare || size == 0)
-        return COLLECTION_FAILURE;
+int sort_insertion(void *data, size_t n, size_t size,
+                   int (*compare)(const void *, const void *)) {
+  if (!data || !compare || size == 0)
+    return COLLECTION_FAILURE;
 
-    if (n == 1 || n == 0)
-        return COLLECTION_SUCCESS;
-
-    for (size_t i = 1; i < n; i++){
-        ssize_t j = (ssize_t)i;
-        while (j > 0 && compare(ARRAY_INDEX(data, j - 1, size), 
-            ARRAY_INDEX(data, j, size)) > 0){
-            if (util_swap(ARRAY_INDEX(data, j - 1, size), 
-            ARRAY_INDEX(data, j, size), size)
-                != COLLECTION_SUCCESS)
-                return COLLECTION_FAILURE;
-            j--;
-        }
-    }
+  if (n == 1 || n == 0)
     return COLLECTION_SUCCESS;
+
+  for (size_t i = 1; i < n; i++) {
+    ssize_t j = (ssize_t)i;
+    while (j > 0 && compare(ARRAY_INDEX(data, j - 1, size),
+                            ARRAY_INDEX(data, j, size)) > 0) {
+      if (util_swap(ARRAY_INDEX(data, j - 1, size), ARRAY_INDEX(data, j, size),
+                    size) != COLLECTION_SUCCESS)
+        return COLLECTION_FAILURE;
+      j--;
+    }
+  }
+  return COLLECTION_SUCCESS;
 }

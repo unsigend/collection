@@ -17,37 +17,40 @@
 
 #include <collection/stack.h>
 
-bool stack_empty(const Stack* stack){
-    return stack ? slist_empty(&(stack)->slist) : false;
+bool stack_empty(const Stack *stack) {
+  return stack ? slist_empty(&(stack)->slist) : false;
 }
 
-size_t stack_size(const Stack* stack){
-    return stack ? slist_size(&(stack)->slist) : 0;
+size_t stack_size(const Stack *stack) {
+  return stack ? slist_size(&(stack)->slist) : 0;
 }
 
-void stack_init(Stack* stack, void (*destroy)(void *)){
-    if (!stack) return;
-    slist_init(&(stack)->slist, destroy);
+void stack_init(Stack *stack, void (*destroy)(void *)) {
+  if (!stack)
+    return;
+  slist_init(&(stack)->slist, destroy);
 }
 
-void stack_destroy(Stack* stack){
-    if (!stack) return;
-    slist_destroy(&(stack)->slist);
+void stack_destroy(Stack *stack) {
+  if (!stack)
+    return;
+  slist_destroy(&(stack)->slist);
 }
 
-int stack_push(Stack* stack, void* data){
-    return stack ? slist_push_front(&(stack)->slist, data) : COLLECTION_FAILURE;
+int stack_push(Stack *stack, void *data) {
+  return stack ? slist_push_front(&(stack)->slist, data) : COLLECTION_FAILURE;
 }
 
-int stack_pop(Stack* stack, void** data){
-    return stack ? slist_pop_front(&(stack)->slist, data) : COLLECTION_FAILURE;
+int stack_pop(Stack *stack, void **data) {
+  return stack ? slist_pop_front(&(stack)->slist, data) : COLLECTION_FAILURE;
 }
 
-void* stack_peek(Stack* stack){
-    return stack ? slist_data(slist_front(&(stack)->slist)) : NULL;
+void *stack_peek(Stack *stack) {
+  return stack ? slist_data(slist_front(&(stack)->slist)) : NULL;
 }
 
-void stack_clear(Stack* stack){
-    if (!stack) return;
-    slist_clear(&(stack)->slist);
+void stack_clear(Stack *stack) {
+  if (!stack)
+    return;
+  slist_clear(&(stack)->slist);
 }

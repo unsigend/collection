@@ -22,32 +22,32 @@
  * This file contains the interface for chained hash table.
  */
 #include <collection/vector.h>
-#include <collection/common.h>
+#include <common.h>
 #include <stdbool.h>
 #include <stdint.h>
 
 // internal structure for ChtblEntry
 typedef struct ChtblEntry {
-    void * key;
-    void * value;
+  void *key;
+  void *value;
 } ChtblEntry;
 
 // internal structure for Chtbl
 typedef struct Chtbl {
-    /* hash table */ 
-    Vector table;
-    /* number of the entries in the table */ 
-    size_t size;
-    /* maximum load factor */ 
-    float load_factor_threshold;
-    /* hash function */ 
-    uint32_t (*hash)(const void * key);
-    /* match function */ 
-    bool (*match)(const void * key1, const void * key2);
-    /* destroy key function */ 
-    void (*destroy_key)(void * key);
-    /* destroy value function */ 
-    void (*destroy_value)(void * value);
+  /* hash table */
+  Vector table;
+  /* number of the entries in the table */
+  size_t size;
+  /* maximum load factor */
+  float load_factor_threshold;
+  /* hash function */
+  uint32_t (*hash)(const void *key);
+  /* match function */
+  bool (*match)(const void *key1, const void *key2);
+  /* destroy key function */
+  void (*destroy_key)(void *key);
+  /* destroy value function */
+  void (*destroy_value)(void *value);
 } Chtbl;
 
 /**
@@ -60,11 +60,10 @@ typedef struct Chtbl {
  * @return 0 if successful, -1 if failed.
  * @complexity O(1)
  */
-extern int chtbl_init(Chtbl* chtbl, 
-    uint32_t (*hash)(const void * key),
-    bool (*match)(const void * key1, const void * key2),
-    void (*destroy_key)(void * key),
-    void (*destroy_value)(void * value));
+extern int chtbl_init(Chtbl *chtbl, uint32_t (*hash)(const void *key),
+                      bool (*match)(const void *key1, const void *key2),
+                      void (*destroy_key)(void *key),
+                      void (*destroy_value)(void *value));
 
 /**
  * Initialize the chained hash table with a given capacity.
@@ -77,12 +76,11 @@ extern int chtbl_init(Chtbl* chtbl,
  * @return 0 if successful, -1 if failed.
  * @complexity O(n)
  */
-extern int chtbl_init_capacity(Chtbl* chtbl, 
-    uint32_t (*hash)(const void * key),
-    bool (*match)(const void * key1, const void * key2),
-    void (*destroy_key)(void * key),
-    void (*destroy_value)(void * value),
-    size_t capacity);
+extern int
+chtbl_init_capacity(Chtbl *chtbl, uint32_t (*hash)(const void *key),
+                    bool (*match)(const void *key1, const void *key2),
+                    void (*destroy_key)(void *key),
+                    void (*destroy_value)(void *value), size_t capacity);
 
 /**
  * Set the load factor threshold of the chained hash table.
@@ -90,7 +88,7 @@ extern int chtbl_init_capacity(Chtbl* chtbl,
  * @param threshold The load factor threshold.
  * @complexity O(1)
  */
-extern void chtbl_set_load_factor(Chtbl* chtbl, float threshold);
+extern void chtbl_set_load_factor(Chtbl *chtbl, float threshold);
 
 /**
  * Get the current load factor of the chained hash table.
@@ -98,14 +96,14 @@ extern void chtbl_set_load_factor(Chtbl* chtbl, float threshold);
  * @return The load factor of the chained hash table.
  * @complexity O(1)
  */
-extern float chtbl_load_factor(Chtbl* chtbl);
+extern float chtbl_load_factor(Chtbl *chtbl);
 
 /**
  * Destroy the chained hash table.
  * @param chtbl The chained hash table to destroy.
  * @complexity O(n)
  */
-extern void chtbl_destroy(Chtbl* chtbl);
+extern void chtbl_destroy(Chtbl *chtbl);
 
 /**
  * Get the size of the key-value pairs in the chained hash table.
@@ -113,7 +111,7 @@ extern void chtbl_destroy(Chtbl* chtbl);
  * @return The size of the key-value pairs in the chained hash table.
  * @complexity O(1)
  */
-extern size_t chtbl_size(const Chtbl* chtbl);
+extern size_t chtbl_size(const Chtbl *chtbl);
 
 /**
  * Get the number of buckets in the chained hash table.
@@ -121,7 +119,7 @@ extern size_t chtbl_size(const Chtbl* chtbl);
  * @return The number of buckets in the chained hash table.
  * @complexity O(1)
  */
-extern size_t chtbl_buckets(const Chtbl* chtbl);
+extern size_t chtbl_buckets(const Chtbl *chtbl);
 
 /**
  * Check if a key is in the chained hash table.
@@ -130,7 +128,7 @@ extern size_t chtbl_buckets(const Chtbl* chtbl);
  * @return True if the key is in the chained hash table, false otherwise.
  * @complexity O(1)
  */
-extern bool chtbl_in(const Chtbl* chtbl, const void * key);
+extern bool chtbl_in(const Chtbl *chtbl, const void *key);
 
 /**
  * Find a key-value pair in the chained hash table by key.
@@ -139,7 +137,7 @@ extern bool chtbl_in(const Chtbl* chtbl, const void * key);
  * @return The value of the key-value pair, or NULL if not found.
  * @complexity O(1)
  */
-extern void* chtbl_find(Chtbl* chtbl, const void * key);
+extern void *chtbl_find(Chtbl *chtbl, const void *key);
 
 /**
  * Find a key-value pair in the chained hash table by key.
@@ -148,7 +146,7 @@ extern void* chtbl_find(Chtbl* chtbl, const void * key);
  * @return The entry of the key-value pair, or NULL if not found.
  * @complexity O(1)
  */
-extern ChtblEntry* chtbl_find_entry(Chtbl* chtbl, const void * key);
+extern ChtblEntry *chtbl_find_entry(Chtbl *chtbl, const void *key);
 
 /**
  * Insert a key-value pair into the chained hash table.
@@ -158,25 +156,25 @@ extern ChtblEntry* chtbl_find_entry(Chtbl* chtbl, const void * key);
  * @return 0 if successful, -1 if failed.
  * @complexity O(1)
  */
-extern int chtbl_insert(Chtbl* chtbl, const void * key, const void * value);
+extern int chtbl_insert(Chtbl *chtbl, const void *key, const void *value);
 
 /**
  * Remove a key-value pair from the chained hash table by key.
  * @param chtbl The chained hash table to remove the key-value pair from.
  * @param key The key to remove.
- * @param entry The pointer to store the removed entry. 
+ * @param entry The pointer to store the removed entry.
  * Or NULL will call the destroy_value and destroy_key functions.
  * @return 0 if successful, -1 if failed.
  * @complexity O(1)
  */
-extern int chtbl_remove(Chtbl* chtbl, const void * key, ChtblEntry** entry);
+extern int chtbl_remove(Chtbl *chtbl, const void *key, ChtblEntry **entry);
 
 /**
  * Clear the chained hash table.
  * @param chtbl The chained hash table to clear.
  * @complexity O(n)
  */
-extern void chtbl_clear(Chtbl* chtbl);
+extern void chtbl_clear(Chtbl *chtbl);
 
 /**
  * Resize the chained hash table to the given number of buckets.
@@ -185,6 +183,6 @@ extern void chtbl_clear(Chtbl* chtbl);
  * @return 0 if successful, -1 if failed.
  * @complexity O(n)
  */
-extern int chtbl_resize(Chtbl* chtbl, size_t nbuckets);
+extern int chtbl_resize(Chtbl *chtbl, size_t nbuckets);
 
 #endif

@@ -19,13 +19,13 @@
 #include <stdint.h>
 
 /**
- * Hash an integer. This hash function is based on 
+ * Hash an integer. This hash function is based on
  * the multiplication method.
  */
-uint32_t hash_int(const int key){
-    const double A = 0.61803398874989484820;
-    uint32_t k = (uint32_t)key;
-    double d = k * A;
-    double frac = d - (uint32_t)d;
-    return (uint32_t)(frac * UINT32_MAX);
+uint32_t hash_int(const int key) {
+  const double A = 0.61803398874989484820;
+  uint32_t k = (uint32_t)key;
+  double d = k * A;
+  double frac = d - (uint32_t)d;
+  return (uint32_t)(frac * UINT32_MAX);
 }
