@@ -19,11 +19,8 @@
 #include <stddef.h>
 #include <util/util.h>
 
-#define ARRAY_INDEX(data, i, size) ((char *)data + (i) * (size))
+#define ARRIDX(data, i, size) ((char *)data + (i) * (size))
 
-/**
- * @note: swap based heavy IO
- */
 int sort_bubble(void *data, size_t n, size_t size,
                 int (*compare)(const void *, const void *)) {
   if (!data || !compare || size == 0)
@@ -34,10 +31,8 @@ int sort_bubble(void *data, size_t n, size_t size,
 
   for (size_t i = 0; i < n - 1; i++) {
     for (size_t j = 0; j < n - i - 1; j++) {
-      if (compare(ARRAY_INDEX(data, j, size), ARRAY_INDEX(data, j + 1, size)) >
-          0) {
-        if (util_swap(ARRAY_INDEX(data, j, size),
-                      ARRAY_INDEX(data, j + 1, size), size))
+      if (compare(ARRIDX(data, j, size), ARRIDX(data, j + 1, size)) > 0) {
+        if (swap(ARRIDX(data, j, size), ARRIDX(data, j + 1, size), size))
           return COLLECTION_FAILURE;
       }
     }

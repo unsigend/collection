@@ -20,23 +20,11 @@
 
 #include <common.h>
 
-/**
- * Swap two elements.
- * @param a The first element.
- * @param b The second element.
- * @param size The size of the elements.
- * @return 0 if successful, -1 if failed.
- * @complexity O(1)
- */
-extern int util_swap(void *a, void *b, size_t size);
+/* Swap two elements. Using a stack buffer or heap buffer depending on the size
+   of the elements. */
+extern int swap(void *a, void *b, size_t sz);
 
-/**
- * Generate a random integer between min and max.
- * @param min The minimum value.
- * @param max The maximum value.
- * @return The random integer.
- * @complexity O(1)
- */
-extern int util_random(int min, int max);
+/* Generate a random integer between min and max. */
+extern int random_int(int min, int max);
 
 #endif

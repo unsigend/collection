@@ -24,11 +24,8 @@
 #include <sys/types.h>
 #endif
 
-#define ARRAY_INDEX(data, i, size) ((char *)data + (i) * (size))
+#define ARRIDX(data, i, size) ((char *)data + (i) * (size))
 
-/**
- * @note: swap based heavy IO
- */
 int sort_insertion(void *data, size_t n, size_t size,
                    int (*compare)(const void *, const void *)) {
   if (!data || !compare || size == 0)
@@ -39,10 +36,10 @@ int sort_insertion(void *data, size_t n, size_t size,
 
   for (size_t i = 1; i < n; i++) {
     ssize_t j = (ssize_t)i;
-    while (j > 0 && compare(ARRAY_INDEX(data, j - 1, size),
-                            ARRAY_INDEX(data, j, size)) > 0) {
-      if (util_swap(ARRAY_INDEX(data, j - 1, size), ARRAY_INDEX(data, j, size),
-                    size) != COLLECTION_SUCCESS)
+    while (j > 0 &&
+           compare(ARRIDX(data, j - 1, size), ARRIDX(data, j, size)) > 0) {
+      if (swap(ARRIDX(data, j - 1, size), ARRIDX(data, j, size), size) !=
+          COLLECTION_SUCCESS)
         return COLLECTION_FAILURE;
       j--;
     }

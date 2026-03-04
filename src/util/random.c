@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <util/util.h>
 
-int util_random(int min, int max) {
+int random_int(int min, int max) {
   int64_t range = (int64_t)max - (int64_t)min + 1;
   int64_t offset = (int64_t)rand() % range;
   return (int)(min + offset);

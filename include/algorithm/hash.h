@@ -18,27 +18,14 @@
 #ifndef ALGORITHM_HASH_H
 #define ALGORITHM_HASH_H
 
-/**
- * This file contains the interface for hash functions.
- */
 #include <common.h>
 #include <stdbool.h>
 #include <stdint.h>
 
-/**
- * Hash a string.
- * @param key The string to hash.
- * @return The hash of the string.
- * @complexity O(n)
- */
+/* Hash a string with O(n) complexity. */
 extern uint32_t hash_str(const char *key);
 
-/**
- * Hash an integer.
- * @param key The integer to hash.
- * @return The hash of the integer.
- * @complexity O(1)
- */
+/* Hash an integer with O(1) complexity. */
 extern uint32_t hash_int(const int key);
 
 #endif

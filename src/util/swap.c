@@ -19,31 +19,30 @@
 #include <string.h>
 #include <util/util.h>
 
-#define MAX_STACK_SIZE 512
+#define BUFFSZ 512
 
-/**
- * @note: If the size of the elements is less than MAX_STACK_SIZE,
- *        the elements are swapped using a temporary array in stack.
- *        Otherwise, the elements are swapped by a buffer in heap.
- */
-int util_swap(void *a, void *b, size_t size) {
-  if (!a || !b || size == 0)
+/* If the size of the elements is less than MAX_STACK_SIZE, the elements are
+   swapped using a temporary array in stack. Otherwise, the elements are swapped
+   by a buffer in heap. */
+
+int swap(void *a, void *b, size_t sz) {
+  if (!a || !b || sz == 0)
     return COLLECTION_FAILURE;
   if (a == b)
     return COLLECTION_SUCCESS;
-  if (size < MAX_STACK_SIZE) {
-    char temp[size];
-    memcpy(temp, a, size);
-    memcpy(a, b, size);
-    memcpy(b, temp, size);
+  if (sz < BUFFSZ) {
+    char temp[sz];
+    memcpy(temp, a, sz);
+    memcpy(a, b, sz);
+    memcpy(b, temp, sz);
     return COLLECTION_SUCCESS;
   }
-  void *temp = malloc(size);
+  void *temp = malloc(sz);
   if (!temp)
     return COLLECTION_FAILURE;
-  memcpy(temp, a, size);
-  memcpy(a, b, size);
-  memcpy(b, temp, size);
+  memcpy(temp, a, sz);
+  memcpy(a, b, sz);
+  memcpy(b, temp, sz);
   free(temp);
   return COLLECTION_SUCCESS;
 }
