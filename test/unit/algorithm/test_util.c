@@ -32,7 +32,7 @@ UTEST_TEST_CASE(util_swap) {
   // Test 1: Swap two integers
   {
     int a = 10, b = 20;
-    int result = util_swap(&a, &b, sizeof(int));
+    int result = swap(&a, &b, sizeof(int));
     EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
     EXPECT_EQUAL_INT(a, 20);
     EXPECT_EQUAL_INT(b, 10);
@@ -41,7 +41,7 @@ UTEST_TEST_CASE(util_swap) {
   // Test 2: Swap two doubles
   {
     double a = 3.14, b = 2.71;
-    int result = util_swap(&a, &b, sizeof(double));
+    int result = swap(&a, &b, sizeof(double));
     EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
     EXPECT_EQUAL_DOUBLE(a, 2.71);
     EXPECT_EQUAL_DOUBLE(b, 3.14);
@@ -50,7 +50,7 @@ UTEST_TEST_CASE(util_swap) {
   // Test 3: Swap two characters
   {
     char a = 'A', b = 'B';
-    int result = util_swap(&a, &b, sizeof(char));
+    int result = swap(&a, &b, sizeof(char));
     EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
     EXPECT_EQUAL_INT(a, 'B');
     EXPECT_EQUAL_INT(b, 'A');
@@ -62,7 +62,7 @@ UTEST_TEST_CASE(util_swap) {
     char *b = "world";
     char *temp_a = a;
     char *temp_b = b;
-    int result = util_swap(&a, &b, sizeof(char *));
+    int result = swap(&a, &b, sizeof(char *));
     EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
     EXPECT_TRUE(a == temp_b);
     EXPECT_TRUE(b == temp_a);
@@ -72,7 +72,7 @@ UTEST_TEST_CASE(util_swap) {
   {
     int arr1[] = {1, 2, 3, 4, 5};
     int arr2[] = {6, 7, 8, 9, 10};
-    int result = util_swap(arr1, arr2, sizeof(arr1));
+    int result = swap(arr1, arr2, sizeof(arr1));
     EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
     EXPECT_EQUAL_INT(arr1[0], 6);
     EXPECT_EQUAL_INT(arr1[4], 10);
@@ -84,7 +84,7 @@ UTEST_TEST_CASE(util_swap) {
   {
     int a = 42;
     int original = a;
-    int result = util_swap(&a, &a, sizeof(int));
+    int result = swap(&a, &a, sizeof(int));
     EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
     EXPECT_EQUAL_INT(a, original);
   }
@@ -92,7 +92,7 @@ UTEST_TEST_CASE(util_swap) {
   // Test 7: Swap with size 0 (should fail)
   {
     int a = 10, b = 20;
-    int result = util_swap(&a, &b, 0);
+    int result = swap(&a, &b, 0);
     EXPECT_EQUAL_INT(result, COLLECTION_FAILURE);
     EXPECT_EQUAL_INT(a, 10);
     EXPECT_EQUAL_INT(b, 20);
@@ -101,7 +101,7 @@ UTEST_TEST_CASE(util_swap) {
   // Test 8: Swap with NULL first pointer (should fail)
   {
     int b = 20;
-    int result = util_swap(NULL, &b, sizeof(int));
+    int result = swap(NULL, &b, sizeof(int));
     EXPECT_EQUAL_INT(result, COLLECTION_FAILURE);
     EXPECT_EQUAL_INT(b, 20);
   }
@@ -109,14 +109,14 @@ UTEST_TEST_CASE(util_swap) {
   // Test 9: Swap with NULL second pointer (should fail)
   {
     int a = 10;
-    int result = util_swap(&a, NULL, sizeof(int));
+    int result = swap(&a, NULL, sizeof(int));
     EXPECT_EQUAL_INT(result, COLLECTION_FAILURE);
     EXPECT_EQUAL_INT(a, 10);
   }
 
   // Test 10: Swap with both NULL pointers (should fail)
   {
-    int result = util_swap(NULL, NULL, sizeof(int));
+    int result = swap(NULL, NULL, sizeof(int));
     EXPECT_EQUAL_INT(result, COLLECTION_FAILURE);
   }
 
@@ -133,7 +133,7 @@ UTEST_TEST_CASE(util_swap) {
       double value;
     } struct2 = {2, "test2", 2.5};
 
-    int result = util_swap(&struct1, &struct2, sizeof(struct1));
+    int result = swap(&struct1, &struct2, sizeof(struct1));
     EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
     EXPECT_EQUAL_INT(struct1.id, 2);
     EXPECT_EQUAL_INT(struct2.id, 1);
@@ -146,7 +146,7 @@ UTEST_TEST_CASE(util_swap) {
   // Test 12: Swap very small size (1 byte)
   {
     unsigned char a = 0xAA, b = 0x55;
-    int result = util_swap(&a, &b, 1);
+    int result = swap(&a, &b, 1);
     EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
     EXPECT_EQUAL_INT(a, 0x55);
     EXPECT_EQUAL_INT(b, 0xAA);
@@ -156,7 +156,7 @@ UTEST_TEST_CASE(util_swap) {
   {
     int arr[] = {1, 2, 3, 4, 5};
     int original[] = {1, 2, 3, 4, 5};
-    int result = util_swap(&arr[0], &arr[2], sizeof(int));
+    int result = swap(&arr[0], &arr[2], sizeof(int));
     EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
     EXPECT_EQUAL_INT(arr[0], 3);
     EXPECT_EQUAL_INT(arr[2], 1);
@@ -168,7 +168,7 @@ UTEST_TEST_CASE(util_swap) {
   // Test 14: Swap long long integers
   {
     long long a = LLONG_MAX, b = LLONG_MIN;
-    int result = util_swap(&a, &b, sizeof(long long));
+    int result = swap(&a, &b, sizeof(long long));
     EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
     EXPECT_EQUAL_INT64(a, LLONG_MIN);
     EXPECT_EQUAL_INT64(b, LLONG_MAX);
@@ -177,7 +177,7 @@ UTEST_TEST_CASE(util_swap) {
   // Test 15: Swap float values
   {
     float a = 1.5f, b = 2.5f;
-    int result = util_swap(&a, &b, sizeof(float));
+    int result = swap(&a, &b, sizeof(float));
     EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
     EXPECT_EQUAL_FLOAT(a, 2.5f);
     EXPECT_EQUAL_FLOAT(b, 1.5f);
@@ -186,13 +186,13 @@ UTEST_TEST_CASE(util_swap) {
   // Test 16: Swap multiple times
   {
     int a = 10, b = 20;
-    util_swap(&a, &b, sizeof(int));
+    swap(&a, &b, sizeof(int));
     EXPECT_EQUAL_INT(a, 20);
     EXPECT_EQUAL_INT(b, 10);
-    util_swap(&a, &b, sizeof(int));
+    swap(&a, &b, sizeof(int));
     EXPECT_EQUAL_INT(a, 10);
     EXPECT_EQUAL_INT(b, 20);
-    util_swap(&a, &b, sizeof(int));
+    swap(&a, &b, sizeof(int));
     EXPECT_EQUAL_INT(a, 20);
     EXPECT_EQUAL_INT(b, 10);
   }
@@ -207,7 +207,7 @@ UTEST_TEST_CASE(util_swap) {
       memset(buf1, 0xAA, large_size);
       memset(buf2, 0x55, large_size);
 
-      int result = util_swap(buf1, buf2, large_size);
+      int result = swap(buf1, buf2, large_size);
       EXPECT_EQUAL_INT(result, COLLECTION_SUCCESS);
 
       for (size_t i = 0; i < large_size; i++) {
@@ -231,7 +231,7 @@ UTEST_TEST_CASE(util_random) {
   // Test 1: Random number in positive range
   {
     int min = 1, max = 10;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result >= min);
     EXPECT_TRUE(result <= max);
   }
@@ -239,7 +239,7 @@ UTEST_TEST_CASE(util_random) {
   // Test 2: Random number in larger range
   {
     int min = 0, max = 100;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result >= min);
     EXPECT_TRUE(result <= max);
   }
@@ -247,21 +247,21 @@ UTEST_TEST_CASE(util_random) {
   // Test 3: Single value range (min == max)
   {
     int min = 5, max = 5;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_EQUAL_INT(result, 5);
   }
 
   // Test 4: Zero range
   {
     int min = 0, max = 0;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_EQUAL_INT(result, 0);
   }
 
   // Test 5: Negative range
   {
     int min = -10, max = -1;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result >= min);
     EXPECT_TRUE(result <= max);
   }
@@ -269,7 +269,7 @@ UTEST_TEST_CASE(util_random) {
   // Test 6: Range spanning zero
   {
     int min = -5, max = 5;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result >= min);
     EXPECT_TRUE(result <= max);
   }
@@ -277,7 +277,7 @@ UTEST_TEST_CASE(util_random) {
   // Test 7: Large positive range
   {
     int min = 1000, max = 9999;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result >= min);
     EXPECT_TRUE(result <= max);
   }
@@ -285,7 +285,7 @@ UTEST_TEST_CASE(util_random) {
   // Test 8: Large negative range
   {
     int min = -9999, max = -1000;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result >= min);
     EXPECT_TRUE(result <= max);
   }
@@ -293,7 +293,7 @@ UTEST_TEST_CASE(util_random) {
   // Test 9: Range with INT_MAX
   {
     int min = INT_MAX - 100, max = INT_MAX;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result >= min);
     EXPECT_TRUE(result <= max);
   }
@@ -301,7 +301,7 @@ UTEST_TEST_CASE(util_random) {
   // Test 10: Range with INT_MIN
   {
     int min = INT_MIN, max = INT_MIN + 100;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result >= min);
     EXPECT_TRUE(result <= max);
   }
@@ -309,7 +309,7 @@ UTEST_TEST_CASE(util_random) {
   // Test 11: Full integer range
   {
     int min = INT_MIN, max = INT_MAX;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result >= min);
     EXPECT_TRUE(result <= max);
   }
@@ -319,7 +319,7 @@ UTEST_TEST_CASE(util_random) {
     int min = 1, max = 100;
     int results[1000];
     for (int i = 0; i < 1000; i++) {
-      results[i] = util_random(min, max);
+      results[i] = random_int(min, max);
       EXPECT_TRUE(results[i] >= min);
       EXPECT_TRUE(results[i] <= max);
     }
@@ -328,14 +328,14 @@ UTEST_TEST_CASE(util_random) {
   // Test 13: Small range
   {
     int min = 10, max = 11;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result == 10 || result == 11);
   }
 
   // Test 14: Range with one negative and one positive
   {
     int min = -1, max = 1;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result >= min);
     EXPECT_TRUE(result <= max);
   }
@@ -343,7 +343,7 @@ UTEST_TEST_CASE(util_random) {
   // Test 15: Very small range near zero
   {
     int min = -2, max = 2;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     EXPECT_TRUE(result >= min);
     EXPECT_TRUE(result <= max);
   }
@@ -352,7 +352,7 @@ UTEST_TEST_CASE(util_random) {
   // implementation)
   {
     int min = 10, max = 5;
-    int result = util_random(min, max);
+    int result = random_int(min, max);
     (void)result;
   }
 }

@@ -26,7 +26,7 @@
 #define COLLECTION_TRUE 1
 #define COLLECTION_FALSE 0
 
-#define COLLECTION_MIN(a, b) ((a) < (b) ? (a) : (b))
-#define COLLECTION_MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 #endif

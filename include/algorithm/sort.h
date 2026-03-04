@@ -18,71 +18,28 @@
 #ifndef ALGORITHM_SORT_H
 #define ALGORITHM_SORT_H
 
-/**
- * This file contains collection for sorting algorithms.
- */
 #include <common.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-/**
- * Sort the data using insertion sort.
- * @param data The data to sort.
- * @param n The number of elements to sort.
- * @param size The size of the element.
- * @param compare The function to compare two elements.
- * @return 0 if successful, -1 if failed.
- * @complexity O(n^2)
- */
+/* Sort the data using insertion sort with O(n^2) complexity. */
 extern int sort_insertion(void *data, size_t n, size_t size,
                           int (*compare)(const void *, const void *));
 
-/**
- * Sort the data using selection sort.
- * @param data The data to sort.
- * @param n The number of elements to sort.
- * @param size The size of the element.
- * @param compare The function to compare two elements.
- * @return 0 if successful, -1 if failed.
- * @complexity O(n^2)
- */
+/* Sort the data using selection sort with O(n^2) complexity. */
 extern int sort_selection(void *data, size_t n, size_t size,
                           int (*compare)(const void *, const void *));
 
-/**
- * Sort the data using bubble sort.
- * @param data The data to sort.
- * @param n The number of elements to sort.
- * @param size The size of the element.
- * @param compare The function to compare two elements.
- * @return 0 if successful, -1 if failed.
- * @complexity O(n^2)
- */
+/* Sort the data using bubble sort with O(n^2) complexity. */
 extern int sort_bubble(void *data, size_t n, size_t size,
                        int (*compare)(const void *, const void *));
 
-/**
- * Sort the data using quick sort.
- * @param data The data to sort.
- * @param n The number of elements to sort.
- * @param size The size of the element.
- * @param compare The function to compare two elements.
- * @return 0 if successful, -1 if failed.
- * @complexity O(n log n)
- */
+/* Sort the data using quick sort with O(n log n) complexity. */
 extern int sort_quick(void *data, size_t n, size_t size,
                       int (*compare)(const void *, const void *));
 
-/**
- * Sort the data using merge sort.
- * @param data The data to sort.
- * @param n The number of elements to sort.
- * @param size The size of the element.
- * @param compare The function to compare two elements.
- * @return 0 if successful, -1 if failed.
- * @complexity O(n log n)
- */
+/* Sort the data using merge sort with O(n log n) complexity. */
 extern int sort_merge(void *data, size_t n, size_t size,
                       int (*compare)(const void *, const void *));
 

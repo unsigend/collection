@@ -18,9 +18,6 @@
 #ifndef ALGORITHM_SEARCH_H
 #define ALGORITHM_SEARCH_H
 
-/**
- * This file contains collection for search algorithms.
- */
 #include <common.h>
 #include <stdbool.h>
 #include <stdint.h>

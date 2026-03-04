@@ -19,7 +19,7 @@
 #include <stddef.h>
 #include <util/util.h>
 
-#define ARRAY_INDEX(data, i, size) ((char *)data + (i) * (size))
+#define ARRIDX(data, i, size) ((char *)data + (i) * (size))
 
 int sort_selection(void *data, size_t n, size_t size,
                    int (*compare)(const void *, const void *)) {
@@ -32,14 +32,12 @@ int sort_selection(void *data, size_t n, size_t size,
   for (size_t i = 0; i < n - 1; i++) {
     size_t min_index = i;
     for (size_t j = i + 1; j < n; j++) {
-      if (compare(ARRAY_INDEX(data, j, size),
-                  ARRAY_INDEX(data, min_index, size)) < 0) {
+      if (compare(ARRIDX(data, j, size), ARRIDX(data, min_index, size)) < 0) {
         min_index = j;
       }
     }
     if (min_index != i) {
-      if (util_swap(ARRAY_INDEX(data, i, size),
-                    ARRAY_INDEX(data, min_index, size), size))
+      if (swap(ARRIDX(data, i, size), ARRIDX(data, min_index, size), size))
         return COLLECTION_FAILURE;
     }
   }
