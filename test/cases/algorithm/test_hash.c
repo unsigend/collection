@@ -29,14 +29,15 @@
  * Description: Tests the hash_str function including deterministic behavior and
  * uniform distribution.
  */
-UTEST_TEST_CASE(hash_str) {
+UTEST_CASE(hash_str)
+{
   // Test 1: Same string produces same hash
   {
     const char *str1 = "hello";
     const char *str2 = "hello";
     uint32_t hash1 = hash_str(str1);
     uint32_t hash2 = hash_str(str2);
-    EXPECT_EQUAL_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash1, hash2);
   }
 
   // Test 2: Different strings produce different hashes (high probability)
@@ -45,7 +46,7 @@ UTEST_TEST_CASE(hash_str) {
     const char *str2 = "world";
     uint32_t hash1 = hash_str(str1);
     uint32_t hash2 = hash_str(str2);
-    EXPECT_NOT_EQUAL_UINT(hash1, hash2);
+    EXPECT_NE_UINT(hash1, hash2);
   }
 
   // Test 3: Empty string produces valid hash
@@ -58,21 +59,21 @@ UTEST_TEST_CASE(hash_str) {
   {
     uint32_t hash1 = hash_str("a");
     uint32_t hash2 = hash_str("a");
-    EXPECT_EQUAL_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash1, hash2);
   }
 
   // Test 5: Case sensitivity
   {
     uint32_t hash1 = hash_str("Hello");
     uint32_t hash2 = hash_str("hello");
-    EXPECT_NOT_EQUAL_UINT(hash1, hash2);
+    EXPECT_NE_UINT(hash1, hash2);
   }
 
   // Test 6: Whitespace sensitivity
   {
     uint32_t hash1 = hash_str("hello");
     uint32_t hash2 = hash_str("hello ");
-    EXPECT_NOT_EQUAL_UINT(hash1, hash2);
+    EXPECT_NE_UINT(hash1, hash2);
   }
 
   // Test 7: Long string
@@ -81,7 +82,7 @@ UTEST_TEST_CASE(hash_str) {
                            "produce a valid hash value";
     uint32_t hash1 = hash_str(long_str);
     uint32_t hash2 = hash_str(long_str);
-    EXPECT_EQUAL_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash1, hash2);
   }
 
   // Test 8: String with special characters
@@ -90,7 +91,7 @@ UTEST_TEST_CASE(hash_str) {
     const char *str2 = "hello@world#123";
     uint32_t hash1 = hash_str(str1);
     uint32_t hash2 = hash_str(str2);
-    EXPECT_EQUAL_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash1, hash2);
   }
 
   // Test 9: Multiple calls with same string
@@ -99,8 +100,8 @@ UTEST_TEST_CASE(hash_str) {
     uint32_t hash1 = hash_str(str);
     uint32_t hash2 = hash_str(str);
     uint32_t hash3 = hash_str(str);
-    EXPECT_EQUAL_UINT(hash1, hash2);
-    EXPECT_EQUAL_UINT(hash2, hash3);
+    EXPECT_EQ_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash2, hash3);
   }
 
   // Test 10: Similar strings produce different hashes
@@ -108,9 +109,9 @@ UTEST_TEST_CASE(hash_str) {
     uint32_t hash1 = hash_str("abc");
     uint32_t hash2 = hash_str("abd");
     uint32_t hash3 = hash_str("ab");
-    EXPECT_NOT_EQUAL_UINT(hash1, hash2);
-    EXPECT_NOT_EQUAL_UINT(hash1, hash3);
-    EXPECT_NOT_EQUAL_UINT(hash2, hash3);
+    EXPECT_NE_UINT(hash1, hash2);
+    EXPECT_NE_UINT(hash1, hash3);
+    EXPECT_NE_UINT(hash2, hash3);
   }
 
   // Test 11: Deterministic - same string multiple times
@@ -122,17 +123,17 @@ UTEST_TEST_CASE(hash_str) {
     uint32_t hash4 = hash_str(str);
     uint32_t hash5 = hash_str(str);
 
-    EXPECT_EQUAL_UINT(hash1, hash2);
-    EXPECT_EQUAL_UINT(hash2, hash3);
-    EXPECT_EQUAL_UINT(hash3, hash4);
-    EXPECT_EQUAL_UINT(hash4, hash5);
+    EXPECT_EQ_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash2, hash3);
+    EXPECT_EQ_UINT(hash3, hash4);
+    EXPECT_EQ_UINT(hash4, hash5);
   }
 
   // Test 12: Deterministic - different string literals with same content
   {
     uint32_t hash1 = hash_str("test");
     uint32_t hash2 = hash_str("test");
-    EXPECT_EQUAL_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash1, hash2);
   }
 
   // Test 13: Deterministic - string variable vs literal
@@ -140,7 +141,7 @@ UTEST_TEST_CASE(hash_str) {
     const char *str = "test";
     uint32_t hash1 = hash_str(str);
     uint32_t hash2 = hash_str("test");
-    EXPECT_EQUAL_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash1, hash2);
   }
 
   // Test 14: Deterministic - multiple different strings maintain consistency
@@ -158,7 +159,7 @@ UTEST_TEST_CASE(hash_str) {
     }
 
     for (int i = 0; i < 5; i++) {
-      EXPECT_EQUAL_UINT(hashes1[i], hashes2[i]);
+      EXPECT_EQ_UINT(hashes1[i], hashes2[i]);
     }
   }
 
@@ -255,7 +256,7 @@ UTEST_TEST_CASE(hash_str) {
 
     for (int i = 0; i < 5; i++) {
       uint32_t hash = hash_str(keys[i]);
-      EXPECT_EQUAL_UINT(hash, hashes[i]);
+      EXPECT_EQ_UINT(hash, hashes[i]);
     }
   }
 
@@ -295,20 +296,21 @@ UTEST_TEST_CASE(hash_str) {
  * Description: Tests the hash_int function including deterministic behavior and
  * uniform distribution.
  */
-UTEST_TEST_CASE(hash_int) {
+UTEST_CASE(hash_int)
+{
   // Test 1: Same integer produces same hash
   {
     int val = 42;
     uint32_t hash1 = hash_int(val);
     uint32_t hash2 = hash_int(val);
-    EXPECT_EQUAL_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash1, hash2);
   }
 
   // Test 2: Different integers produce different hashes (high probability)
   {
     uint32_t hash1 = hash_int(42);
     uint32_t hash2 = hash_int(43);
-    EXPECT_NOT_EQUAL_UINT(hash1, hash2);
+    EXPECT_NE_UINT(hash1, hash2);
   }
 
   // Test 3: Zero produces valid hash
@@ -321,21 +323,21 @@ UTEST_TEST_CASE(hash_int) {
   {
     uint32_t hash1 = hash_int(1);
     uint32_t hash2 = hash_int(1);
-    EXPECT_EQUAL_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash1, hash2);
   }
 
   // Test 5: Negative integers
   {
     uint32_t hash1 = hash_int(-1);
     uint32_t hash2 = hash_int(-1);
-    EXPECT_EQUAL_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash1, hash2);
   }
 
   // Test 6: Negative and positive produce different hashes
   {
     uint32_t hash1 = hash_int(42);
     uint32_t hash2 = hash_int(-42);
-    EXPECT_NOT_EQUAL_UINT(hash1, hash2);
+    EXPECT_NE_UINT(hash1, hash2);
   }
 
   // Test 7: INT_MAX produces valid hash
@@ -356,8 +358,8 @@ UTEST_TEST_CASE(hash_int) {
     uint32_t hash1 = hash_int(val);
     uint32_t hash2 = hash_int(val);
     uint32_t hash3 = hash_int(val);
-    EXPECT_EQUAL_UINT(hash1, hash2);
-    EXPECT_EQUAL_UINT(hash2, hash3);
+    EXPECT_EQ_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash2, hash3);
   }
 
   // Test 10: Sequential integers produce different hashes
@@ -365,8 +367,8 @@ UTEST_TEST_CASE(hash_int) {
     uint32_t hash1 = hash_int(100);
     uint32_t hash2 = hash_int(101);
     uint32_t hash3 = hash_int(102);
-    EXPECT_NOT_EQUAL_UINT(hash1, hash2);
-    EXPECT_NOT_EQUAL_UINT(hash2, hash3);
+    EXPECT_NE_UINT(hash1, hash2);
+    EXPECT_NE_UINT(hash2, hash3);
   }
 
   // Test 11: Deterministic - same integer multiple times
@@ -378,10 +380,10 @@ UTEST_TEST_CASE(hash_int) {
     uint32_t hash4 = hash_int(val);
     uint32_t hash5 = hash_int(val);
 
-    EXPECT_EQUAL_UINT(hash1, hash2);
-    EXPECT_EQUAL_UINT(hash2, hash3);
-    EXPECT_EQUAL_UINT(hash3, hash4);
-    EXPECT_EQUAL_UINT(hash4, hash5);
+    EXPECT_EQ_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash2, hash3);
+    EXPECT_EQ_UINT(hash3, hash4);
+    EXPECT_EQ_UINT(hash4, hash5);
   }
 
   // Test 12: Deterministic - integer literal vs variable
@@ -389,7 +391,7 @@ UTEST_TEST_CASE(hash_int) {
     int val = 42;
     uint32_t hash1 = hash_int(val);
     uint32_t hash2 = hash_int(42);
-    EXPECT_EQUAL_UINT(hash1, hash2);
+    EXPECT_EQ_UINT(hash1, hash2);
   }
 
   // Test 13: Deterministic - multiple different integers maintain consistency
@@ -407,7 +409,7 @@ UTEST_TEST_CASE(hash_int) {
     }
 
     for (int i = 0; i < 5; i++) {
-      EXPECT_EQUAL_UINT(hashes1[i], hashes2[i]);
+      EXPECT_EQ_UINT(hashes1[i], hashes2[i]);
     }
   }
 
@@ -415,11 +417,11 @@ UTEST_TEST_CASE(hash_int) {
   {
     uint32_t hash1_max = hash_int(INT_MAX);
     uint32_t hash2_max = hash_int(INT_MAX);
-    EXPECT_EQUAL_UINT(hash1_max, hash2_max);
+    EXPECT_EQ_UINT(hash1_max, hash2_max);
 
     uint32_t hash1_min = hash_int(INT_MIN);
     uint32_t hash2_min = hash_int(INT_MIN);
-    EXPECT_EQUAL_UINT(hash1_min, hash2_min);
+    EXPECT_EQ_UINT(hash1_min, hash2_min);
   }
 
   // Test 15: Uniform distribution - distribution across sequential integers
@@ -532,7 +534,7 @@ UTEST_TEST_CASE(hash_int) {
 
     for (int i = 0; i < 5; i++) {
       uint32_t hash = hash_int(keys[i]);
-      EXPECT_EQUAL_UINT(hash, hashes[i]);
+      EXPECT_EQ_UINT(hash, hashes[i]);
     }
   }
 
@@ -547,7 +549,8 @@ UTEST_TEST_CASE(hash_int) {
  * Test suite: hash
  * Description: Test suite for hash algorithm functions
  */
-UTEST_TEST_SUITE(hash) {
-  UTEST_RUN_TEST_CASE(hash_str);
-  UTEST_RUN_TEST_CASE(hash_int);
+UTEST_SUITE(hash)
+{
+  UTEST_RUNCASE(hash_str);
+  UTEST_RUNCASE(hash_int);
 }

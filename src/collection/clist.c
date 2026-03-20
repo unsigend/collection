@@ -18,11 +18,13 @@
 #include <collection/clist.h>
 #include <stdlib.h>
 
-CListNode *clist_next(const CListNode *node) {
+CListNode *clist_next(const CListNode *node)
+{
   return node ? node->next : NULL;
 }
 
-CListNode *clist_prev(const CListNode *node) {
+CListNode *clist_prev(const CListNode *node)
+{
   return node ? node->prev : NULL;
 }
 
@@ -30,28 +32,33 @@ void *clist_data(const CListNode *node) { return node ? node->data : NULL; }
 
 CListNode *clist_head(const CList *clist) { return clist ? clist->head : NULL; }
 
-CListNode *clist_tail(const CList *clist) {
+CListNode *clist_tail(const CList *clist)
+{
   return (clist && clist->head) ? clist->head->prev : NULL;
 }
 
-bool clist_empty(const CList *clist) {
+bool clist_empty(const CList *clist)
+{
   return clist ? clist->size == 0 : false;
 }
 
 size_t clist_size(const CList *clist) { return clist ? clist->size : 0; }
 
-void clist_init(CList *clist, void (*destroy)(void *)) {
+void clist_init(CList *clist, void (*destroy)(void *))
+{
   clist->size = 0;
   clist->head = NULL;
   clist->destroy = destroy;
 }
 
-void clist_destroy(CList *clist) {
+void clist_destroy(CList *clist)
+{
   clist_clear(clist);
   clist->destroy = NULL;
 }
 
-void clist_clear(CList *clist) {
+void clist_clear(CList *clist)
+{
   if (!clist || clist_empty(clist)) {
     return;
   }
@@ -68,7 +75,8 @@ void clist_clear(CList *clist) {
   clist->head = NULL;
 }
 
-int clist_push_front(CList *clist, void *data) {
+int clist_push_front(CList *clist, void *data)
+{
   if (!clist)
     return COLLECTION_FAILURE;
   CListNode *node = malloc(sizeof(CListNode));
@@ -94,7 +102,8 @@ int clist_push_front(CList *clist, void *data) {
   return COLLECTION_SUCCESS;
 }
 
-int clist_push_back(CList *clist, void *data) {
+int clist_push_back(CList *clist, void *data)
+{
   if (!clist)
     return COLLECTION_FAILURE;
   CListNode *node = malloc(sizeof(CListNode));
@@ -118,7 +127,8 @@ int clist_push_back(CList *clist, void *data) {
   return COLLECTION_SUCCESS;
 }
 
-int clist_pop_front(CList *clist, void **data) {
+int clist_pop_front(CList *clist, void **data)
+{
   if (!clist || clist_empty(clist))
     return COLLECTION_FAILURE;
 
@@ -150,7 +160,8 @@ int clist_pop_front(CList *clist, void **data) {
   return COLLECTION_SUCCESS;
 }
 
-int clist_pop_back(CList *clist, void **data) {
+int clist_pop_back(CList *clist, void **data)
+{
   if (!clist || clist_empty(clist))
     return COLLECTION_FAILURE;
 
@@ -181,7 +192,8 @@ int clist_pop_back(CList *clist, void **data) {
   return COLLECTION_SUCCESS;
 }
 
-int clist_insert_after(CList *clist, CListNode *node, void *data) {
+int clist_insert_after(CList *clist, CListNode *node, void *data)
+{
   if (!clist || !node)
     return COLLECTION_FAILURE;
 
@@ -199,7 +211,8 @@ int clist_insert_after(CList *clist, CListNode *node, void *data) {
   return COLLECTION_SUCCESS;
 }
 
-int clist_insert_before(CList *clist, CListNode *node, void *data) {
+int clist_insert_before(CList *clist, CListNode *node, void *data)
+{
   if (!clist || !node)
     return COLLECTION_FAILURE;
 
@@ -221,7 +234,8 @@ int clist_insert_before(CList *clist, CListNode *node, void *data) {
   return COLLECTION_SUCCESS;
 }
 
-int clist_remove(CList *clist, CListNode *node, void **data) {
+int clist_remove(CList *clist, CListNode *node, void **data)
+{
   if (!clist || !node)
     return COLLECTION_FAILURE;
 

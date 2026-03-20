@@ -15,7 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "utest/utest_types.h"
 #include <algorithm/hash.h>
 #include <collection/set.h>
 #include <common.h>
@@ -26,7 +25,8 @@
 /* Global destroy counter for testing */
 static int destroy_count = 0;
 
-static void destroy_counter(void *data) {
+static void destroy_counter(void *data)
+{
   if (data != NULL) {
     destroy_count++;
   }
@@ -35,16 +35,19 @@ static void destroy_counter(void *data) {
 /* Hash and match functions for integer keys */
 static uint32_t hash_int_ptr(const void *key) { return hash_int(*(int *)key); }
 
-static bool match_int_ptr(const void *key1, const void *key2) {
+static bool match_int_ptr(const void *key1, const void *key2)
+{
   return *(int *)key1 == *(int *)key2;
 }
 
 /* Hash and match functions for string keys */
-static uint32_t hash_str_wrapper(const void *key) {
+static uint32_t hash_str_wrapper(const void *key)
+{
   return hash_str((const char *)key);
 }
 
-static bool match_str_wrapper(const void *key1, const void *key2) {
+static bool match_str_wrapper(const void *key1, const void *key2)
+{
   return strcmp((const char *)key1, (const char *)key2) == 0;
 }
 
@@ -53,28 +56,29 @@ static bool match_str_wrapper(const void *key1, const void *key2) {
  * Dependencies: None
  * Description: Tests basic initialization of the set structure.
  */
-UTEST_TEST_CASE(set_init) {
+UTEST_CASE(set_init)
+{
   // Test 1: Initialize with NULL functions
   {
     Set set;
-    EXPECT_EQUAL_INT(set_init(&set, NULL, NULL, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(set_init(&set, NULL, NULL, NULL), COLLECTION_SUCCESS);
     EXPECT_TRUE(set_empty(&set));
-    EXPECT_EQUAL_UINT(set_size(&set), 0);
+    EXPECT_EQ_UINT(set_size(&set), 0);
     set_destroy(&set);
   }
 
   // Test 2: Initialize with destroy function
   {
     Set set;
-    EXPECT_EQUAL_INT(set_init(&set, NULL, NULL, free), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(set_init(&set, NULL, NULL, free), COLLECTION_SUCCESS);
     EXPECT_TRUE(set_empty(&set));
-    EXPECT_EQUAL_UINT(set_size(&set), 0);
+    EXPECT_EQ_UINT(set_size(&set), 0);
     set_destroy(&set);
   }
 
   // Test 3: Initialize with NULL set pointer
   {
-    EXPECT_EQUAL_INT(set_init(NULL, NULL, NULL, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_init(NULL, NULL, NULL, NULL), COLLECTION_FAILURE);
   }
 }
 
@@ -83,7 +87,8 @@ UTEST_TEST_CASE(set_init) {
  * Dependencies: set_init, set_insert
  * Description: Tests the set_destroy function to free all resources.
  */
-UTEST_TEST_CASE(set_destroy) {
+UTEST_CASE(set_destroy)
+{
   // Test 1: Destroy empty set
   {
     Set set;
@@ -115,7 +120,7 @@ UTEST_TEST_CASE(set_destroy) {
     set_insert(&set, val2);
     destroy_count = 0;
     set_destroy(&set);
-    EXPECT_EQUAL_INT(destroy_count, 2);
+    EXPECT_EQ_INT(destroy_count, 2);
     free(val1);
     free(val2);
   }
@@ -131,7 +136,8 @@ UTEST_TEST_CASE(set_destroy) {
  * Dependencies: set_init, set_insert, set_clear
  * Description: Tests the set_empty function to check if set is empty.
  */
-UTEST_TEST_CASE(set_empty) {
+UTEST_CASE(set_empty)
+{
   // Test 1: Empty set
   {
     Set set;
@@ -175,12 +181,13 @@ UTEST_TEST_CASE(set_empty) {
  * Dependencies: set_init, set_insert, set_remove, set_clear
  * Description: Tests the set_size function to get the number of elements.
  */
-UTEST_TEST_CASE(set_size) {
+UTEST_CASE(set_size)
+{
   // Test 1: Size of empty set
   {
     Set set;
     set_init(&set, NULL, NULL, NULL);
-    EXPECT_EQUAL_UINT(set_size(&set), 0);
+    EXPECT_EQ_UINT(set_size(&set), 0);
     set_destroy(&set);
   }
 
@@ -192,11 +199,11 @@ UTEST_TEST_CASE(set_size) {
     char *str2 = "test2";
     char *str3 = "test3";
     set_insert(&set, str1);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
+    EXPECT_EQ_UINT(set_size(&set), 1);
     set_insert(&set, str2);
-    EXPECT_EQUAL_UINT(set_size(&set), 2);
+    EXPECT_EQ_UINT(set_size(&set), 2);
     set_insert(&set, str3);
-    EXPECT_EQUAL_UINT(set_size(&set), 3);
+    EXPECT_EQ_UINT(set_size(&set), 3);
     set_destroy(&set);
   }
 
@@ -206,9 +213,9 @@ UTEST_TEST_CASE(set_size) {
     set_init(&set, NULL, NULL, NULL);
     char *str = "test";
     set_insert(&set, str);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
+    EXPECT_EQ_UINT(set_size(&set), 1);
     set_insert(&set, str);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
+    EXPECT_EQ_UINT(set_size(&set), 1);
     set_destroy(&set);
   }
 
@@ -220,9 +227,9 @@ UTEST_TEST_CASE(set_size) {
     char *str2 = "test2";
     set_insert(&set, str1);
     set_insert(&set, str2);
-    EXPECT_EQUAL_UINT(set_size(&set), 2);
+    EXPECT_EQ_UINT(set_size(&set), 2);
     set_remove(&set, str1);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
+    EXPECT_EQ_UINT(set_size(&set), 1);
     set_destroy(&set);
   }
 
@@ -234,15 +241,15 @@ UTEST_TEST_CASE(set_size) {
     char *str2 = "test2";
     set_insert(&set, str1);
     set_insert(&set, str2);
-    EXPECT_EQUAL_UINT(set_size(&set), 2);
+    EXPECT_EQ_UINT(set_size(&set), 2);
     set_clear(&set);
-    EXPECT_EQUAL_UINT(set_size(&set), 0);
+    EXPECT_EQ_UINT(set_size(&set), 0);
     set_destroy(&set);
   }
 
   // Test 6: Size with NULL set
   {
-    EXPECT_EQUAL_UINT(set_size(NULL), 0);
+    EXPECT_EQ_UINT(set_size(NULL), 0);
   }
 }
 
@@ -251,14 +258,15 @@ UTEST_TEST_CASE(set_size) {
  * Dependencies: set_init, set_size, set_contains
  * Description: Tests the set_insert function to add elements.
  */
-UTEST_TEST_CASE(set_insert) {
+UTEST_CASE(set_insert)
+{
   // Test 1: Insert single element
   {
     Set set;
-    EXPECT_EQUAL_INT(set_init(&set, NULL, NULL, NULL), UTEST_RESULT_SUCCESS);
+    EXPECT_EQ_INT(set_init(&set, NULL, NULL, NULL), COLLECTION_SUCCESS);
     char *str = "test";
-    EXPECT_EQUAL_INT(set_insert(&set, str), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
+    EXPECT_EQ_INT(set_insert(&set, str), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&set), 1);
     EXPECT_TRUE(set_contains(&set, str));
     set_destroy(&set);
   }
@@ -270,10 +278,10 @@ UTEST_TEST_CASE(set_insert) {
     char *str1 = "test1";
     char *str2 = "test2";
     char *str3 = "test3";
-    EXPECT_EQUAL_INT(set_insert(&set, str1), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(set_insert(&set, str2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(set_insert(&set, str3), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&set), 3);
+    EXPECT_EQ_INT(set_insert(&set, str1), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(set_insert(&set, str2), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(set_insert(&set, str3), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&set), 3);
     set_destroy(&set);
   }
 
@@ -282,23 +290,23 @@ UTEST_TEST_CASE(set_insert) {
     Set set;
     set_init(&set, NULL, NULL, NULL);
     char *str = "test";
-    EXPECT_EQUAL_INT(set_insert(&set, str), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(set_insert(&set, str), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
+    EXPECT_EQ_INT(set_insert(&set, str), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(set_insert(&set, str), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&set), 1);
     set_destroy(&set);
   }
 
   // Test 4: Insert with NULL set
   {
     char *str = "test";
-    EXPECT_EQUAL_INT(set_insert(NULL, str), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_insert(NULL, str), COLLECTION_FAILURE);
   }
 
   // Test 5: Insert NULL data
   {
     Set set;
     set_init(&set, NULL, NULL, NULL);
-    EXPECT_EQUAL_INT(set_insert(&set, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_insert(&set, NULL), COLLECTION_FAILURE);
     set_destroy(&set);
   }
 }
@@ -308,16 +316,17 @@ UTEST_TEST_CASE(set_insert) {
  * Dependencies: set_init, set_insert, set_size, set_contains
  * Description: Tests the set_remove function to remove elements.
  */
-UTEST_TEST_CASE(set_remove) {
+UTEST_CASE(set_remove)
+{
   // Test 1: Remove existing element
   {
     Set set;
     set_init(&set, NULL, NULL, NULL);
     char *str = "test";
     set_insert(&set, str);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
-    EXPECT_EQUAL_INT(set_remove(&set, str), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&set), 0);
+    EXPECT_EQ_UINT(set_size(&set), 1);
+    EXPECT_EQ_INT(set_remove(&set, str), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&set), 0);
     EXPECT_FALSE(set_contains(&set, str));
     set_destroy(&set);
   }
@@ -329,8 +338,8 @@ UTEST_TEST_CASE(set_remove) {
     char *str1 = "test1";
     char *str2 = "test2";
     set_insert(&set, str1);
-    EXPECT_EQUAL_INT(set_remove(&set, str2), COLLECTION_FAILURE);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
+    EXPECT_EQ_INT(set_remove(&set, str2), COLLECTION_FAILURE);
+    EXPECT_EQ_UINT(set_size(&set), 1);
     set_destroy(&set);
   }
 
@@ -339,7 +348,7 @@ UTEST_TEST_CASE(set_remove) {
     Set set;
     set_init(&set, NULL, NULL, NULL);
     char *str = "test";
-    EXPECT_EQUAL_INT(set_remove(&set, str), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_remove(&set, str), COLLECTION_FAILURE);
     set_destroy(&set);
   }
 
@@ -353,25 +362,25 @@ UTEST_TEST_CASE(set_remove) {
     set_insert(&set, str1);
     set_insert(&set, str2);
     set_insert(&set, str3);
-    EXPECT_EQUAL_UINT(set_size(&set), 3);
-    EXPECT_EQUAL_INT(set_remove(&set, str2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&set), 2);
-    EXPECT_EQUAL_INT(set_remove(&set, str1), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
+    EXPECT_EQ_UINT(set_size(&set), 3);
+    EXPECT_EQ_INT(set_remove(&set, str2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&set), 2);
+    EXPECT_EQ_INT(set_remove(&set, str1), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&set), 1);
     set_destroy(&set);
   }
 
   // Test 5: Remove with NULL set
   {
     char *str = "test";
-    EXPECT_EQUAL_INT(set_remove(NULL, str), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_remove(NULL, str), COLLECTION_FAILURE);
   }
 
   // Test 6: Remove NULL data
   {
     Set set;
     set_init(&set, NULL, NULL, NULL);
-    EXPECT_EQUAL_INT(set_remove(&set, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_remove(&set, NULL), COLLECTION_FAILURE);
     set_destroy(&set);
   }
 }
@@ -381,14 +390,15 @@ UTEST_TEST_CASE(set_remove) {
  * Dependencies: set_init, set_insert, set_size, set_empty
  * Description: Tests the set_clear function to remove all elements.
  */
-UTEST_TEST_CASE(set_clear) {
+UTEST_CASE(set_clear)
+{
   // Test 1: Clear empty set
   {
     Set set;
     set_init(&set, NULL, NULL, NULL);
     set_clear(&set);
     EXPECT_TRUE(set_empty(&set));
-    EXPECT_EQUAL_UINT(set_size(&set), 0);
+    EXPECT_EQ_UINT(set_size(&set), 0);
     set_destroy(&set);
   }
 
@@ -402,10 +412,10 @@ UTEST_TEST_CASE(set_clear) {
     set_insert(&set, str1);
     set_insert(&set, str2);
     set_insert(&set, str3);
-    EXPECT_EQUAL_UINT(set_size(&set), 3);
+    EXPECT_EQ_UINT(set_size(&set), 3);
     set_clear(&set);
     EXPECT_TRUE(set_empty(&set));
-    EXPECT_EQUAL_UINT(set_size(&set), 0);
+    EXPECT_EQ_UINT(set_size(&set), 0);
     set_destroy(&set);
   }
 
@@ -420,7 +430,7 @@ UTEST_TEST_CASE(set_clear) {
     set_clear(&set);
     char *str3 = "test3";
     set_insert(&set, str3);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
+    EXPECT_EQ_UINT(set_size(&set), 1);
     set_destroy(&set);
   }
 
@@ -435,7 +445,8 @@ UTEST_TEST_CASE(set_clear) {
  * Dependencies: set_init, set_insert, set_remove
  * Description: Tests the set_contains function to check membership.
  */
-UTEST_TEST_CASE(set_contains) {
+UTEST_CASE(set_contains)
+{
   // Test 1: Contains existing element
   {
     Set set;
@@ -498,7 +509,8 @@ UTEST_TEST_CASE(set_contains) {
  * Dependencies: set_init, set_insert, set_size, set_contains, set_clear
  * Description: Tests the set_intersection function to compute intersection.
  */
-UTEST_TEST_CASE(set_intersection) {
+UTEST_CASE(set_intersection)
+{
   // Test 1: Intersection of two sets with common elements
   {
     Set set1, set2, result;
@@ -514,9 +526,8 @@ UTEST_TEST_CASE(set_intersection) {
     set_insert(&set2, str2);
     set_insert(&set2, str3);
 
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str2));
     EXPECT_FALSE(set_contains(&result, str1));
     EXPECT_FALSE(set_contains(&result, str3));
@@ -538,9 +549,8 @@ UTEST_TEST_CASE(set_intersection) {
     set_insert(&set1, str1);
     set_insert(&set2, str2);
 
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 0);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 0);
     EXPECT_TRUE(set_empty(&result));
 
     set_destroy(&set1);
@@ -562,9 +572,8 @@ UTEST_TEST_CASE(set_intersection) {
     set_insert(&set2, str1);
     set_insert(&set2, str2);
 
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_TRUE(set_contains(&result, str2));
 
@@ -583,9 +592,8 @@ UTEST_TEST_CASE(set_intersection) {
     char *str1 = "a";
     set_insert(&set1, str1);
 
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 0);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 0);
 
     set_destroy(&set1);
     set_destroy(&set2);
@@ -600,17 +608,15 @@ UTEST_TEST_CASE(set_intersection) {
     set_init(&result, NULL, NULL, NULL);
 
     char *str1 = "a";
-    char *str2 = "b";
-    char *str3 = "c";
-    set_insert(&result, str3);
+    char *str2 = "c";
+    set_insert(&result, str2);
     set_insert(&set1, str1);
     set_insert(&set2, str1);
 
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str1));
-    EXPECT_FALSE(set_contains(&result, str3));
+    EXPECT_FALSE(set_contains(&result, str2));
 
     set_destroy(&set1);
     set_destroy(&set2);
@@ -624,11 +630,9 @@ UTEST_TEST_CASE(set_intersection) {
     set_init(&set2, NULL, NULL, NULL);
     set_init(&result, NULL, NULL, NULL);
 
-    EXPECT_EQUAL_INT(set_intersection(NULL, &set1, &set2), COLLECTION_FAILURE);
-    EXPECT_EQUAL_INT(set_intersection(&result, NULL, &set2),
-                     COLLECTION_FAILURE);
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, NULL),
-                     COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_intersection(NULL, &set1, &set2), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_intersection(&result, NULL, &set2), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, NULL), COLLECTION_FAILURE);
 
     set_destroy(&set1);
     set_destroy(&set2);
@@ -647,7 +651,7 @@ UTEST_TEST_CASE(set_intersection) {
     int val2 = 200;
     set_insert(&result, &val1);
     set_insert(&result, &val2);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_UINT(set_size(&result), 2);
 
     char *str1 = "common1";
     char *str2 = "common2";
@@ -658,9 +662,8 @@ UTEST_TEST_CASE(set_intersection) {
     set_insert(&set2, str1);
     set_insert(&set2, str2);
 
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_TRUE(set_contains(&result, str2));
     EXPECT_FALSE(set_contains(&result, str3));
@@ -682,16 +685,15 @@ UTEST_TEST_CASE(set_intersection) {
 
     int val1 = 42;
     set_insert(&result, &val1);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_UINT(set_size(&result), 1);
 
     char *str1 = "a";
     char *str2 = "b";
     set_insert(&set1, str1);
     set_insert(&set2, str2);
 
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 0);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 0);
     EXPECT_TRUE(set_empty(&result));
     EXPECT_FALSE(set_contains(&result, &val1));
 
@@ -713,9 +715,8 @@ UTEST_TEST_CASE(set_intersection) {
     set_insert(&set1, str2);
     set_insert(&set2, str1);
     set_insert(&set2, str2);
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_TRUE(set_contains(&result, str2));
 
@@ -725,9 +726,8 @@ UTEST_TEST_CASE(set_intersection) {
     set_insert(&set1, str3);
     set_insert(&set2, str3);
 
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str3));
     EXPECT_FALSE(set_contains(&result, str1));
     EXPECT_FALSE(set_contains(&result, str2));
@@ -751,7 +751,7 @@ UTEST_TEST_CASE(set_intersection) {
     strcpy(result_val2, "result2");
     set_insert(&result, result_val1);
     set_insert(&result, result_val2);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_UINT(set_size(&result), 2);
 
     char *set1_key1 = malloc(10);
     char *set1_key2 = malloc(10);
@@ -767,9 +767,8 @@ UTEST_TEST_CASE(set_intersection) {
     set_insert(&set2, set2_key1);
     set_insert(&set2, set2_key2);
 
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, set1_key1));
     EXPECT_TRUE(set_contains(&result, set1_key2));
 
@@ -786,7 +785,8 @@ UTEST_TEST_CASE(set_intersection) {
  * Dependencies: set_init, set_insert, set_size, set_contains, set_clear
  * Description: Tests the set_union function to compute union.
  */
-UTEST_TEST_CASE(set_union) {
+UTEST_CASE(set_union)
+{
   // Test 1: Union of two sets
   {
     Set set1, set2, result;
@@ -802,8 +802,8 @@ UTEST_TEST_CASE(set_union) {
     set_insert(&set2, str2);
     set_insert(&set2, str3);
 
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 3);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 3);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_TRUE(set_contains(&result, str2));
     EXPECT_TRUE(set_contains(&result, str3));
@@ -825,8 +825,8 @@ UTEST_TEST_CASE(set_union) {
     set_insert(&set1, str1);
     set_insert(&set2, str2);
 
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_TRUE(set_contains(&result, str2));
 
@@ -849,8 +849,8 @@ UTEST_TEST_CASE(set_union) {
     set_insert(&set2, str1);
     set_insert(&set2, str2);
 
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_TRUE(set_contains(&result, str2));
 
@@ -869,8 +869,8 @@ UTEST_TEST_CASE(set_union) {
     char *str1 = "a";
     set_insert(&set1, str1);
 
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str1));
 
     set_destroy(&set1);
@@ -892,8 +892,8 @@ UTEST_TEST_CASE(set_union) {
     set_insert(&set1, str1);
     set_insert(&set2, str2);
 
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_TRUE(set_contains(&result, str2));
     EXPECT_FALSE(set_contains(&result, str3));
@@ -910,9 +910,9 @@ UTEST_TEST_CASE(set_union) {
     set_init(&set2, NULL, NULL, NULL);
     set_init(&result, NULL, NULL, NULL);
 
-    EXPECT_EQUAL_INT(set_union(NULL, &set1, &set2), COLLECTION_FAILURE);
-    EXPECT_EQUAL_INT(set_union(&result, NULL, &set2), COLLECTION_FAILURE);
-    EXPECT_EQUAL_INT(set_union(&result, &set1, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_union(NULL, &set1, &set2), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_union(&result, NULL, &set2), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_union(&result, &set1, NULL), COLLECTION_FAILURE);
 
     set_destroy(&set1);
     set_destroy(&set2);
@@ -931,7 +931,7 @@ UTEST_TEST_CASE(set_union) {
     int val2 = 200;
     set_insert(&result, &val1);
     set_insert(&result, &val2);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_UINT(set_size(&result), 2);
 
     char *str1 = "alpha";
     char *str2 = "beta";
@@ -941,8 +941,8 @@ UTEST_TEST_CASE(set_union) {
     set_insert(&set2, str2);
     set_insert(&set2, str3);
 
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 3);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 3);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_TRUE(set_contains(&result, str2));
     EXPECT_TRUE(set_contains(&result, str3));
@@ -963,10 +963,10 @@ UTEST_TEST_CASE(set_union) {
 
     int val1 = 42;
     set_insert(&result, &val1);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_UINT(set_size(&result), 1);
 
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 0);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 0);
     EXPECT_TRUE(set_empty(&result));
     EXPECT_FALSE(set_contains(&result, &val1));
 
@@ -986,8 +986,8 @@ UTEST_TEST_CASE(set_union) {
     char *str2 = "y";
     set_insert(&set1, str1);
     set_insert(&set2, str2);
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_TRUE(set_contains(&result, str2));
 
@@ -998,8 +998,8 @@ UTEST_TEST_CASE(set_union) {
     set_insert(&set1, str3);
     set_insert(&set2, str4);
 
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str3));
     EXPECT_TRUE(set_contains(&result, str4));
     EXPECT_FALSE(set_contains(&result, str1));
@@ -1024,7 +1024,7 @@ UTEST_TEST_CASE(set_union) {
     strcpy(result_val2, "result2");
     set_insert(&result, result_val1);
     set_insert(&result, result_val2);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_UINT(set_size(&result), 2);
 
     char *set1_key1 = malloc(10);
     char *set1_key2 = malloc(10);
@@ -1037,8 +1037,8 @@ UTEST_TEST_CASE(set_union) {
     strcpy(set2_key1, "set1_key1");
     set_insert(&set2, set2_key1);
 
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, set1_key1));
     EXPECT_TRUE(set_contains(&result, set1_key2));
 
@@ -1054,7 +1054,8 @@ UTEST_TEST_CASE(set_union) {
  * Dependencies: set_init, set_insert, set_size, set_contains, set_clear
  * Description: Tests the set_difference function to compute difference.
  */
-UTEST_TEST_CASE(set_difference) {
+UTEST_CASE(set_difference)
+{
   // Test 1: Difference of two sets
   {
     Set set1, set2, result;
@@ -1070,8 +1071,8 @@ UTEST_TEST_CASE(set_difference) {
     set_insert(&set2, str2);
     set_insert(&set2, str3);
 
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_FALSE(set_contains(&result, str2));
     EXPECT_FALSE(set_contains(&result, str3));
@@ -1093,8 +1094,8 @@ UTEST_TEST_CASE(set_difference) {
     set_insert(&set1, str1);
     set_insert(&set2, str2);
 
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str1));
 
     set_destroy(&set1);
@@ -1116,8 +1117,8 @@ UTEST_TEST_CASE(set_difference) {
     set_insert(&set2, str1);
     set_insert(&set2, str2);
 
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 0);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 0);
     EXPECT_TRUE(set_empty(&result));
 
     set_destroy(&set1);
@@ -1137,8 +1138,8 @@ UTEST_TEST_CASE(set_difference) {
     set_insert(&set1, str1);
     set_insert(&set1, str2);
 
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_TRUE(set_contains(&result, str2));
 
@@ -1161,8 +1162,8 @@ UTEST_TEST_CASE(set_difference) {
     set_insert(&set1, str1);
     set_insert(&set2, str2);
 
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_FALSE(set_contains(&result, str3));
 
@@ -1178,9 +1179,9 @@ UTEST_TEST_CASE(set_difference) {
     set_init(&set2, NULL, NULL, NULL);
     set_init(&result, NULL, NULL, NULL);
 
-    EXPECT_EQUAL_INT(set_difference(NULL, &set1, &set2), COLLECTION_FAILURE);
-    EXPECT_EQUAL_INT(set_difference(&result, NULL, &set2), COLLECTION_FAILURE);
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_difference(NULL, &set1, &set2), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_difference(&result, NULL, &set2), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(set_difference(&result, &set1, NULL), COLLECTION_FAILURE);
 
     set_destroy(&set1);
     set_destroy(&set2);
@@ -1199,7 +1200,7 @@ UTEST_TEST_CASE(set_difference) {
     int val2 = 200;
     set_insert(&result, &val1);
     set_insert(&result, &val2);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_UINT(set_size(&result), 2);
 
     char *str1 = "only_in_set1";
     char *str2 = "in_both";
@@ -1209,8 +1210,8 @@ UTEST_TEST_CASE(set_difference) {
     set_insert(&set2, str2);
     set_insert(&set2, str3);
 
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_FALSE(set_contains(&result, str2));
     EXPECT_FALSE(set_contains(&result, str3));
@@ -1231,7 +1232,7 @@ UTEST_TEST_CASE(set_difference) {
 
     int val1 = 42;
     set_insert(&result, &val1);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_UINT(set_size(&result), 1);
 
     char *str1 = "a";
     char *str2 = "b";
@@ -1239,8 +1240,8 @@ UTEST_TEST_CASE(set_difference) {
     set_insert(&set2, str1);
     set_insert(&set2, str2);
 
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 0);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 0);
     EXPECT_TRUE(set_empty(&result));
     EXPECT_FALSE(set_contains(&result, &val1));
 
@@ -1261,8 +1262,8 @@ UTEST_TEST_CASE(set_difference) {
     set_insert(&set1, str1);
     set_insert(&set1, str2);
     set_insert(&set2, str2);
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str1));
 
     set_clear(&set1);
@@ -1273,8 +1274,8 @@ UTEST_TEST_CASE(set_difference) {
     set_insert(&set1, str4);
     set_insert(&set2, str4);
 
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str3));
     EXPECT_FALSE(set_contains(&result, str1));
     EXPECT_FALSE(set_contains(&result, str4));
@@ -1298,7 +1299,7 @@ UTEST_TEST_CASE(set_difference) {
     strcpy(result_val2, "result2");
     set_insert(&result, result_val1);
     set_insert(&result, result_val2);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_UINT(set_size(&result), 2);
 
     char *set1_key1 = malloc(10);
     char *set1_key2 = malloc(10);
@@ -1311,8 +1312,8 @@ UTEST_TEST_CASE(set_difference) {
     strcpy(set2_key1, "in_both");
     set_insert(&set2, set2_key1);
 
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, set1_key1));
     EXPECT_FALSE(set_contains(&result, set1_key2));
 
@@ -1328,7 +1329,8 @@ UTEST_TEST_CASE(set_difference) {
  * Dependencies: set_init, set_insert, set_size
  * Description: Tests the set_equal function to check equality.
  */
-UTEST_TEST_CASE(set_equal) {
+UTEST_CASE(set_equal)
+{
   // Test 1: Equal sets
   {
     Set set1, set2;
@@ -1421,7 +1423,8 @@ UTEST_TEST_CASE(set_equal) {
  * Dependencies: set_init, set_insert, set_size
  * Description: Tests the set_subset function to check subset relationship.
  */
-UTEST_TEST_CASE(set_subset) {
+UTEST_CASE(set_subset)
+{
   // Test 1: Proper subset
   {
     Set set1, set2;
@@ -1532,7 +1535,8 @@ UTEST_TEST_CASE(set_subset) {
  * set_intersection, set_union, set_difference Description: Tests for memory
  * leaks by tracking destroy function calls and shadow copy behavior.
  */
-UTEST_TEST_CASE(set_memory_leak) {
+UTEST_CASE(set_memory_leak)
+{
   // Test 1: All elements destroyed on set_destroy
   {
     Set set;
@@ -1548,7 +1552,7 @@ UTEST_TEST_CASE(set_memory_leak) {
     set_insert(&set, val3);
     destroy_count = 0;
     set_destroy(&set);
-    EXPECT_EQUAL_INT(destroy_count, 3);
+    EXPECT_EQ_INT(destroy_count, 3);
     free(val1);
     free(val2);
     free(val3);
@@ -1566,9 +1570,9 @@ UTEST_TEST_CASE(set_memory_leak) {
     set_insert(&set, val2);
     destroy_count = 0;
     set_remove(&set, val1);
-    EXPECT_EQUAL_INT(destroy_count, 1);
+    EXPECT_EQ_INT(destroy_count, 1);
     set_destroy(&set);
-    EXPECT_EQUAL_INT(destroy_count, 2);
+    EXPECT_EQ_INT(destroy_count, 2);
     free(val1);
     free(val2);
   }
@@ -1588,9 +1592,9 @@ UTEST_TEST_CASE(set_memory_leak) {
     set_insert(&set, val3);
     destroy_count = 0;
     set_clear(&set);
-    EXPECT_EQUAL_INT(destroy_count, 3);
+    EXPECT_EQ_INT(destroy_count, 3);
     set_destroy(&set);
-    EXPECT_EQUAL_INT(destroy_count, 3);
+    EXPECT_EQ_INT(destroy_count, 3);
     free(val1);
     free(val2);
     free(val3);
@@ -1615,17 +1619,16 @@ UTEST_TEST_CASE(set_memory_leak) {
     set_insert(&set2, val3);
 
     destroy_count = 0;
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(destroy_count, 0);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(destroy_count, 0);
 
     set_destroy(&result);
-    EXPECT_EQUAL_INT(destroy_count, 0);
+    EXPECT_EQ_INT(destroy_count, 0);
 
     set_destroy(&set1);
-    EXPECT_EQUAL_INT(destroy_count, 2);
+    EXPECT_EQ_INT(destroy_count, 2);
     set_destroy(&set2);
-    EXPECT_EQUAL_INT(destroy_count, 4);
+    EXPECT_EQ_INT(destroy_count, 4);
 
     free(val1);
     free(val2);
@@ -1651,16 +1654,16 @@ UTEST_TEST_CASE(set_memory_leak) {
     set_insert(&set2, val3);
 
     destroy_count = 0;
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(destroy_count, 0);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(destroy_count, 0);
 
     set_destroy(&result);
-    EXPECT_EQUAL_INT(destroy_count, 0);
+    EXPECT_EQ_INT(destroy_count, 0);
 
     set_destroy(&set1);
-    EXPECT_EQUAL_INT(destroy_count, 2);
+    EXPECT_EQ_INT(destroy_count, 2);
     set_destroy(&set2);
-    EXPECT_EQUAL_INT(destroy_count, 4);
+    EXPECT_EQ_INT(destroy_count, 4);
 
     free(val1);
     free(val2);
@@ -1686,16 +1689,16 @@ UTEST_TEST_CASE(set_memory_leak) {
     set_insert(&set2, val3);
 
     destroy_count = 0;
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(destroy_count, 0);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(destroy_count, 0);
 
     set_destroy(&result);
-    EXPECT_EQUAL_INT(destroy_count, 0);
+    EXPECT_EQ_INT(destroy_count, 0);
 
     set_destroy(&set1);
-    EXPECT_EQUAL_INT(destroy_count, 2);
+    EXPECT_EQ_INT(destroy_count, 2);
     set_destroy(&set2);
-    EXPECT_EQUAL_INT(destroy_count, 4);
+    EXPECT_EQ_INT(destroy_count, 4);
 
     free(val1);
     free(val2);
@@ -1711,10 +1714,10 @@ UTEST_TEST_CASE(set_memory_leak) {
       *value = i;
       set_insert(&set, value);
     }
-    EXPECT_EQUAL_UINT(set_size(&set), 10);
+    EXPECT_EQ_UINT(set_size(&set), 10);
     destroy_count = 0;
     set_destroy(&set);
-    EXPECT_EQUAL_INT(destroy_count, 0);
+    EXPECT_EQ_INT(destroy_count, 0);
   }
 }
 
@@ -1723,7 +1726,8 @@ UTEST_TEST_CASE(set_memory_leak) {
  * Dependencies: All set functions
  * Description: Integration test combining multiple operations.
  */
-UTEST_TEST_CASE(set_integration) {
+UTEST_CASE(set_integration)
+{
   // Test 1: Complex sequence of operations
   {
     Set set;
@@ -1731,16 +1735,16 @@ UTEST_TEST_CASE(set_integration) {
 
     char *strs[10] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"};
     for (int i = 0; i < 10; i++) {
-      EXPECT_EQUAL_INT(set_insert(&set, strs[i]), COLLECTION_SUCCESS);
+      EXPECT_EQ_INT(set_insert(&set, strs[i]), COLLECTION_SUCCESS);
     }
-    EXPECT_EQUAL_UINT(set_size(&set), 10);
+    EXPECT_EQ_UINT(set_size(&set), 10);
 
-    EXPECT_EQUAL_INT(set_remove(&set, strs[5]), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&set), 9);
+    EXPECT_EQ_INT(set_remove(&set, strs[5]), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&set), 9);
     EXPECT_FALSE(set_contains(&set, strs[5]));
 
     set_clear(&set);
-    EXPECT_EQUAL_UINT(set_size(&set), 0);
+    EXPECT_EQ_UINT(set_size(&set), 0);
     EXPECT_TRUE(set_empty(&set));
 
     set_destroy(&set);
@@ -1769,17 +1773,16 @@ UTEST_TEST_CASE(set_integration) {
     set_insert(&set3, str4);
     set_insert(&set3, str5);
 
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str2));
     EXPECT_TRUE(set_contains(&result, str3));
 
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set3), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 5);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set3), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 5);
 
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str1));
 
     set_destroy(&set1);
@@ -1829,23 +1832,23 @@ UTEST_TEST_CASE(set_integration) {
 
     set_insert(&set, str1);
     set_insert(&set, str2);
-    EXPECT_EQUAL_UINT(set_size(&set), 2);
+    EXPECT_EQ_UINT(set_size(&set), 2);
 
     set_insert(&set, str1);
-    EXPECT_EQUAL_UINT(set_size(&set), 2);
+    EXPECT_EQ_UINT(set_size(&set), 2);
 
     set_remove(&set, str2);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
+    EXPECT_EQ_UINT(set_size(&set), 1);
     EXPECT_TRUE(set_contains(&set, str1));
 
     set_insert(&set, str3);
-    EXPECT_EQUAL_UINT(set_size(&set), 2);
+    EXPECT_EQ_UINT(set_size(&set), 2);
 
     set_clear(&set);
     EXPECT_TRUE(set_empty(&set));
 
     set_insert(&set, str1);
-    EXPECT_EQUAL_UINT(set_size(&set), 1);
+    EXPECT_EQ_UINT(set_size(&set), 1);
 
     set_destroy(&set);
   }
@@ -1871,9 +1874,9 @@ UTEST_TEST_CASE(set_integration) {
     set_insert(&set3, str3);
     set_insert(&set3, str4);
 
-    EXPECT_EQUAL_INT(set_intersection(&temp, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(set_union(&result, &temp, &set3), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 3);
+    EXPECT_EQ_INT(set_intersection(&temp, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(set_union(&result, &temp, &set3), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 3);
     EXPECT_TRUE(set_contains(&result, str2));
     EXPECT_TRUE(set_contains(&result, str3));
     EXPECT_TRUE(set_contains(&result, str4));
@@ -1903,15 +1906,14 @@ UTEST_TEST_CASE(set_integration) {
     EXPECT_FALSE(set_subset(&set1, &set2));
     EXPECT_TRUE(set_subset(&set2, &set1));
 
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
     EXPECT_TRUE(set_empty(&result));
 
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
 
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
 
     set_destroy(&set1);
     set_destroy(&set2);
@@ -1927,14 +1929,14 @@ UTEST_TEST_CASE(set_integration) {
 
     int val1 = 999;
     set_insert(&result, &val1);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_UINT(set_size(&result), 1);
 
     char *str1 = "u1";
     char *str2 = "u2";
     set_insert(&set1, str1);
     set_insert(&set2, str2);
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str1));
     EXPECT_TRUE(set_contains(&result, str2));
     EXPECT_FALSE(set_contains(&result, &val1));
@@ -1946,9 +1948,8 @@ UTEST_TEST_CASE(set_integration) {
     set_insert(&set1, str3);
     set_insert(&set1, str4);
     set_insert(&set2, str3);
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str3));
     EXPECT_FALSE(set_contains(&result, str1));
     EXPECT_FALSE(set_contains(&result, str2));
@@ -1960,8 +1961,8 @@ UTEST_TEST_CASE(set_integration) {
     set_insert(&set1, str5);
     set_insert(&set1, str6);
     set_insert(&set2, str6);
-    EXPECT_EQUAL_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_difference(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str5));
     EXPECT_FALSE(set_contains(&result, str3));
 
@@ -1981,14 +1982,14 @@ UTEST_TEST_CASE(set_integration) {
     char *str_old2 = "old2";
     set_insert(&result, str_old1);
     set_insert(&result, str_old2);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_UINT(set_size(&result), 2);
 
     char *str_new1 = "new1";
     char *str_new2 = "new2";
     set_insert(&set1, str_new1);
     set_insert(&set2, str_new2);
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 2);
     EXPECT_TRUE(set_contains(&result, str_new1));
     EXPECT_TRUE(set_contains(&result, str_new2));
     EXPECT_FALSE(set_contains(&result, str_old1));
@@ -1996,16 +1997,15 @@ UTEST_TEST_CASE(set_integration) {
 
     char *str_old3 = "old3";
     set_insert(&result, str_old3);
-    EXPECT_EQUAL_UINT(set_size(&result), 3);
+    EXPECT_EQ_UINT(set_size(&result), 3);
 
     set_clear(&set1);
     set_clear(&set2);
     char *str_new3 = "new3";
     set_insert(&set1, str_new3);
     set_insert(&set2, str_new3);
-    EXPECT_EQUAL_INT(set_intersection(&result, &set1, &set2),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(set_size(&result), 1);
+    EXPECT_EQ_INT(set_intersection(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(set_size(&result), 1);
     EXPECT_TRUE(set_contains(&result, str_new3));
     EXPECT_FALSE(set_contains(&result, str_old3));
 
@@ -2026,15 +2026,15 @@ UTEST_TEST_CASE(set_integration) {
 
     char *str = "test_string";
     set_insert(&set1, str);
-    EXPECT_EQUAL_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(set_union(&result, &set1, &set2), COLLECTION_SUCCESS);
 
     EXPECT_TRUE(set_contains(&result, str));
     EXPECT_FALSE(set_contains(&result, &val));
 
     char *str2 = "another_string";
-    EXPECT_EQUAL_INT(set_insert(&result, str2), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(set_insert(&result, str2), COLLECTION_SUCCESS);
     EXPECT_TRUE(set_contains(&result, str2));
-    EXPECT_EQUAL_UINT(set_size(&result), 2);
+    EXPECT_EQ_UINT(set_size(&result), 2);
 
     set_destroy(&set1);
     set_destroy(&set2);
@@ -2046,20 +2046,21 @@ UTEST_TEST_CASE(set_integration) {
  * Test suite: set
  * Description: Test suite for set data structure
  */
-UTEST_TEST_SUITE(set) {
-  UTEST_RUN_TEST_CASE(set_init);
-  UTEST_RUN_TEST_CASE(set_destroy);
-  UTEST_RUN_TEST_CASE(set_empty);
-  UTEST_RUN_TEST_CASE(set_size);
-  UTEST_RUN_TEST_CASE(set_insert);
-  UTEST_RUN_TEST_CASE(set_remove);
-  UTEST_RUN_TEST_CASE(set_clear);
-  UTEST_RUN_TEST_CASE(set_contains);
-  UTEST_RUN_TEST_CASE(set_intersection);
-  UTEST_RUN_TEST_CASE(set_union);
-  UTEST_RUN_TEST_CASE(set_difference);
-  UTEST_RUN_TEST_CASE(set_equal);
-  UTEST_RUN_TEST_CASE(set_subset);
-  UTEST_RUN_TEST_CASE(set_memory_leak);
-  UTEST_RUN_TEST_CASE(set_integration);
+UTEST_SUITE(set)
+{
+  UTEST_RUNCASE(set_init);
+  UTEST_RUNCASE(set_destroy);
+  UTEST_RUNCASE(set_empty);
+  UTEST_RUNCASE(set_size);
+  UTEST_RUNCASE(set_insert);
+  UTEST_RUNCASE(set_remove);
+  UTEST_RUNCASE(set_clear);
+  UTEST_RUNCASE(set_contains);
+  UTEST_RUNCASE(set_intersection);
+  UTEST_RUNCASE(set_union);
+  UTEST_RUNCASE(set_difference);
+  UTEST_RUNCASE(set_equal);
+  UTEST_RUNCASE(set_subset);
+  UTEST_RUNCASE(set_memory_leak);
+  UTEST_RUNCASE(set_integration);
 }

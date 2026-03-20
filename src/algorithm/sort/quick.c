@@ -24,7 +24,8 @@
 /* Partition the data into two parts with the pivot based on median of three
    algorithm. */
 static int partition(void *data, size_t n, size_t size,
-                     int (*compare)(const void *, const void *)) {
+                     int (*compare)(const void *, const void *))
+{
   size_t left = 0;
   size_t right = n - 1;
   size_t mid = left + (right - left) / 2;
@@ -73,7 +74,8 @@ static int partition(void *data, size_t n, size_t size,
 }
 
 static int qsort(void *data, size_t n, size_t size, size_t low, size_t high,
-                 int (*compare)(const void *, const void *)) {
+                 int (*compare)(const void *, const void *))
+{
   if (low >= high)
     return COLLECTION_SUCCESS;
 
@@ -100,7 +102,8 @@ static int qsort(void *data, size_t n, size_t size, size_t low, size_t high,
 }
 
 int sort_quick(void *data, size_t n, size_t size,
-               int (*compare)(const void *, const void *)) {
+               int (*compare)(const void *, const void *))
+{
   if (!data || !compare || size == 0)
     return COLLECTION_FAILURE;
   if (n == 1 || n == 0)

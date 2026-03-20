@@ -24,7 +24,8 @@
 /* Global destroy counter for testing */
 static int destroy_count = 0;
 
-static void destroy_counter(void *data) {
+static void destroy_counter(void *data)
+{
   if (data != NULL) {
     destroy_count++;
   }
@@ -35,12 +36,13 @@ static void destroy_counter(void *data) {
  * Dependencies: None
  * Description: Tests basic initialization of the queue structure.
  */
-UTEST_TEST_CASE(queue_init) {
+UTEST_CASE(queue_init)
+{
   // Test 1: Initialize with NULL destroy function
   {
     Queue queue;
     queue_init(&queue, NULL);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 0);
+    EXPECT_EQ_UINT(queue_size(&queue), 0);
     EXPECT_TRUE(queue_empty(&queue));
     queue_destroy(&queue);
   }
@@ -49,7 +51,7 @@ UTEST_TEST_CASE(queue_init) {
   {
     Queue queue;
     queue_init(&queue, free);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 0);
+    EXPECT_EQ_UINT(queue_size(&queue), 0);
     EXPECT_TRUE(queue_empty(&queue));
     queue_destroy(&queue);
   }
@@ -60,12 +62,13 @@ UTEST_TEST_CASE(queue_init) {
  * Dependencies: queue_init
  * Description: Tests the queue_size function to get the number of elements.
  */
-UTEST_TEST_CASE(queue_size) {
+UTEST_CASE(queue_size)
+{
   // Test 1: Size of empty queue
   {
     Queue queue;
     queue_init(&queue, NULL);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 0);
+    EXPECT_EQ_UINT(queue_size(&queue), 0);
     queue_destroy(&queue);
   }
 
@@ -75,11 +78,11 @@ UTEST_TEST_CASE(queue_size) {
     queue_init(&queue, NULL);
     int a = 1, b = 2, c = 3;
     queue_enqueue(&queue, &a);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 1);
+    EXPECT_EQ_UINT(queue_size(&queue), 1);
     queue_enqueue(&queue, &b);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 2);
+    EXPECT_EQ_UINT(queue_size(&queue), 2);
     queue_enqueue(&queue, &c);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 3);
+    EXPECT_EQ_UINT(queue_size(&queue), 3);
     queue_destroy(&queue);
   }
 
@@ -91,13 +94,13 @@ UTEST_TEST_CASE(queue_size) {
     queue_enqueue(&queue, &a);
     queue_enqueue(&queue, &b);
     queue_dequeue(&queue, NULL);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 1);
+    EXPECT_EQ_UINT(queue_size(&queue), 1);
     queue_destroy(&queue);
   }
 
   // Test 4: Size with NULL queue
   {
-    EXPECT_EQUAL_UINT(queue_size(NULL), 0);
+    EXPECT_EQ_UINT(queue_size(NULL), 0);
   }
 }
 
@@ -106,7 +109,8 @@ UTEST_TEST_CASE(queue_size) {
  * Dependencies: queue_init, queue_size
  * Description: Tests the queue_empty function to check if queue is empty.
  */
-UTEST_TEST_CASE(queue_empty) {
+UTEST_CASE(queue_empty)
+{
   // Test 1: Empty queue
   {
     Queue queue;
@@ -149,13 +153,14 @@ UTEST_TEST_CASE(queue_empty) {
  * Dependencies: queue_init
  * Description: Tests destruction of the queue and cleanup.
  */
-UTEST_TEST_CASE(queue_destroy) {
+UTEST_CASE(queue_destroy)
+{
   // Test 1: Destroy empty queue
   {
     Queue queue;
     queue_init(&queue, NULL);
     queue_destroy(&queue);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 0);
+    EXPECT_EQ_UINT(queue_size(&queue), 0);
     EXPECT_TRUE(queue_empty(&queue));
   }
 
@@ -169,7 +174,7 @@ UTEST_TEST_CASE(queue_destroy) {
     queue_enqueue(&queue, &c);
     destroy_count = 0;
     queue_destroy(&queue);
-    EXPECT_EQUAL_INT(destroy_count, 3);
+    EXPECT_EQ_INT(destroy_count, 3);
   }
 
   // Test 3: Destroy queue without destroy function
@@ -180,7 +185,7 @@ UTEST_TEST_CASE(queue_destroy) {
     queue_enqueue(&queue, &a);
     queue_enqueue(&queue, &b);
     queue_destroy(&queue);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 0);
+    EXPECT_EQ_UINT(queue_size(&queue), 0);
   }
 }
 
@@ -189,15 +194,16 @@ UTEST_TEST_CASE(queue_destroy) {
  * Dependencies: queue_init, queue_size
  * Description: Tests adding elements to the back of the queue.
  */
-UTEST_TEST_CASE(queue_enqueue) {
+UTEST_CASE(queue_enqueue)
+{
   // Test 1: Enqueue to empty queue
   {
     Queue queue;
     queue_init(&queue, NULL);
     int a = 1;
-    EXPECT_EQUAL_INT(queue_enqueue(&queue, &a), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 1);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 1);
+    EXPECT_EQ_INT(queue_enqueue(&queue, &a), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(queue_size(&queue), 1);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 1);
     queue_destroy(&queue);
   }
 
@@ -206,11 +212,11 @@ UTEST_TEST_CASE(queue_enqueue) {
     Queue queue;
     queue_init(&queue, NULL);
     int a = 1, b = 2, c = 3;
-    EXPECT_EQUAL_INT(queue_enqueue(&queue, &a), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(queue_enqueue(&queue, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(queue_enqueue(&queue, &c), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 3);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 1);
+    EXPECT_EQ_INT(queue_enqueue(&queue, &a), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(queue_enqueue(&queue, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(queue_enqueue(&queue, &c), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(queue_size(&queue), 3);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 1);
     queue_destroy(&queue);
   }
 
@@ -218,8 +224,8 @@ UTEST_TEST_CASE(queue_enqueue) {
   {
     Queue queue;
     queue_init(&queue, NULL);
-    EXPECT_EQUAL_INT(queue_enqueue(&queue, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 1);
+    EXPECT_EQ_INT(queue_enqueue(&queue, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(queue_size(&queue), 1);
     EXPECT_NULL(queue_peek(&queue));
     queue_destroy(&queue);
   }
@@ -234,17 +240,17 @@ UTEST_TEST_CASE(queue_enqueue) {
     queue_enqueue(&queue, &c);
     void *dequeued = NULL;
     queue_dequeue(&queue, &dequeued);
-    EXPECT_EQUAL_UINT(*(int *)dequeued, 1);
+    EXPECT_EQ_UINT(*(int *)dequeued, 1);
     queue_dequeue(&queue, &dequeued);
-    EXPECT_EQUAL_UINT(*(int *)dequeued, 2);
+    EXPECT_EQ_UINT(*(int *)dequeued, 2);
     queue_dequeue(&queue, &dequeued);
-    EXPECT_EQUAL_UINT(*(int *)dequeued, 3);
+    EXPECT_EQ_UINT(*(int *)dequeued, 3);
     queue_destroy(&queue);
   }
 
   // Test 5: Enqueue with NULL queue
   {
-    EXPECT_EQUAL_INT(queue_enqueue(NULL, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(queue_enqueue(NULL, NULL), COLLECTION_FAILURE);
   }
 }
 
@@ -253,13 +259,14 @@ UTEST_TEST_CASE(queue_enqueue) {
  * Dependencies: queue_init, queue_enqueue, queue_size
  * Description: Tests removing elements from the front of the queue.
  */
-UTEST_TEST_CASE(queue_dequeue) {
+UTEST_CASE(queue_dequeue)
+{
   // Test 1: Dequeue from empty queue
   {
     Queue queue;
     queue_init(&queue, NULL);
-    EXPECT_EQUAL_INT(queue_dequeue(&queue, NULL), COLLECTION_FAILURE);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 0);
+    EXPECT_EQ_INT(queue_dequeue(&queue, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_UINT(queue_size(&queue), 0);
     queue_destroy(&queue);
   }
 
@@ -270,9 +277,9 @@ UTEST_TEST_CASE(queue_dequeue) {
     int a = 1, b = 2;
     queue_enqueue(&queue, &a);
     queue_enqueue(&queue, &b);
-    EXPECT_EQUAL_INT(queue_dequeue(&queue, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 1);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 2);
+    EXPECT_EQ_INT(queue_dequeue(&queue, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(queue_size(&queue), 1);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 2);
     queue_destroy(&queue);
   }
 
@@ -284,9 +291,9 @@ UTEST_TEST_CASE(queue_dequeue) {
     queue_enqueue(&queue, &a);
     queue_enqueue(&queue, &b);
     void *dequeued = NULL;
-    EXPECT_EQUAL_INT(queue_dequeue(&queue, &dequeued), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)dequeued, 1);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 1);
+    EXPECT_EQ_INT(queue_dequeue(&queue, &dequeued), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)dequeued, 1);
+    EXPECT_EQ_UINT(queue_size(&queue), 1);
     queue_destroy(&queue);
   }
 
@@ -298,9 +305,9 @@ UTEST_TEST_CASE(queue_dequeue) {
     queue_enqueue(&queue, &a);
     queue_enqueue(&queue, &b);
     destroy_count = 0;
-    EXPECT_EQUAL_INT(queue_dequeue(&queue, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(destroy_count, 1);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 1);
+    EXPECT_EQ_INT(queue_dequeue(&queue, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(destroy_count, 1);
+    EXPECT_EQ_UINT(queue_size(&queue), 1);
     queue_destroy(&queue);
   }
 
@@ -312,10 +319,10 @@ UTEST_TEST_CASE(queue_dequeue) {
     queue_enqueue(&queue, &a);
     queue_enqueue(&queue, &b);
     queue_enqueue(&queue, &c);
-    EXPECT_EQUAL_INT(queue_dequeue(&queue, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(queue_dequeue(&queue, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(queue_dequeue(&queue, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 0);
+    EXPECT_EQ_INT(queue_dequeue(&queue, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(queue_dequeue(&queue, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(queue_dequeue(&queue, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(queue_size(&queue), 0);
     EXPECT_TRUE(queue_empty(&queue));
     queue_destroy(&queue);
   }
@@ -331,7 +338,7 @@ UTEST_TEST_CASE(queue_dequeue) {
     for (int i = 0; i < 5; i++) {
       void *dequeued = NULL;
       queue_dequeue(&queue, &dequeued);
-      EXPECT_EQUAL_UINT(*(int *)dequeued, i + 1);
+      EXPECT_EQ_UINT(*(int *)dequeued, i + 1);
     }
     EXPECT_TRUE(queue_empty(&queue));
     queue_destroy(&queue);
@@ -343,7 +350,8 @@ UTEST_TEST_CASE(queue_dequeue) {
  * Dependencies: queue_init, queue_enqueue
  * Description: Tests peeking at the front element without removing it.
  */
-UTEST_TEST_CASE(queue_peek) {
+UTEST_CASE(queue_peek)
+{
   // Test 1: Peek at empty queue
   {
     Queue queue;
@@ -358,9 +366,9 @@ UTEST_TEST_CASE(queue_peek) {
     queue_init(&queue, NULL);
     int a = 1, b = 2;
     queue_enqueue(&queue, &a);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 1);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 1);
     queue_enqueue(&queue, &b);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 1);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 1);
     queue_destroy(&queue);
   }
 
@@ -371,10 +379,10 @@ UTEST_TEST_CASE(queue_peek) {
     int a = 1, b = 2;
     queue_enqueue(&queue, &a);
     queue_enqueue(&queue, &b);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 1);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 2);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 1);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 2);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 1);
+    EXPECT_EQ_UINT(queue_size(&queue), 2);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 1);
+    EXPECT_EQ_UINT(queue_size(&queue), 2);
     queue_destroy(&queue);
   }
 
@@ -386,11 +394,11 @@ UTEST_TEST_CASE(queue_peek) {
     queue_enqueue(&queue, &a);
     queue_enqueue(&queue, &b);
     queue_enqueue(&queue, &c);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 1);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 1);
     queue_dequeue(&queue, NULL);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 2);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 2);
     queue_dequeue(&queue, NULL);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 3);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 3);
     queue_destroy(&queue);
   }
 
@@ -409,13 +417,14 @@ UTEST_TEST_CASE(queue_peek) {
  * Dependencies: queue_init, queue_enqueue, queue_size
  * Description: Tests removing all elements from the queue.
  */
-UTEST_TEST_CASE(queue_clear) {
+UTEST_CASE(queue_clear)
+{
   // Test 1: Clear empty queue
   {
     Queue queue;
     queue_init(&queue, NULL);
     queue_clear(&queue);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 0);
+    EXPECT_EQ_UINT(queue_size(&queue), 0);
     EXPECT_TRUE(queue_empty(&queue));
     queue_destroy(&queue);
   }
@@ -429,7 +438,7 @@ UTEST_TEST_CASE(queue_clear) {
     queue_enqueue(&queue, &b);
     queue_enqueue(&queue, &c);
     queue_clear(&queue);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 0);
+    EXPECT_EQ_UINT(queue_size(&queue), 0);
     EXPECT_TRUE(queue_empty(&queue));
     EXPECT_NULL(queue_peek(&queue));
     queue_destroy(&queue);
@@ -445,8 +454,8 @@ UTEST_TEST_CASE(queue_clear) {
     queue_enqueue(&queue, &c);
     destroy_count = 0;
     queue_clear(&queue);
-    EXPECT_EQUAL_INT(destroy_count, 3);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 0);
+    EXPECT_EQ_INT(destroy_count, 3);
+    EXPECT_EQ_UINT(queue_size(&queue), 0);
     queue_destroy(&queue);
   }
 
@@ -458,8 +467,8 @@ UTEST_TEST_CASE(queue_clear) {
     queue_enqueue(&queue, &a);
     queue_clear(&queue);
     queue_enqueue(&queue, &b);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 1);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 2);
+    EXPECT_EQ_UINT(queue_size(&queue), 1);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 2);
     queue_destroy(&queue);
   }
 }
@@ -470,7 +479,8 @@ UTEST_TEST_CASE(queue_clear) {
  * queue_clear Description: Tests for memory leaks by tracking destroy function
  * calls.
  */
-UTEST_TEST_CASE(queue_memory_leak) {
+UTEST_CASE(queue_memory_leak)
+{
   // Test 1: All elements destroyed on queue_destroy
   {
     Queue queue;
@@ -482,7 +492,7 @@ UTEST_TEST_CASE(queue_memory_leak) {
     }
     destroy_count = 0;
     queue_destroy(&queue);
-    EXPECT_EQUAL_INT(destroy_count, 10);
+    EXPECT_EQ_INT(destroy_count, 10);
   }
 
   // Test 2: Elements destroyed on dequeue
@@ -498,9 +508,9 @@ UTEST_TEST_CASE(queue_memory_leak) {
     for (int i = 0; i < 5; i++) {
       queue_dequeue(&queue, NULL);
     }
-    EXPECT_EQUAL_INT(destroy_count, 5);
+    EXPECT_EQ_INT(destroy_count, 5);
     queue_destroy(&queue);
-    EXPECT_EQUAL_INT(destroy_count, 5);
+    EXPECT_EQ_INT(destroy_count, 5);
   }
 
   // Test 3: Elements destroyed on clear
@@ -514,9 +524,9 @@ UTEST_TEST_CASE(queue_memory_leak) {
     }
     destroy_count = 0;
     queue_clear(&queue);
-    EXPECT_EQUAL_INT(destroy_count, 10);
+    EXPECT_EQ_INT(destroy_count, 10);
     queue_destroy(&queue);
-    EXPECT_EQUAL_INT(destroy_count, 10);
+    EXPECT_EQ_INT(destroy_count, 10);
   }
   // Test 4: Elements freed by free
   {
@@ -527,7 +537,7 @@ UTEST_TEST_CASE(queue_memory_leak) {
       *value = i;
       queue_enqueue(&queue, value);
     }
-    EXPECT_EQUAL_UINT(queue_size(&queue), 10);
+    EXPECT_EQ_UINT(queue_size(&queue), 10);
     queue_destroy(&queue);
   }
 }
@@ -537,7 +547,8 @@ UTEST_TEST_CASE(queue_memory_leak) {
  * Dependencies: All queue functions
  * Description: Integration test combining multiple operations.
  */
-UTEST_TEST_CASE(queue_integration) {
+UTEST_CASE(queue_integration)
+{
   // Test 1: Complex sequence of operations
   {
     Queue queue;
@@ -546,21 +557,21 @@ UTEST_TEST_CASE(queue_integration) {
     int values[10];
     for (int i = 0; i < 10; i++) {
       values[i] = i;
-      EXPECT_EQUAL_INT(queue_enqueue(&queue, &values[i]), COLLECTION_SUCCESS);
+      EXPECT_EQ_INT(queue_enqueue(&queue, &values[i]), COLLECTION_SUCCESS);
     }
-    EXPECT_EQUAL_UINT(queue_size(&queue), 10);
+    EXPECT_EQ_UINT(queue_size(&queue), 10);
 
     void *peeked = queue_peek(&queue);
-    EXPECT_EQUAL_UINT(*(int *)peeked, 0);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 10);
+    EXPECT_EQ_UINT(*(int *)peeked, 0);
+    EXPECT_EQ_UINT(queue_size(&queue), 10);
 
     void *dequeued = NULL;
-    EXPECT_EQUAL_INT(queue_dequeue(&queue, &dequeued), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)dequeued, 0);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 9);
+    EXPECT_EQ_INT(queue_dequeue(&queue, &dequeued), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)dequeued, 0);
+    EXPECT_EQ_UINT(queue_size(&queue), 9);
 
     queue_clear(&queue);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 0);
+    EXPECT_EQ_UINT(queue_size(&queue), 0);
     EXPECT_TRUE(queue_empty(&queue));
 
     queue_destroy(&queue);
@@ -579,7 +590,7 @@ UTEST_TEST_CASE(queue_integration) {
     for (int i = 0; i < 5; i++) {
       void *dequeued = NULL;
       queue_dequeue(&queue, &dequeued);
-      EXPECT_EQUAL_UINT(*(int *)dequeued, values[i]);
+      EXPECT_EQ_UINT(*(int *)dequeued, values[i]);
     }
 
     EXPECT_TRUE(queue_empty(&queue));
@@ -597,11 +608,11 @@ UTEST_TEST_CASE(queue_integration) {
 
     void *dequeued = NULL;
     queue_dequeue(&queue, &dequeued);
-    EXPECT_EQUAL_UINT(*(int *)dequeued, 1);
+    EXPECT_EQ_UINT(*(int *)dequeued, 1);
 
     queue_enqueue(&queue, &c);
-    EXPECT_EQUAL_UINT(queue_size(&queue), 2);
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 2);
+    EXPECT_EQ_UINT(queue_size(&queue), 2);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 2);
 
     queue_destroy(&queue);
   }
@@ -617,7 +628,7 @@ UTEST_TEST_CASE(queue_integration) {
     int a = 1;
     queue_enqueue(&queue, &a);
     EXPECT_FALSE(queue_empty(&queue));
-    EXPECT_EQUAL_UINT(*(int *)queue_peek(&queue), 1);
+    EXPECT_EQ_UINT(*(int *)queue_peek(&queue), 1);
 
     queue_dequeue(&queue, NULL);
     EXPECT_TRUE(queue_empty(&queue));
@@ -639,7 +650,7 @@ UTEST_TEST_CASE(queue_integration) {
       for (int i = 0; i < 3; i++) {
         void *dequeued = NULL;
         queue_dequeue(&queue, &dequeued);
-        EXPECT_EQUAL_UINT(*(int *)dequeued, values[i]);
+        EXPECT_EQ_UINT(*(int *)dequeued, values[i]);
       }
       EXPECT_TRUE(queue_empty(&queue));
     }
@@ -652,15 +663,16 @@ UTEST_TEST_CASE(queue_integration) {
  * Test suite: queue
  * Description: Test suite for queue data structure
  */
-UTEST_TEST_SUITE(queue) {
-  UTEST_RUN_TEST_CASE(queue_init);
-  UTEST_RUN_TEST_CASE(queue_size);
-  UTEST_RUN_TEST_CASE(queue_empty);
-  UTEST_RUN_TEST_CASE(queue_destroy);
-  UTEST_RUN_TEST_CASE(queue_enqueue);
-  UTEST_RUN_TEST_CASE(queue_dequeue);
-  UTEST_RUN_TEST_CASE(queue_peek);
-  UTEST_RUN_TEST_CASE(queue_clear);
-  UTEST_RUN_TEST_CASE(queue_memory_leak);
-  UTEST_RUN_TEST_CASE(queue_integration);
+UTEST_SUITE(queue)
+{
+  UTEST_RUNCASE(queue_init);
+  UTEST_RUNCASE(queue_size);
+  UTEST_RUNCASE(queue_empty);
+  UTEST_RUNCASE(queue_destroy);
+  UTEST_RUNCASE(queue_enqueue);
+  UTEST_RUNCASE(queue_dequeue);
+  UTEST_RUNCASE(queue_peek);
+  UTEST_RUNCASE(queue_clear);
+  UTEST_RUNCASE(queue_memory_leak);
+  UTEST_RUNCASE(queue_integration);
 }

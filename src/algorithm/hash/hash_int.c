@@ -22,7 +22,8 @@
  * Hash an integer. This hash function is based on
  * the multiplication method.
  */
-uint32_t hash_int(const int key) {
+uint32_t hash_int(const int key)
+{
   const double A = 0.61803398874989484820;
   uint32_t k = (uint32_t)key;
   double d = k * A;

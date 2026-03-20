@@ -24,7 +24,8 @@
 /* Global destroy counter for testing */
 static int destroy_count = 0;
 
-static void destroy_counter(void *data) {
+static void destroy_counter(void *data)
+{
   if (data != NULL) {
     destroy_count++;
   }
@@ -35,12 +36,13 @@ static void destroy_counter(void *data) {
  * Dependencies: None
  * Description: Tests basic initialization of the dlist structure.
  */
-UTEST_TEST_CASE(dlist_init) {
+UTEST_CASE(dlist_init)
+{
   // Test 1: Initialize with NULL destroy function
   {
     DList list;
     dlist_init(&list, NULL);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     EXPECT_TRUE(dlist_empty(&list));
     EXPECT_NULL(dlist_head(&list));
     EXPECT_NULL(dlist_tail(&list));
@@ -51,7 +53,7 @@ UTEST_TEST_CASE(dlist_init) {
   {
     DList list;
     dlist_init(&list, free);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     EXPECT_TRUE(dlist_empty(&list));
     EXPECT_NULL(dlist_head(&list));
     EXPECT_NULL(dlist_tail(&list));
@@ -64,12 +66,13 @@ UTEST_TEST_CASE(dlist_init) {
  * Dependencies: dlist_init
  * Description: Tests the dlist_size function to get the number of elements.
  */
-UTEST_TEST_CASE(dlist_size) {
+UTEST_CASE(dlist_size)
+{
   // Test 1: Size of empty list
   {
     DList list;
     dlist_init(&list, NULL);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     dlist_destroy(&list);
   }
 
@@ -79,11 +82,11 @@ UTEST_TEST_CASE(dlist_size) {
     dlist_init(&list, NULL);
     int a = 1, b = 2, c = 3;
     dlist_push_front(&list, &a);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
     dlist_push_front(&list, &b);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 2);
+    EXPECT_EQ_UINT(dlist_size(&list), 2);
     dlist_push_front(&list, &c);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 3);
+    EXPECT_EQ_UINT(dlist_size(&list), 3);
     dlist_destroy(&list);
   }
 
@@ -93,11 +96,11 @@ UTEST_TEST_CASE(dlist_size) {
     dlist_init(&list, NULL);
     int a = 1, b = 2, c = 3;
     dlist_push_back(&list, &a);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
     dlist_push_back(&list, &b);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 2);
+    EXPECT_EQ_UINT(dlist_size(&list), 2);
     dlist_push_back(&list, &c);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 3);
+    EXPECT_EQ_UINT(dlist_size(&list), 3);
     dlist_destroy(&list);
   }
 
@@ -109,7 +112,7 @@ UTEST_TEST_CASE(dlist_size) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
     dlist_pop_front(&list, NULL);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
     dlist_destroy(&list);
   }
 
@@ -121,13 +124,13 @@ UTEST_TEST_CASE(dlist_size) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
     dlist_pop_back(&list, NULL);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
     dlist_destroy(&list);
   }
 
   // Test 6: Size with NULL list
   {
-    EXPECT_EQUAL_UINT(dlist_size(NULL), 0);
+    EXPECT_EQ_UINT(dlist_size(NULL), 0);
   }
 }
 
@@ -136,7 +139,8 @@ UTEST_TEST_CASE(dlist_size) {
  * Dependencies: dlist_init, dlist_size
  * Description: Tests the dlist_empty function to check if list is empty.
  */
-UTEST_TEST_CASE(dlist_empty) {
+UTEST_CASE(dlist_empty)
+{
   // Test 1: Empty list
   {
     DList list;
@@ -179,7 +183,8 @@ UTEST_TEST_CASE(dlist_empty) {
  * Dependencies: dlist_init
  * Description: Tests the dlist_head function to get the head node.
  */
-UTEST_TEST_CASE(dlist_head) {
+UTEST_CASE(dlist_head)
+{
   // Test 1: Head of empty list
   {
     DList list;
@@ -194,10 +199,10 @@ UTEST_TEST_CASE(dlist_head) {
     dlist_init(&list, NULL);
     int a = 1, b = 2;
     dlist_push_back(&list, &a);
-    EXPECT_NOT_NULL(dlist_head(&list));
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
+    EXPECT_NOTNULL(dlist_head(&list));
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
     dlist_push_back(&list, &b);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
     dlist_destroy(&list);
   }
 
@@ -208,7 +213,7 @@ UTEST_TEST_CASE(dlist_head) {
     int a = 1, b = 2;
     dlist_push_back(&list, &a);
     dlist_push_front(&list, &b);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 2);
     dlist_destroy(&list);
   }
 
@@ -223,7 +228,8 @@ UTEST_TEST_CASE(dlist_head) {
  * Dependencies: dlist_init
  * Description: Tests the dlist_tail function to get the tail node.
  */
-UTEST_TEST_CASE(dlist_tail) {
+UTEST_CASE(dlist_tail)
+{
   // Test 1: Tail of empty list
   {
     DList list;
@@ -238,10 +244,10 @@ UTEST_TEST_CASE(dlist_tail) {
     dlist_init(&list, NULL);
     int a = 1, b = 2;
     dlist_push_back(&list, &a);
-    EXPECT_NOT_NULL(dlist_tail(&list));
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 1);
+    EXPECT_NOTNULL(dlist_tail(&list));
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 1);
     dlist_push_back(&list, &b);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 2);
     dlist_destroy(&list);
   }
 
@@ -251,7 +257,7 @@ UTEST_TEST_CASE(dlist_tail) {
     dlist_init(&list, NULL);
     int a = 1;
     dlist_push_back(&list, &a);
-    EXPECT_EQUAL_UINT(dlist_head(&list), dlist_tail(&list));
+    EXPECT_EQ_UINT(dlist_head(&list), dlist_tail(&list));
     dlist_destroy(&list);
   }
 
@@ -266,7 +272,8 @@ UTEST_TEST_CASE(dlist_tail) {
  * Dependencies: dlist_init, dlist_push_back
  * Description: Tests the dlist_next function to get the next node.
  */
-UTEST_TEST_CASE(dlist_next) {
+UTEST_CASE(dlist_next)
+{
   // Test 1: Next of NULL node
   {
     EXPECT_NULL(dlist_next(NULL));
@@ -292,11 +299,11 @@ UTEST_TEST_CASE(dlist_next) {
     dlist_push_back(&list, &b);
     dlist_push_back(&list, &c);
     DListNode *node = dlist_head(&list);
-    EXPECT_NOT_NULL(dlist_next(node));
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_next(node)), 2);
+    EXPECT_NOTNULL(dlist_next(node));
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_next(node)), 2);
     node = dlist_next(node);
-    EXPECT_NOT_NULL(dlist_next(node));
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_next(node)), 3);
+    EXPECT_NOTNULL(dlist_next(node));
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_next(node)), 3);
     node = dlist_next(node);
     EXPECT_NULL(dlist_next(node));
     dlist_destroy(&list);
@@ -308,7 +315,8 @@ UTEST_TEST_CASE(dlist_next) {
  * Dependencies: dlist_init, dlist_push_back
  * Description: Tests the dlist_prev function to get the previous node.
  */
-UTEST_TEST_CASE(dlist_prev) {
+UTEST_CASE(dlist_prev)
+{
   // Test 1: Prev of NULL node
   {
     EXPECT_NULL(dlist_prev(NULL));
@@ -334,11 +342,11 @@ UTEST_TEST_CASE(dlist_prev) {
     dlist_push_back(&list, &b);
     dlist_push_back(&list, &c);
     DListNode *node = dlist_tail(&list);
-    EXPECT_NOT_NULL(dlist_prev(node));
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_prev(node)), 2);
+    EXPECT_NOTNULL(dlist_prev(node));
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_prev(node)), 2);
     node = dlist_prev(node);
-    EXPECT_NOT_NULL(dlist_prev(node));
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_prev(node)), 1);
+    EXPECT_NOTNULL(dlist_prev(node));
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_prev(node)), 1);
     node = dlist_prev(node);
     EXPECT_NULL(dlist_prev(node));
     dlist_destroy(&list);
@@ -350,7 +358,8 @@ UTEST_TEST_CASE(dlist_prev) {
  * Dependencies: dlist_init, dlist_push_back
  * Description: Tests the dlist_data function to get node data.
  */
-UTEST_TEST_CASE(dlist_data) {
+UTEST_CASE(dlist_data)
+{
   // Test 1: Data of NULL node
   {
     EXPECT_NULL(dlist_data(NULL));
@@ -364,9 +373,9 @@ UTEST_TEST_CASE(dlist_data) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
     DListNode *node = dlist_head(&list);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 1);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 2);
     dlist_destroy(&list);
   }
 
@@ -386,13 +395,14 @@ UTEST_TEST_CASE(dlist_data) {
  * Dependencies: dlist_init
  * Description: Tests destruction of the list and cleanup.
  */
-UTEST_TEST_CASE(dlist_destroy) {
+UTEST_CASE(dlist_destroy)
+{
   // Test 1: Destroy empty list
   {
     DList list;
     dlist_init(&list, NULL);
     dlist_destroy(&list);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     EXPECT_TRUE(dlist_empty(&list));
   }
 
@@ -406,7 +416,7 @@ UTEST_TEST_CASE(dlist_destroy) {
     dlist_push_back(&list, &c);
     destroy_count = 0;
     dlist_destroy(&list);
-    EXPECT_EQUAL_INT(destroy_count, 3);
+    EXPECT_EQ_INT(destroy_count, 3);
   }
 
   // Test 3: Destroy list without destroy function
@@ -417,7 +427,7 @@ UTEST_TEST_CASE(dlist_destroy) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
     dlist_destroy(&list);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
   }
 }
 
@@ -426,15 +436,16 @@ UTEST_TEST_CASE(dlist_destroy) {
  * Dependencies: dlist_init, dlist_size
  * Description: Tests inserting elements at the beginning of the list.
  */
-UTEST_TEST_CASE(dlist_push_front) {
+UTEST_CASE(dlist_push_front)
+{
   // Test 1: Push to empty list
   {
     DList list;
     dlist_init(&list, NULL);
     int a = 1;
-    EXPECT_EQUAL_INT(dlist_push_front(&list, &a), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
+    EXPECT_EQ_INT(dlist_push_front(&list, &a), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
     dlist_destroy(&list);
   }
 
@@ -443,17 +454,17 @@ UTEST_TEST_CASE(dlist_push_front) {
     DList list;
     dlist_init(&list, NULL);
     int a = 1, b = 2, c = 3;
-    EXPECT_EQUAL_INT(dlist_push_front(&list, &a), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(dlist_push_front(&list, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(dlist_push_front(&list, &c), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 3);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 3);
+    EXPECT_EQ_INT(dlist_push_front(&list, &a), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(dlist_push_front(&list, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(dlist_push_front(&list, &c), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 3);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 3);
     DListNode *node = dlist_head(&list);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 3);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 3);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 2);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 1);
     dlist_destroy(&list);
   }
 
@@ -461,8 +472,8 @@ UTEST_TEST_CASE(dlist_push_front) {
   {
     DList list;
     dlist_init(&list, NULL);
-    EXPECT_EQUAL_INT(dlist_push_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_INT(dlist_push_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
     EXPECT_NULL(dlist_data(dlist_head(&list)));
     dlist_destroy(&list);
   }
@@ -473,16 +484,16 @@ UTEST_TEST_CASE(dlist_push_front) {
     dlist_init(&list, NULL);
     int a = 1, b = 2;
     dlist_push_front(&list, &a);
-    EXPECT_EQUAL_UINT(dlist_head(&list), dlist_tail(&list));
+    EXPECT_EQ_UINT(dlist_head(&list), dlist_tail(&list));
     dlist_push_front(&list, &b);
-    EXPECT_NOT_EQUAL_UINT(dlist_head(&list), dlist_tail(&list));
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 1);
+    EXPECT_NE_UINT(dlist_head(&list), dlist_tail(&list));
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 1);
     dlist_destroy(&list);
   }
 
   // Test 5: Push with NULL list
   {
-    EXPECT_EQUAL_INT(dlist_push_front(NULL, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(dlist_push_front(NULL, NULL), COLLECTION_FAILURE);
   }
 }
 
@@ -491,15 +502,16 @@ UTEST_TEST_CASE(dlist_push_front) {
  * Dependencies: dlist_init, dlist_size
  * Description: Tests appending elements to the end of the list.
  */
-UTEST_TEST_CASE(dlist_push_back) {
+UTEST_CASE(dlist_push_back)
+{
   // Test 1: Push to empty list
   {
     DList list;
     dlist_init(&list, NULL);
     int a = 1;
-    EXPECT_EQUAL_INT(dlist_push_back(&list, &a), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 1);
+    EXPECT_EQ_INT(dlist_push_back(&list, &a), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 1);
     dlist_destroy(&list);
   }
 
@@ -508,12 +520,12 @@ UTEST_TEST_CASE(dlist_push_back) {
     DList list;
     dlist_init(&list, NULL);
     int a = 1, b = 2, c = 3;
-    EXPECT_EQUAL_INT(dlist_push_back(&list, &a), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(dlist_push_back(&list, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(dlist_push_back(&list, &c), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 3);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 3);
+    EXPECT_EQ_INT(dlist_push_back(&list, &a), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(dlist_push_back(&list, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(dlist_push_back(&list, &c), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 3);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 3);
     dlist_destroy(&list);
   }
 
@@ -521,8 +533,8 @@ UTEST_TEST_CASE(dlist_push_back) {
   {
     DList list;
     dlist_init(&list, NULL);
-    EXPECT_EQUAL_INT(dlist_push_back(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_INT(dlist_push_back(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
     EXPECT_NULL(dlist_data(dlist_tail(&list)));
     dlist_destroy(&list);
   }
@@ -533,16 +545,16 @@ UTEST_TEST_CASE(dlist_push_back) {
     dlist_init(&list, NULL);
     int a = 1, b = 2;
     dlist_push_back(&list, &a);
-    EXPECT_EQUAL_UINT(dlist_head(&list), dlist_tail(&list));
+    EXPECT_EQ_UINT(dlist_head(&list), dlist_tail(&list));
     dlist_push_back(&list, &b);
-    EXPECT_NOT_EQUAL_UINT(dlist_head(&list), dlist_tail(&list));
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
+    EXPECT_NE_UINT(dlist_head(&list), dlist_tail(&list));
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
     dlist_destroy(&list);
   }
 
   // Test 5: Push with NULL list
   {
-    EXPECT_EQUAL_INT(dlist_push_back(NULL, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(dlist_push_back(NULL, NULL), COLLECTION_FAILURE);
   }
 }
 
@@ -551,13 +563,14 @@ UTEST_TEST_CASE(dlist_push_back) {
  * Dependencies: dlist_init, dlist_push_back, dlist_size
  * Description: Tests removing the first element from the list.
  */
-UTEST_TEST_CASE(dlist_pop_front) {
+UTEST_CASE(dlist_pop_front)
+{
   // Test 1: Pop from empty list
   {
     DList list;
     dlist_init(&list, NULL);
-    EXPECT_EQUAL_INT(dlist_pop_front(&list, NULL), COLLECTION_FAILURE);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_INT(dlist_pop_front(&list, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     dlist_destroy(&list);
   }
 
@@ -568,9 +581,9 @@ UTEST_TEST_CASE(dlist_pop_front) {
     int a = 1, b = 2;
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
-    EXPECT_EQUAL_INT(dlist_pop_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 2);
+    EXPECT_EQ_INT(dlist_pop_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 2);
     dlist_destroy(&list);
   }
 
@@ -582,9 +595,9 @@ UTEST_TEST_CASE(dlist_pop_front) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
     void *popped = NULL;
-    EXPECT_EQUAL_INT(dlist_pop_front(&list, &popped), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)popped, 1);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_INT(dlist_pop_front(&list, &popped), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)popped, 1);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
     dlist_destroy(&list);
   }
 
@@ -596,9 +609,9 @@ UTEST_TEST_CASE(dlist_pop_front) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
     destroy_count = 0;
-    EXPECT_EQUAL_INT(dlist_pop_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(destroy_count, 1);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_INT(dlist_pop_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(destroy_count, 1);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
     dlist_destroy(&list);
   }
 
@@ -610,10 +623,10 @@ UTEST_TEST_CASE(dlist_pop_front) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
     dlist_push_back(&list, &c);
-    EXPECT_EQUAL_INT(dlist_pop_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(dlist_pop_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(dlist_pop_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_INT(dlist_pop_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(dlist_pop_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(dlist_pop_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     EXPECT_TRUE(dlist_empty(&list));
     dlist_destroy(&list);
   }
@@ -636,13 +649,14 @@ UTEST_TEST_CASE(dlist_pop_front) {
  * Dependencies: dlist_init, dlist_push_back, dlist_size
  * Description: Tests removing the last element from the list.
  */
-UTEST_TEST_CASE(dlist_pop_back) {
+UTEST_CASE(dlist_pop_back)
+{
   // Test 1: Pop from empty list
   {
     DList list;
     dlist_init(&list, NULL);
-    EXPECT_EQUAL_INT(dlist_pop_back(&list, NULL), COLLECTION_FAILURE);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_INT(dlist_pop_back(&list, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     dlist_destroy(&list);
   }
 
@@ -653,9 +667,9 @@ UTEST_TEST_CASE(dlist_pop_back) {
     int a = 1, b = 2;
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
-    EXPECT_EQUAL_INT(dlist_pop_back(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 1);
+    EXPECT_EQ_INT(dlist_pop_back(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 1);
     dlist_destroy(&list);
   }
 
@@ -667,9 +681,9 @@ UTEST_TEST_CASE(dlist_pop_back) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
     void *popped = NULL;
-    EXPECT_EQUAL_INT(dlist_pop_back(&list, &popped), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)popped, 2);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_INT(dlist_pop_back(&list, &popped), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)popped, 2);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
     dlist_destroy(&list);
   }
 
@@ -681,9 +695,9 @@ UTEST_TEST_CASE(dlist_pop_back) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
     destroy_count = 0;
-    EXPECT_EQUAL_INT(dlist_pop_back(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(destroy_count, 1);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_INT(dlist_pop_back(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(destroy_count, 1);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
     dlist_destroy(&list);
   }
 
@@ -695,10 +709,10 @@ UTEST_TEST_CASE(dlist_pop_back) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &b);
     dlist_push_back(&list, &c);
-    EXPECT_EQUAL_INT(dlist_pop_back(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(dlist_pop_back(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(dlist_pop_back(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_INT(dlist_pop_back(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(dlist_pop_back(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(dlist_pop_back(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     EXPECT_TRUE(dlist_empty(&list));
     dlist_destroy(&list);
   }
@@ -721,13 +735,14 @@ UTEST_TEST_CASE(dlist_pop_back) {
  * Dependencies: dlist_init, dlist_push_back, dlist_size
  * Description: Tests removing all elements from the list.
  */
-UTEST_TEST_CASE(dlist_clear) {
+UTEST_CASE(dlist_clear)
+{
   // Test 1: Clear empty list
   {
     DList list;
     dlist_init(&list, NULL);
     dlist_clear(&list);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     EXPECT_TRUE(dlist_empty(&list));
     dlist_destroy(&list);
   }
@@ -741,7 +756,7 @@ UTEST_TEST_CASE(dlist_clear) {
     dlist_push_back(&list, &b);
     dlist_push_back(&list, &c);
     dlist_clear(&list);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     EXPECT_TRUE(dlist_empty(&list));
     EXPECT_NULL(dlist_head(&list));
     EXPECT_NULL(dlist_tail(&list));
@@ -758,8 +773,8 @@ UTEST_TEST_CASE(dlist_clear) {
     dlist_push_back(&list, &c);
     destroy_count = 0;
     dlist_clear(&list);
-    EXPECT_EQUAL_INT(destroy_count, 3);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_INT(destroy_count, 3);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     dlist_destroy(&list);
   }
 
@@ -771,8 +786,8 @@ UTEST_TEST_CASE(dlist_clear) {
     dlist_push_back(&list, &a);
     dlist_clear(&list);
     dlist_push_back(&list, &b);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 2);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 2);
     dlist_destroy(&list);
   }
 }
@@ -782,7 +797,8 @@ UTEST_TEST_CASE(dlist_clear) {
  * Dependencies: dlist_init, dlist_push_back, dlist_size
  * Description: Tests inserting elements after a given node.
  */
-UTEST_TEST_CASE(dlist_insert_after) {
+UTEST_CASE(dlist_insert_after)
+{
   // Test 1: Insert after head
   {
     DList list;
@@ -791,13 +807,13 @@ UTEST_TEST_CASE(dlist_insert_after) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &c);
     DListNode *node = dlist_head(&list);
-    EXPECT_EQUAL_INT(dlist_insert_after(&list, node, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 3);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
+    EXPECT_EQ_INT(dlist_insert_after(&list, node, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 3);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 2);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 3);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 3);
     dlist_destroy(&list);
   }
 
@@ -808,9 +824,9 @@ UTEST_TEST_CASE(dlist_insert_after) {
     int a = 1, b = 2;
     dlist_push_back(&list, &a);
     DListNode *node = dlist_tail(&list);
-    EXPECT_EQUAL_INT(dlist_insert_after(&list, node, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 2);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 2);
+    EXPECT_EQ_INT(dlist_insert_after(&list, node, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 2);
     dlist_destroy(&list);
   }
 
@@ -821,8 +837,8 @@ UTEST_TEST_CASE(dlist_insert_after) {
     int a = 1;
     dlist_push_back(&list, &a);
     DListNode *node = dlist_head(&list);
-    EXPECT_EQUAL_INT(dlist_insert_after(&list, node, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 2);
+    EXPECT_EQ_INT(dlist_insert_after(&list, node, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 2);
     EXPECT_NULL(dlist_data(dlist_next(node)));
     dlist_destroy(&list);
   }
@@ -832,8 +848,8 @@ UTEST_TEST_CASE(dlist_insert_after) {
     DList list;
     dlist_init(&list, NULL);
     int a = 1;
-    EXPECT_EQUAL_INT(dlist_insert_after(&list, NULL, &a), COLLECTION_FAILURE);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_INT(dlist_insert_after(&list, NULL, &a), COLLECTION_FAILURE);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     dlist_destroy(&list);
   }
 
@@ -844,7 +860,7 @@ UTEST_TEST_CASE(dlist_insert_after) {
     int a = 1, b = 2;
     dlist_push_back(&list, &a);
     DListNode *node = dlist_head(&list);
-    EXPECT_EQUAL_INT(dlist_insert_after(NULL, node, &b), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(dlist_insert_after(NULL, node, &b), COLLECTION_FAILURE);
     dlist_destroy(&list);
   }
 
@@ -858,16 +874,16 @@ UTEST_TEST_CASE(dlist_insert_after) {
     dlist_push_back(&list, &d);
     DListNode *node = dlist_head(&list);
     node = dlist_next(node);
-    EXPECT_EQUAL_INT(dlist_insert_after(&list, node, &c), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 4);
+    EXPECT_EQ_INT(dlist_insert_after(&list, node, &c), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 4);
     node = dlist_head(&list);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 1);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 2);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 3);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 3);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 4);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 4);
     dlist_destroy(&list);
   }
 }
@@ -877,7 +893,8 @@ UTEST_TEST_CASE(dlist_insert_after) {
  * Dependencies: dlist_init, dlist_push_back, dlist_size
  * Description: Tests inserting elements before a given node.
  */
-UTEST_TEST_CASE(dlist_insert_before) {
+UTEST_CASE(dlist_insert_before)
+{
   // Test 1: Insert before tail
   {
     DList list;
@@ -886,13 +903,13 @@ UTEST_TEST_CASE(dlist_insert_before) {
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &c);
     DListNode *node = dlist_tail(&list);
-    EXPECT_EQUAL_INT(dlist_insert_before(&list, node, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 3);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 3);
+    EXPECT_EQ_INT(dlist_insert_before(&list, node, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 3);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 3);
     node = dlist_prev(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 2);
     node = dlist_prev(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 1);
     dlist_destroy(&list);
   }
 
@@ -903,9 +920,9 @@ UTEST_TEST_CASE(dlist_insert_before) {
     int a = 1, b = 2;
     dlist_push_back(&list, &a);
     DListNode *node = dlist_head(&list);
-    EXPECT_EQUAL_INT(dlist_insert_before(&list, node, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 2);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 2);
+    EXPECT_EQ_INT(dlist_insert_before(&list, node, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 2);
     dlist_destroy(&list);
   }
 
@@ -916,9 +933,8 @@ UTEST_TEST_CASE(dlist_insert_before) {
     int a = 1;
     dlist_push_back(&list, &a);
     DListNode *node = dlist_tail(&list);
-    EXPECT_EQUAL_INT(dlist_insert_before(&list, node, NULL),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 2);
+    EXPECT_EQ_INT(dlist_insert_before(&list, node, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 2);
     EXPECT_NULL(dlist_data(dlist_prev(node)));
     dlist_destroy(&list);
   }
@@ -928,8 +944,8 @@ UTEST_TEST_CASE(dlist_insert_before) {
     DList list;
     dlist_init(&list, NULL);
     int a = 1;
-    EXPECT_EQUAL_INT(dlist_insert_before(&list, NULL, &a), COLLECTION_FAILURE);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_INT(dlist_insert_before(&list, NULL, &a), COLLECTION_FAILURE);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     dlist_destroy(&list);
   }
 
@@ -940,7 +956,7 @@ UTEST_TEST_CASE(dlist_insert_before) {
     int a = 1, b = 2;
     dlist_push_back(&list, &a);
     DListNode *node = dlist_head(&list);
-    EXPECT_EQUAL_INT(dlist_insert_before(NULL, node, &b), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(dlist_insert_before(NULL, node, &b), COLLECTION_FAILURE);
     dlist_destroy(&list);
   }
 
@@ -954,16 +970,16 @@ UTEST_TEST_CASE(dlist_insert_before) {
     dlist_push_back(&list, &d);
     DListNode *node = dlist_tail(&list);
     node = dlist_prev(node);
-    EXPECT_EQUAL_INT(dlist_insert_before(&list, node, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 4);
+    EXPECT_EQ_INT(dlist_insert_before(&list, node, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 4);
     node = dlist_head(&list);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 1);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 2);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 3);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 3);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 4);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 4);
     dlist_destroy(&list);
   }
 }
@@ -973,7 +989,8 @@ UTEST_TEST_CASE(dlist_insert_before) {
  * Dependencies: dlist_init, dlist_push_back, dlist_size
  * Description: Tests removing a specific node from the list.
  */
-UTEST_TEST_CASE(dlist_remove) {
+UTEST_CASE(dlist_remove)
+{
   // Test 1: Remove head
   {
     DList list;
@@ -983,9 +1000,9 @@ UTEST_TEST_CASE(dlist_remove) {
     dlist_push_back(&list, &b);
     dlist_push_back(&list, &c);
     DListNode *node = dlist_head(&list);
-    EXPECT_EQUAL_INT(dlist_remove(&list, node, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 2);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 2);
+    EXPECT_EQ_INT(dlist_remove(&list, node, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 2);
     dlist_destroy(&list);
   }
 
@@ -998,9 +1015,9 @@ UTEST_TEST_CASE(dlist_remove) {
     dlist_push_back(&list, &b);
     dlist_push_back(&list, &c);
     DListNode *node = dlist_tail(&list);
-    EXPECT_EQUAL_INT(dlist_remove(&list, node, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 2);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 2);
+    EXPECT_EQ_INT(dlist_remove(&list, node, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 2);
     dlist_destroy(&list);
   }
 
@@ -1015,9 +1032,9 @@ UTEST_TEST_CASE(dlist_remove) {
     DListNode *node = dlist_head(&list);
     node = dlist_next(node);
     void *removed = NULL;
-    EXPECT_EQUAL_INT(dlist_remove(&list, node, &removed), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)removed, 2);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 2);
+    EXPECT_EQ_INT(dlist_remove(&list, node, &removed), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)removed, 2);
+    EXPECT_EQ_UINT(dlist_size(&list), 2);
     dlist_destroy(&list);
   }
 
@@ -1031,9 +1048,9 @@ UTEST_TEST_CASE(dlist_remove) {
     dlist_push_back(&list, &c);
     DListNode *node = dlist_head(&list);
     destroy_count = 0;
-    EXPECT_EQUAL_INT(dlist_remove(&list, node, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(destroy_count, 1);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 2);
+    EXPECT_EQ_INT(dlist_remove(&list, node, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(destroy_count, 1);
+    EXPECT_EQ_UINT(dlist_size(&list), 2);
     dlist_destroy(&list);
   }
 
@@ -1043,8 +1060,8 @@ UTEST_TEST_CASE(dlist_remove) {
     dlist_init(&list, NULL);
     int a = 1;
     dlist_push_back(&list, &a);
-    EXPECT_EQUAL_INT(dlist_remove(&list, NULL, NULL), COLLECTION_FAILURE);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 1);
+    EXPECT_EQ_INT(dlist_remove(&list, NULL, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_UINT(dlist_size(&list), 1);
     dlist_destroy(&list);
   }
 
@@ -1055,7 +1072,7 @@ UTEST_TEST_CASE(dlist_remove) {
     int a = 1;
     dlist_push_back(&list, &a);
     DListNode *node = dlist_head(&list);
-    EXPECT_EQUAL_INT(dlist_remove(NULL, node, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_INT(dlist_remove(NULL, node, NULL), COLLECTION_FAILURE);
     dlist_destroy(&list);
   }
 
@@ -1069,12 +1086,12 @@ UTEST_TEST_CASE(dlist_remove) {
     dlist_push_back(&list, &c);
     DListNode *node = dlist_head(&list);
     node = dlist_next(node);
-    EXPECT_EQUAL_INT(dlist_remove(&list, node, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 2);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 3);
+    EXPECT_EQ_INT(dlist_remove(&list, node, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 3);
     node = dlist_head(&list);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_next(node)), 3);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_next(node)), 3);
     dlist_destroy(&list);
   }
 
@@ -1085,8 +1102,8 @@ UTEST_TEST_CASE(dlist_remove) {
     int a = 1;
     dlist_push_back(&list, &a);
     DListNode *node = dlist_head(&list);
-    EXPECT_EQUAL_INT(dlist_remove(&list, node, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_INT(dlist_remove(&list, node, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     EXPECT_NULL(dlist_head(&list));
     EXPECT_NULL(dlist_tail(&list));
     dlist_destroy(&list);
@@ -1100,7 +1117,8 @@ UTEST_TEST_CASE(dlist_remove) {
  * dlist_clear Description: Tests for memory leaks by tracking destroy function
  * calls.
  */
-UTEST_TEST_CASE(dlist_memory_leak) {
+UTEST_CASE(dlist_memory_leak)
+{
   // Test 1: All elements destroyed on dlist_destroy
   {
     DList list;
@@ -1112,7 +1130,7 @@ UTEST_TEST_CASE(dlist_memory_leak) {
     }
     destroy_count = 0;
     dlist_destroy(&list);
-    EXPECT_EQUAL_INT(destroy_count, 10);
+    EXPECT_EQ_INT(destroy_count, 10);
   }
 
   // Test 2: Elements destroyed on pop_front
@@ -1128,9 +1146,9 @@ UTEST_TEST_CASE(dlist_memory_leak) {
     for (int i = 0; i < 5; i++) {
       dlist_pop_front(&list, NULL);
     }
-    EXPECT_EQUAL_INT(destroy_count, 5);
+    EXPECT_EQ_INT(destroy_count, 5);
     dlist_destroy(&list);
-    EXPECT_EQUAL_INT(destroy_count, 5);
+    EXPECT_EQ_INT(destroy_count, 5);
   }
 
   // Test 3: Elements destroyed on pop_back
@@ -1146,9 +1164,9 @@ UTEST_TEST_CASE(dlist_memory_leak) {
     for (int i = 0; i < 5; i++) {
       dlist_pop_back(&list, NULL);
     }
-    EXPECT_EQUAL_INT(destroy_count, 5);
+    EXPECT_EQ_INT(destroy_count, 5);
     dlist_destroy(&list);
-    EXPECT_EQUAL_INT(destroy_count, 5);
+    EXPECT_EQ_INT(destroy_count, 5);
   }
 
   // Test 4: Elements destroyed on remove
@@ -1163,12 +1181,12 @@ UTEST_TEST_CASE(dlist_memory_leak) {
     destroy_count = 0;
     DListNode *node = dlist_head(&list);
     dlist_remove(&list, node, NULL);
-    EXPECT_EQUAL_INT(destroy_count, 1);
+    EXPECT_EQ_INT(destroy_count, 1);
     node = dlist_head(&list);
     dlist_remove(&list, node, NULL);
-    EXPECT_EQUAL_INT(destroy_count, 2);
+    EXPECT_EQ_INT(destroy_count, 2);
     dlist_destroy(&list);
-    EXPECT_EQUAL_INT(destroy_count, 5);
+    EXPECT_EQ_INT(destroy_count, 5);
   }
 
   // Test 5: Elements destroyed on clear
@@ -1182,9 +1200,9 @@ UTEST_TEST_CASE(dlist_memory_leak) {
     }
     destroy_count = 0;
     dlist_clear(&list);
-    EXPECT_EQUAL_INT(destroy_count, 10);
+    EXPECT_EQ_INT(destroy_count, 10);
     dlist_destroy(&list);
-    EXPECT_EQUAL_INT(destroy_count, 10);
+    EXPECT_EQ_INT(destroy_count, 10);
   }
   // Test 6: Elements freed by free
   {
@@ -1195,7 +1213,7 @@ UTEST_TEST_CASE(dlist_memory_leak) {
       *value = i;
       dlist_push_back(&list, value);
     }
-    EXPECT_EQUAL_UINT64(dlist_size(&list), 10);
+    EXPECT_EQ_UINT(dlist_size(&list), 10);
     dlist_destroy(&list);
   }
 }
@@ -1205,7 +1223,8 @@ UTEST_TEST_CASE(dlist_memory_leak) {
  * Dependencies: All dlist functions
  * Description: Integration test combining multiple operations.
  */
-UTEST_TEST_CASE(dlist_integration) {
+UTEST_CASE(dlist_integration)
+{
   // Test 1: Complex sequence of operations
   {
     DList list;
@@ -1214,28 +1233,28 @@ UTEST_TEST_CASE(dlist_integration) {
     int values[10];
     for (int i = 0; i < 10; i++) {
       values[i] = i;
-      EXPECT_EQUAL_INT(dlist_push_back(&list, &values[i]), COLLECTION_SUCCESS);
+      EXPECT_EQ_INT(dlist_push_back(&list, &values[i]), COLLECTION_SUCCESS);
     }
-    EXPECT_EQUAL_UINT(dlist_size(&list), 10);
+    EXPECT_EQ_UINT(dlist_size(&list), 10);
 
     void *popped = NULL;
-    EXPECT_EQUAL_INT(dlist_pop_front(&list, &popped), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)popped, 0);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 9);
+    EXPECT_EQ_INT(dlist_pop_front(&list, &popped), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)popped, 0);
+    EXPECT_EQ_UINT(dlist_size(&list), 9);
 
     int new_val = 99;
     DListNode *node = dlist_head(&list);
-    EXPECT_EQUAL_INT(dlist_insert_after(&list, node, &new_val),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 10);
+    EXPECT_EQ_INT(dlist_insert_after(&list, node, &new_val),
+                  COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(dlist_size(&list), 10);
 
     void *removed = NULL;
-    EXPECT_EQUAL_INT(dlist_remove(&list, node, &removed), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)removed, 1);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 9);
+    EXPECT_EQ_INT(dlist_remove(&list, node, &removed), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)removed, 1);
+    EXPECT_EQ_UINT(dlist_size(&list), 9);
 
     dlist_clear(&list);
-    EXPECT_EQUAL_UINT(dlist_size(&list), 0);
+    EXPECT_EQ_UINT(dlist_size(&list), 0);
     EXPECT_TRUE(dlist_empty(&list));
 
     dlist_destroy(&list);
@@ -1252,9 +1271,9 @@ UTEST_TEST_CASE(dlist_integration) {
     dlist_push_front(&list, &c);
     dlist_push_back(&list, &d);
 
-    EXPECT_EQUAL_UINT(dlist_size(&list), 4);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 3);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 4);
+    EXPECT_EQ_UINT(dlist_size(&list), 4);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 3);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 4);
 
     dlist_destroy(&list);
   }
@@ -1272,10 +1291,10 @@ UTEST_TEST_CASE(dlist_integration) {
     int count = 0;
     for (DListNode *node = dlist_head(&list); node != NULL;
          node = dlist_next(node)) {
-      EXPECT_EQUAL_UINT(*(int *)dlist_data(node), values[count]);
+      EXPECT_EQ_UINT(*(int *)dlist_data(node), values[count]);
       count++;
     }
-    EXPECT_EQUAL_UINT(count, 5);
+    EXPECT_EQ_UINT(count, 5);
 
     dlist_destroy(&list);
   }
@@ -1293,10 +1312,10 @@ UTEST_TEST_CASE(dlist_integration) {
     int count = 4;
     for (DListNode *node = dlist_tail(&list); node != NULL;
          node = dlist_prev(node)) {
-      EXPECT_EQUAL_UINT(*(int *)dlist_data(node), values[count]);
+      EXPECT_EQ_UINT(*(int *)dlist_data(node), values[count]);
       count--;
     }
-    EXPECT_EQUAL_UINT(count, -1);
+    EXPECT_EQ_UINT(count, -1);
 
     dlist_destroy(&list);
   }
@@ -1306,7 +1325,7 @@ UTEST_TEST_CASE(dlist_integration) {
     DList list;
     dlist_init(&list, NULL);
 
-    int a = 1, b = 2, c = 3, d = 4, e = 5;
+    int a = 1, b = 2, c = 3, d = 4;
     dlist_push_back(&list, &a);
     dlist_push_back(&list, &c);
 
@@ -1315,15 +1334,15 @@ UTEST_TEST_CASE(dlist_integration) {
     node = dlist_tail(&list);
     dlist_insert_before(&list, node, &d);
 
-    EXPECT_EQUAL_UINT(dlist_size(&list), 4);
+    EXPECT_EQ_UINT(dlist_size(&list), 4);
     node = dlist_head(&list);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 1);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 2);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 2);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 4);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 4);
     node = dlist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(node), 3);
+    EXPECT_EQ_UINT(*(int *)dlist_data(node), 3);
 
     dlist_destroy(&list);
   }
@@ -1340,9 +1359,9 @@ UTEST_TEST_CASE(dlist_integration) {
     int a = 1;
     dlist_push_back(&list, &a);
     EXPECT_FALSE(dlist_empty(&list));
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
-    EXPECT_EQUAL_UINT(*(int *)dlist_data(dlist_tail(&list)), 1);
-    EXPECT_EQUAL_UINT(dlist_head(&list), dlist_tail(&list));
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_head(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)dlist_data(dlist_tail(&list)), 1);
+    EXPECT_EQ_UINT(dlist_head(&list), dlist_tail(&list));
 
     dlist_pop_front(&list, NULL);
     EXPECT_TRUE(dlist_empty(&list));
@@ -1357,24 +1376,25 @@ UTEST_TEST_CASE(dlist_integration) {
  * Test suite: dlist
  * Description: Test suite for doubly linked list data structure
  */
-UTEST_TEST_SUITE(dlist) {
-  UTEST_RUN_TEST_CASE(dlist_init);
-  UTEST_RUN_TEST_CASE(dlist_size);
-  UTEST_RUN_TEST_CASE(dlist_empty);
-  UTEST_RUN_TEST_CASE(dlist_head);
-  UTEST_RUN_TEST_CASE(dlist_tail);
-  UTEST_RUN_TEST_CASE(dlist_next);
-  UTEST_RUN_TEST_CASE(dlist_prev);
-  UTEST_RUN_TEST_CASE(dlist_data);
-  UTEST_RUN_TEST_CASE(dlist_destroy);
-  UTEST_RUN_TEST_CASE(dlist_push_front);
-  UTEST_RUN_TEST_CASE(dlist_push_back);
-  UTEST_RUN_TEST_CASE(dlist_pop_front);
-  UTEST_RUN_TEST_CASE(dlist_pop_back);
-  UTEST_RUN_TEST_CASE(dlist_clear);
-  UTEST_RUN_TEST_CASE(dlist_insert_after);
-  UTEST_RUN_TEST_CASE(dlist_insert_before);
-  UTEST_RUN_TEST_CASE(dlist_remove);
-  UTEST_RUN_TEST_CASE(dlist_memory_leak);
-  UTEST_RUN_TEST_CASE(dlist_integration);
+UTEST_SUITE(dlist)
+{
+  UTEST_RUNCASE(dlist_init);
+  UTEST_RUNCASE(dlist_size);
+  UTEST_RUNCASE(dlist_empty);
+  UTEST_RUNCASE(dlist_head);
+  UTEST_RUNCASE(dlist_tail);
+  UTEST_RUNCASE(dlist_next);
+  UTEST_RUNCASE(dlist_prev);
+  UTEST_RUNCASE(dlist_data);
+  UTEST_RUNCASE(dlist_destroy);
+  UTEST_RUNCASE(dlist_push_front);
+  UTEST_RUNCASE(dlist_push_back);
+  UTEST_RUNCASE(dlist_pop_front);
+  UTEST_RUNCASE(dlist_pop_back);
+  UTEST_RUNCASE(dlist_clear);
+  UTEST_RUNCASE(dlist_insert_after);
+  UTEST_RUNCASE(dlist_insert_before);
+  UTEST_RUNCASE(dlist_remove);
+  UTEST_RUNCASE(dlist_memory_leak);
+  UTEST_RUNCASE(dlist_integration);
 }

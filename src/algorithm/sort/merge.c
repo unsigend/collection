@@ -25,7 +25,8 @@
 #define ARRIDX(data, i, size) ((char *)data + (i) * (size))
 
 static int merge(void *data, size_t size, void *arr1, size_t n1, void *arr2,
-                 size_t n2, int (*compare)(const void *, const void *)) {
+                 size_t n2, int (*compare)(const void *, const void *))
+{
   if (!data || !arr1 || !arr2 || !compare)
     return COLLECTION_FAILURE;
 
@@ -54,7 +55,8 @@ static int merge(void *data, size_t size, void *arr1, size_t n1, void *arr2,
 }
 
 static int sort(void *data, size_t n, size_t size, size_t low, size_t high,
-                int (*compare)(const void *, const void *)) {
+                int (*compare)(const void *, const void *))
+{
   if (low >= high)
     return COLLECTION_SUCCESS;
 
@@ -84,7 +86,8 @@ static int sort(void *data, size_t n, size_t size, size_t low, size_t high,
 }
 
 int sort_merge(void *data, size_t n, size_t size,
-               int (*compare)(const void *, const void *)) {
+               int (*compare)(const void *, const void *))
+{
   if (!data || !compare || size == 0)
     return COLLECTION_FAILURE;
 

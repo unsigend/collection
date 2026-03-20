@@ -38,7 +38,8 @@
  * @return The hash of the key.
  * @complexity O(n)
  */
-static uint32_t default_hash(const void *key) {
+static uint32_t default_hash(const void *key)
+{
   return hash_str((const char *)key);
 }
 
@@ -49,7 +50,8 @@ static uint32_t default_hash(const void *key) {
  * @return True if the keys are equal, false otherwise.
  * @complexity O(n)
  */
-static bool default_match(const void *key1, const void *key2) {
+static bool default_match(const void *key1, const void *key2)
+{
   return strcmp((const char *)key1, (const char *)key2) == 0;
 }
 
@@ -59,7 +61,8 @@ static bool default_match(const void *key1, const void *key2) {
  * @param context The context of the chained hash table.
  * @complexity O(1)
  */
-static void entry_destroy(void *entry, void *context) {
+static void entry_destroy(void *entry, void *context)
+{
   if (!entry)
     return;
   ChtblEntry *entry_ptr = (ChtblEntry *)entry;
@@ -78,7 +81,8 @@ static void entry_destroy(void *entry, void *context) {
  * @param bucket The bucket to destroy.
  * @complexity O(n)
  */
-static void bucket_destroy(void *bucket) {
+static void bucket_destroy(void *bucket)
+{
   if (!bucket)
     return;
   slist_destroy((SList *)bucket);
@@ -92,7 +96,8 @@ static void bucket_destroy(void *bucket) {
  * @return 0 if successful, -1 if failed.
  * @complexity O(n)
  */
-static int _init_buckets(Chtbl *chtbl, size_t nbuckets) {
+static int _init_buckets(Chtbl *chtbl, size_t nbuckets)
+{
 
   for (size_t i = 0; i < nbuckets; i++) {
     SList *bucket = malloc(sizeof(SList));
@@ -118,7 +123,8 @@ static int _init_buckets(Chtbl *chtbl, size_t nbuckets) {
  * @return 0 if successful, -1 if failed.
  * @complexity O(n)
  */
-static int _resize(Chtbl *chtbl, size_t nbuckets) {
+static int _resize(Chtbl *chtbl, size_t nbuckets)
+{
   if (chtbl_buckets(chtbl) == nbuckets)
     return COLLECTION_SUCCESS;
 
@@ -176,20 +182,23 @@ static int _resize(Chtbl *chtbl, size_t nbuckets) {
   return COLLECTION_SUCCESS;
 }
 
-bool chtbl_in(const Chtbl *chtbl, const void *key) {
+bool chtbl_in(const Chtbl *chtbl, const void *key)
+{
   return chtbl_find_entry((Chtbl *)chtbl, key) != NULL;
 }
 
 size_t chtbl_size(const Chtbl *chtbl) { return chtbl ? chtbl->size : 0; }
 
-size_t chtbl_buckets(const Chtbl *chtbl) {
+size_t chtbl_buckets(const Chtbl *chtbl)
+{
   return chtbl ? chtbl->table.size : 0;
 }
 
 int chtbl_init_capacity(Chtbl *chtbl, uint32_t (*hash)(const void *key),
                         bool (*match)(const void *key1, const void *key2),
                         void (*destroy_key)(void *key),
-                        void (*destroy_value)(void *value), size_t capacity) {
+                        void (*destroy_value)(void *value), size_t capacity)
+{
   if (!chtbl)
     return COLLECTION_FAILURE;
 
@@ -215,12 +224,14 @@ int chtbl_init_capacity(Chtbl *chtbl, uint32_t (*hash)(const void *key),
 int chtbl_init(Chtbl *chtbl, uint32_t (*hash)(const void *key),
                bool (*match)(const void *key1, const void *key2),
                void (*destroy_key)(void *key),
-               void (*destroy_value)(void *value)) {
+               void (*destroy_value)(void *value))
+{
   return chtbl_init_capacity(chtbl, hash, match, destroy_key, destroy_value,
                              DEFAULT_BUCKETS);
 }
 
-void chtbl_set_load_factor(Chtbl *chtbl, float threshold) {
+void chtbl_set_load_factor(Chtbl *chtbl, float threshold)
+{
   if (!chtbl || threshold <= 0.0f)
     return;
   if (threshold > MAX_LOAD_FACTOR_THRESHOLD)
@@ -228,20 +239,23 @@ void chtbl_set_load_factor(Chtbl *chtbl, float threshold) {
   chtbl->load_factor_threshold = threshold;
 }
 
-float chtbl_load_factor(Chtbl *chtbl) {
+float chtbl_load_factor(Chtbl *chtbl)
+{
   if (!chtbl || chtbl_size(chtbl) == 0)
     return 0.0f;
   return (float)chtbl_size(chtbl) / (float)chtbl_buckets(chtbl);
 }
 
-void chtbl_destroy(Chtbl *chtbl) {
+void chtbl_destroy(Chtbl *chtbl)
+{
   if (!chtbl)
     return;
   vector_destroy(&chtbl->table);
   memset(chtbl, 0, sizeof(Chtbl));
 }
 
-void chtbl_clear(Chtbl *chtbl) {
+void chtbl_clear(Chtbl *chtbl)
+{
   if (!chtbl)
     return;
   for (size_t i = 0; i < chtbl_buckets(chtbl); i++) {
@@ -253,7 +267,8 @@ void chtbl_clear(Chtbl *chtbl) {
   chtbl->size = 0;
 }
 
-void *chtbl_find(Chtbl *chtbl, const void *key) {
+void *chtbl_find(Chtbl *chtbl, const void *key)
+{
   if (!chtbl || !key)
     return NULL;
 
@@ -275,7 +290,8 @@ void *chtbl_find(Chtbl *chtbl, const void *key) {
   return NULL;
 }
 
-ChtblEntry *chtbl_find_entry(Chtbl *chtbl, const void *key) {
+ChtblEntry *chtbl_find_entry(Chtbl *chtbl, const void *key)
+{
   if (!chtbl || !key)
     return NULL;
 
@@ -297,7 +313,8 @@ ChtblEntry *chtbl_find_entry(Chtbl *chtbl, const void *key) {
   return NULL;
 }
 
-int chtbl_resize(Chtbl *chtbl, size_t nbuckets) {
+int chtbl_resize(Chtbl *chtbl, size_t nbuckets)
+{
   if (!chtbl)
     return COLLECTION_FAILURE;
 
@@ -307,7 +324,8 @@ int chtbl_resize(Chtbl *chtbl, size_t nbuckets) {
   return _resize(chtbl, nbuckets);
 }
 
-int chtbl_insert(Chtbl *chtbl, const void *key, const void *value) {
+int chtbl_insert(Chtbl *chtbl, const void *key, const void *value)
+{
   if (!chtbl || !key)
     return COLLECTION_FAILURE;
 
@@ -356,7 +374,8 @@ int chtbl_insert(Chtbl *chtbl, const void *key, const void *value) {
   return COLLECTION_SUCCESS;
 }
 
-int chtbl_remove(Chtbl *chtbl, const void *key, ChtblEntry **entry) {
+int chtbl_remove(Chtbl *chtbl, const void *key, ChtblEntry **entry)
+{
   if (!chtbl || !key)
     return COLLECTION_FAILURE;
 
