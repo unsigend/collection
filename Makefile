@@ -1,4 +1,4 @@
-# Collection - A generic data structure and algorithms library for modern C
+# Collection - A generic data structure and algorithms library
 # Copyright (C) 2025 Yixiang Qiu
 #
 # This program is free software: you can redistribute it and/or modify
@@ -11,156 +11,117 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# Main Makefile for Collection
+CUR_DIR   		:= .
+SRC_PATH 		:= $(CUR_DIR)/src
+INCLUDE_PATH 	:= $(CUR_DIR)/include
+CONFIG_PATH 	:= $(CUR_DIR)/config
+BUILD_PATH 		:= $(CUR_DIR)/build
+OBJ_PATH 		:= $(BUILD_PATH)/obj
+DEP_PATH 		:= $(BUILD_PATH)/dep
+LIB_PATH 		:= $(CUR_DIR)/lib
+TEST_PATH 		:= $(CUR_DIR)/test
 
-# variables for paths
-CUR_DIR         :=          .
-SRC_PATH 		:= 			$(CUR_DIR)/src
-CONFIG_PATH 	:= 			$(CUR_DIR)/config
-INCLUDE_PATH 	:= 			$(CUR_DIR)/include
-TEST_PATH 		:= 			$(CUR_DIR)/test
-BUILD_PATH 		:= 			$(CUR_DIR)/build
-OBJ_PATH 		:= 			$(BUILD_PATH)/obj
-DEP_PATH 		:= 			$(BUILD_PATH)/dep
-LIB_PATH 		:= 			$(CUR_DIR)/lib
-
-# include config
 include $(CONFIG_PATH)/config.mk
 
-# variables for host OS
-HOST_OS         :=          $(shell uname -s)
+HOST_OS := $(shell uname -s)
+GCC ?= gcc
+AR ?= ar
 
-# variables for flags
-CC_FLAGS        :=          -std=$(STD_C)
-CC_FLAGS        +=          -Wall -Wextra -Werror
-CC_FLAGS        +=          -Wno-unused-parameter
-CC_FLAGS        +=          -fPIC
-CC_FLAGS        +=          -I$(INCLUDE_PATH)
-ifeq ($(DEBUG), true)
-CC_FLAGS        +=          -fsanitize=address
-CC_FLAGS        +=          -fsanitize=undefined
-CC_FLAGS        +=          -fsanitize=bounds
-CC_FLAGS        +=          -fno-omit-frame-pointer
-CC_FLAGS        +=          -g
-CC_FLAGS        +=          -O0
-else
-CC_FLAGS        +=          -O2
+LIB_METHOD ?= $(BUILD_METHOD)
+ifeq ($(strip $(LIB_METHOD)),)
+LIB_METHOD := static
 endif
 
-# dependencies flags
-CC_DEPS_FLAGS   :=          -MMD -MP -MF
-
-# archive flags
-AR_FLAGS        :=          -rcs
-
-# linker flags
-ifeq ($(DEBUG), true)
-LD_FLAGS        :=          -fsanitize=address
-LD_FLAGS        +=          -fsanitize=undefined
-LD_FLAGS        +=          -fsanitize=bounds
-else
-LD_FLAGS        :=
+LIB_NAME ?= $(LIBRARY_NAME)
+ifeq ($(strip $(LIB_NAME)),)
+LIB_NAME := collection
 endif
 
-SRCS            :=          $(shell find $(SRC_PATH) -name "*.c")
-OBJS            :=          $(patsubst $(SRC_PATH)/%.c, $(OBJ_PATH)/%.o, $(SRCS))
-DEPS            :=          $(patsubst $(SRC_PATH)/%.c, $(DEP_PATH)/%.d, $(SRCS))
+DEBUG_FLAG := $(filter true 1,$(DEBUG))
 
-# variable for dynamic library postfix
-# for now it supports only Linux and macOS
-DYLIB_POSTFIX   	:=          $(if $(findstring Darwin, $(HOST_OS)),.dylib,.so)
-STATIC_LIB_POSTFIX  :=          .a
-
-ifeq ($(BUILD_METHOD), static)
-LIB_POSTFIX         :=          $(STATIC_LIB_POSTFIX)
+ifeq ($(LIB_METHOD),static)
+LIB_POSTFIX := .a
 else
-LIB_POSTFIX         :=          $(DYLIB_POSTFIX)
+ifeq ($(HOST_OS),Darwin)
+LIB_POSTFIX := .dylib
+else
+LIB_POSTFIX := .so
+endif
 endif
 
-# general rules for all objects
+SRCS := $(shell find $(SRC_PATH) -name "*.c")
+OBJS := $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(SRCS))
+DEPS := $(patsubst $(SRC_PATH)/%.c,$(DEP_PATH)/%.d,$(SRCS))
+LIB_TARGET := $(LIB_PATH)/lib$(LIB_NAME)$(LIB_POSTFIX)
+
+CC_FLAGS := -std=$(STD_C)
+CC_FLAGS += -Wall -Wextra -Werror
+CC_FLAGS += -I$(INCLUDE_PATH)
+CC_FLAGS += -fPIC
+
+ifneq ($(DEBUG_FLAG),)
+CC_FLAGS += -fsanitize=address,undefined,bounds
+CC_FLAGS += -g -O0
+else
+CC_FLAGS += -O2
+endif
+
+CC_DEPS_FLAGS := -MMD -MP -MF
+AR_FLAGS := -rcs
+
+LD_FLAGS :=
+ifneq ($(DEBUG_FLAG),)
+LD_FLAGS += -fsanitize=address,undefined,bounds
+endif
+
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c
-	@mkdir -p $(dir $@)
-	@$(GCC) $(CC_FLAGS) $(CC_DEPS_FLAGS) $(DEP_PATH)/$(notdir $(@F:.o=.d)) -c $< -o $@
+	@mkdir -p $(dir $@) $(dir $(DEP_PATH)/$*.d) $(LIB_PATH)
+	@$(GCC) $(CC_FLAGS) $(CC_DEPS_FLAGS) $(DEP_PATH)/$*.d -MT $@ -c $< -o $@
 	@echo " + CC\t$@"
 
-$(LIB_PATH)/lib$(LIBRARY_NAME)$(LIB_POSTFIX): $(OBJS)
-ifeq ($(BUILD_METHOD), static)
+$(LIB_TARGET): $(OBJS)
+	@mkdir -p $(LIB_PATH)
+ifeq ($(LIB_METHOD),static)
 	@$(AR) $(AR_FLAGS) $@ $(OBJS)
 	@echo " + AR\t$@"
 else
 	@$(GCC) $(LD_FLAGS) -shared $(OBJS) -o $@
 	@echo " + LD\t$@"
 endif
-	@echo "Build $(LIBRARY_NAME) library ./$@"
+	@echo "Build library ./$@"
 	@echo ""
 
-# export the variables to the sub-make
-export STD_C
-export LIBRARY_NAME
-export LIB_POSTFIX
-export DEBUG
-
-# include dependency files
--include $(DEP_PATH)/*.d
+-include $(DEPS)
 
 .DEFAULT_GOAL := help
-.PHONY: all clean test help create_build_dir lib test-bench docker flags
+.PHONY: all lib test test-% clean help docker flags clang format
 
-# lib target
-lib: create_build_dir $(LIB_PATH)/lib$(LIBRARY_NAME)$(LIB_POSTFIX)
-
-# default goal
 all: lib
+lib: $(LIB_TARGET)
 
-# clean target
-clean:
-	@rm -rf $(BUILD_PATH)
-	@rm -rf $(LIB_PATH)
-	@$(MAKE) -C $(TEST_PATH) clean
-
-# test target
 test: lib
 	@$(MAKE) -C $(TEST_PATH) test
 
-# test-bench target
-test-bench: lib
-	@$(MAKE) -C $(TEST_PATH) benchmark
-
-# test module target
 test-%: lib
-ifeq ($(BUILD_METHOD), static)
 	@$(MAKE) -C $(TEST_PATH) test-$*
-else
-	@echo "Dynamic library is not supported for module tests"
-	@echo "You can run it manually by running:"
-	@echo "  make test"
-	@echo "  ./test/build/test -m $*"
-endif
 
-# help target
+clean:
+	@rm -rf $(BUILD_PATH) $(LIB_PATH)
+	@$(MAKE) -C $(TEST_PATH) clean
+
 help:
-	@echo "Collection - A generic data structure and algorithms library for modern C"
-	@echo "Copyright (C) 2025 Yixiang Qiu"
 	@echo "Usage:"
-	@echo "\tmake all         	- Build the library and tests"
-	@echo "\tmake clean       	- Clean the build directory"
-	@echo "\tmake test        	- Run the tests"
-	@echo "\tmake test-[module] \t- Run the tests for a specific module"
-	@echo "\tmake test-bench  	- Run the benchmark tests"
-	@echo "\tmake help        	- Show this help message"
-	@echo "\tmake docker      	- Build and Run the Docker container"
-	@echo "\tmake flags       	- Show the compile and link flags"
-	@echo "\tmake clang       	- Build Clang compilation database"
+	@echo "  make all       - Build the library and run all tests"
+	@echo "  make lib       - Build the library"
+	@echo "  make test      - Build and run all tests"
+	@echo "  make test-NAME - Build and run tests for a specific module"
+	@echo "  make clean     - Clean the build artifacts"
+	@echo "  make flags     - Show the compile and link flags"
+	@echo "  make clang     - Run clang to generate compile commands"
+	@echo "  make format    - Format the code"
+	@echo "  make docker    - Run Docker container with development environment"
 	@echo ""
 
-# generate dir
-create_build_dir:
-	@mkdir -p $(BUILD_PATH)
-	@mkdir -p $(OBJ_PATH)
-	@mkdir -p $(DEP_PATH)
-	@mkdir -p $(LIB_PATH)
-
-# docker target
 docker:
 	@if [ -z "$$(docker images -q $(DOCKER_IMAGE) 2>/dev/null)" ]; then \
 		echo "Building Docker image $(DOCKER_IMAGE)..."; \
@@ -171,12 +132,24 @@ docker:
 	fi
 	@docker run -it --name $(DOCKER_IMAGE)-container -v $(CUR_DIR):/workspace $(DOCKER_IMAGE) /bin/bash
 
-# flags target
 flags:
-	@echo "CC_FLAGS: $(CC_FLAGS)\n"
-	@echo "LD_FLAGS: $(LD_FLAGS)\n"
+	@echo "LIB_METHOD: $(LIB_METHOD)"
+	@echo "LIB_TARGET: $(LIB_TARGET)"
+	@echo "CC_FLAGS: $(CC_FLAGS)"
+	@echo "LD_FLAGS: $(LD_FLAGS)"
 	@$(MAKE) -C $(TEST_PATH) flags
 
-# clang target
 clang:
 	@bear -- make test
+
+format:
+	@find $(INCLUDE_PATH) $(SRC_PATH) $(TEST_PATH)/cases \
+		\( -name "*.c" -o -name "*.h" \) -exec clang-format -i {} +
+	@echo "Format done."
+
+export STD_C
+export DEBUG
+export LIB_METHOD
+export LIB_NAME
+export LIB_POSTFIX
+export LIBRARY_NAME

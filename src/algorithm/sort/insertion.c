@@ -27,7 +27,8 @@
 #define ARRIDX(data, i, size) ((char *)data + (i) * (size))
 
 int sort_insertion(void *data, size_t n, size_t size,
-                   int (*compare)(const void *, const void *)) {
+                   int (*compare)(const void *, const void *))
+{
   if (!data || !compare || size == 0)
     return COLLECTION_FAILURE;
 

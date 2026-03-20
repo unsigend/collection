@@ -25,7 +25,8 @@
    swapped using a temporary array in stack. Otherwise, the elements are swapped
    by a buffer in heap. */
 
-int swap(void *a, void *b, size_t sz) {
+int swap(void *a, void *b, size_t sz)
+{
   if (!a || !b || sz == 0)
     return COLLECTION_FAILURE;
   if (a == b)

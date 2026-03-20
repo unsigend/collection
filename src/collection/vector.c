@@ -30,7 +30,8 @@
  * @param count The number of elements to destroy.
  * @complexity O(n)
  */
-static void _vector_destroy_range(Vector *vector, size_t index, size_t count) {
+static void _vector_destroy_range(Vector *vector, size_t index, size_t count)
+{
   if (vector->destroy) {
     for (size_t i = index; i < index + count; i++) {
       vector->destroy(vector->data[i]);
@@ -45,7 +46,8 @@ static void _vector_destroy_range(Vector *vector, size_t index, size_t count) {
  * @return 0 if successful, -1 if failed (memory allocation failure)
  * @complexity O(1)
  */
-static int _vector_resize_capacity(Vector *vector, size_t new_capacity) {
+static int _vector_resize_capacity(Vector *vector, size_t new_capacity)
+{
   if (!new_capacity) {
     free(vector->data);
     vector->data = NULL;
@@ -62,21 +64,25 @@ static int _vector_resize_capacity(Vector *vector, size_t new_capacity) {
   return COLLECTION_SUCCESS;
 }
 
-bool vector_empty(const Vector *vector) {
+bool vector_empty(const Vector *vector)
+{
   return vector ? vector->size == 0 : false;
 }
 
-void **vector_data(const Vector *vector) {
+void **vector_data(const Vector *vector)
+{
   return vector ? vector->data : NULL;
 }
 
 size_t vector_size(const Vector *vector) { return vector ? vector->size : 0; }
 
-size_t vector_capacity(const Vector *vector) {
+size_t vector_capacity(const Vector *vector)
+{
   return vector ? vector->capacity : 0;
 }
 
-int vector_shrink_to_fit(Vector *vector) {
+int vector_shrink_to_fit(Vector *vector)
+{
   if (!vector)
     return COLLECTION_FAILURE;
   if (vector->size == vector->capacity)
@@ -84,7 +90,8 @@ int vector_shrink_to_fit(Vector *vector) {
   return _vector_resize_capacity(vector, vector->size);
 }
 
-int vector_resize(Vector *vector, size_t new_size) {
+int vector_resize(Vector *vector, size_t new_size)
+{
   if (!vector)
     return COLLECTION_FAILURE;
   if (new_size == vector->size) {
@@ -115,7 +122,8 @@ int vector_resize(Vector *vector, size_t new_size) {
   return COLLECTION_SUCCESS;
 }
 
-void vector_init(Vector *vector, void (*destroy)(void *)) {
+void vector_init(Vector *vector, void (*destroy)(void *))
+{
   if (!vector)
     return;
   vector->data = NULL;
@@ -124,7 +132,8 @@ void vector_init(Vector *vector, void (*destroy)(void *)) {
   vector->destroy = destroy;
 }
 
-void vector_destroy(Vector *vector) {
+void vector_destroy(Vector *vector)
+{
   if (!vector)
     return;
   if (vector->data) {
@@ -137,7 +146,8 @@ void vector_destroy(Vector *vector) {
   vector->destroy = NULL;
 }
 
-void *vector_at(const Vector *vector, size_t index) {
+void *vector_at(const Vector *vector, size_t index)
+{
   if (!vector)
     return NULL;
   if (index >= vector->size) {
@@ -146,7 +156,8 @@ void *vector_at(const Vector *vector, size_t index) {
   return vector->data[index];
 }
 
-void *vector_back(const Vector *vector) {
+void *vector_back(const Vector *vector)
+{
   if (!vector)
     return NULL;
   if (vector->size == 0) {
@@ -155,7 +166,8 @@ void *vector_back(const Vector *vector) {
   return vector->data[vector->size - 1];
 }
 
-void *vector_front(const Vector *vector) {
+void *vector_front(const Vector *vector)
+{
   if (!vector)
     return NULL;
   if (vector->size == 0) {
@@ -164,7 +176,8 @@ void *vector_front(const Vector *vector) {
   return vector->data[0];
 }
 
-int vector_push_back(Vector *vector, void *element) {
+int vector_push_back(Vector *vector, void *element)
+{
   if (!vector)
     return COLLECTION_FAILURE;
   if (vector->size >= vector->capacity) {
@@ -178,7 +191,8 @@ int vector_push_back(Vector *vector, void *element) {
   return COLLECTION_SUCCESS;
 }
 
-int vector_pop_back(Vector *vector, void **data) {
+int vector_pop_back(Vector *vector, void **data)
+{
   if (!vector)
     return COLLECTION_FAILURE;
   if (vector->size == 0) {
@@ -195,7 +209,8 @@ int vector_pop_back(Vector *vector, void **data) {
   return COLLECTION_SUCCESS;
 }
 
-void vector_clear(Vector *vector) {
+void vector_clear(Vector *vector)
+{
   if (!vector || !vector->data)
     return;
   if (vector->destroy) {
@@ -205,7 +220,8 @@ void vector_clear(Vector *vector) {
   vector->size = 0;
 }
 
-int vector_insert(Vector *vector, size_t index, void *element) {
+int vector_insert(Vector *vector, size_t index, void *element)
+{
   if (!vector)
     return COLLECTION_FAILURE;
   if (index > vector->size) {
@@ -233,7 +249,8 @@ int vector_insert(Vector *vector, size_t index, void *element) {
   return COLLECTION_SUCCESS;
 }
 
-int vector_remove(Vector *vector, size_t index, void **data) {
+int vector_remove(Vector *vector, size_t index, void **data)
+{
   if (!vector)
     return COLLECTION_FAILURE;
   if (index >= vector->size) {

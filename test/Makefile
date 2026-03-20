@@ -1,4 +1,4 @@
-# Collection - A generic data structure and algorithms library for modern C
+# Collection - A generic data structure and algorithms library
 # Copyright (C) 2025 Yixiang Qiu
 #
 # This program is free software: you can redistribute it and/or modify
@@ -11,138 +11,106 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# Main Makefile for Collection tests
+CUR_DIR 		:= .
+ROOT_DIR 		:= ..
+BUILD_PATH 		:= $(CUR_DIR)/build
+OBJ_PATH 		:= $(BUILD_PATH)/obj
+DEP_PATH 		:= $(BUILD_PATH)/dep
+CASES_PATH 		:= $(CUR_DIR)/cases
+EXTERNAL_PATH 	:= $(CUR_DIR)/external
+INCLUDE_PATH 	:= $(ROOT_DIR)/include
+LIB_PATH 		:= $(ROOT_DIR)/lib
 
-# variables for tools
-CC            :=          gcc
-CXX           :=          g++
-LD            :=          gcc
-AR            :=          ar
+include ../config/config.mk
 
-# host OS
-HOST_OS         :=          $(shell uname -s)
+HOST_OS := $(shell uname -s)
+GCC ?= gcc
+CC := $(GCC)
+LD := $(CC)
 
-# variables for paths
-CUR_DIR       		:=          .
-ROOT_DIR      		:=          ..
-CUR_DIR_NAME        :=          $(shell basename $(abspath $(CUR_DIR)))
-INCLUDE_PATH  		:=          $(ROOT_DIR)/include
-LIB_PATH      		:=          $(ROOT_DIR)/lib
-TESTS_PATH          :=          $(CUR_DIR)/unit
-BENCHMARKS_PATH     :=          $(CUR_DIR)/benchmark
-BUILD_PATH    		:=          $(CUR_DIR)/build
-DEP_PATH      		:=          $(BUILD_PATH)/dep
-OBJ_PATH      		:=          $(BUILD_PATH)/obj
-EXTERNAL_PATH       :=          $(CUR_DIR)/external
+LIB_METHOD ?= $(BUILD_METHOD)
+ifeq ($(strip $(LIB_METHOD)),)
+LIB_METHOD := static
+endif
 
-# variables for flags
-CC_FLAGS      :=          -std=$(STD_C)
-CC_FLAGS      +=  		  -Wall -Wextra -Werror
-CC_FLAGS      +=          -Wno-unused-parameter
-CC_FLAGS      +=          -Wno-unused-variable
-CC_FLAGS      +=          -Wno-unused-function
-CC_FLAGS      +=          -I$(INCLUDE_PATH)
-CC_FLAGS      +=          -I$(EXTERNAL_PATH)/include
-ifeq ($(DEBUG), true)
-CC_FLAGS      +=          -fsanitize=address
-CC_FLAGS      +=          -fsanitize=undefined
-CC_FLAGS      +=          -fsanitize=bounds
-CC_FLAGS      +=          -fno-omit-frame-pointer
-CC_FLAGS      +=          -g
-CC_FLAGS      +=          -O0
+LIB_NAME ?= $(LIBRARY_NAME)
+ifeq ($(strip $(LIB_NAME)),)
+LIB_NAME := collection
+endif
+
+DEBUG_FLAG := $(filter true 1,$(DEBUG))
+
+ifeq ($(LIB_METHOD),static)
+LIB_POSTFIX := .a
 else
-CC_FLAGS      +=          -O2
+ifeq ($(HOST_OS),Darwin)
+LIB_POSTFIX := .dylib
+else
+LIB_POSTFIX := .so
 endif
-ifeq ($(HOST_OS), Linux)
-CC_FLAGS        +=          -D_GNU_SOURCE
-CC_FLAGS        +=          -Wno-type-limits
-CC_FLAGS        +=          -Wno-sign-compare
-endif
-
-# dependencies flags
-CC_DEPS_FLAGS :=          -MMD -MP -MF
-
-# linker flags
-LD_FLAGS      :=          -L$(LIB_PATH) -l$(LIBRARY_NAME)
-ifeq ($(DEBUG), true)
-LD_FLAGS      +=          -fsanitize=address
-LD_FLAGS      +=          -fsanitize=undefined
-LD_FLAGS      +=          -fsanitize=bounds
 endif
 
-# source files
-TEST_SRCS           :=          $(shell find $(TESTS_PATH) -name "*.c")
-EXTERNAL_SRCS       :=          $(shell find $(EXTERNAL_PATH)/src -name "*.c")
-BENCHMARK_SRCS      :=          $(shell find $(BENCHMARKS_PATH) -name "*.c")
+SRCS_CASE 	:= $(shell find $(CASES_PATH) -name "*.c")
+SRCS_EXT 	:= $(shell find $(EXTERNAL_PATH)/src -name "*.c")
+OBJS_CASE 	:= $(patsubst $(CASES_PATH)/%.c,$(OBJ_PATH)/%.o,$(SRCS_CASE))
+OBJS_EXT 	:= $(patsubst $(EXTERNAL_PATH)/src/%.c,$(OBJ_PATH)/external/%.o,$(SRCS_EXT))
+OBJS 		:= $(OBJS_CASE) $(OBJS_EXT)
+DEPS 		:= $(patsubst $(OBJ_PATH)/%.o,$(DEP_PATH)/%.d,$(OBJS))
 
-# objects
-TEST_OBJS           :=          $(patsubst $(TESTS_PATH)/%.c, $(OBJ_PATH)/%.o, $(TEST_SRCS))
-BENCHMARK_OBJS      :=          $(patsubst $(BENCHMARKS_PATH)/%.c, $(OBJ_PATH)/%.o, $(BENCHMARK_SRCS))
-EXTERNAL_OBJS       :=          $(patsubst $(EXTERNAL_PATH)/src/%.c, $(OBJ_PATH)/%.o, $(EXTERNAL_SRCS))
+CC_FLAGS := -std=$(STD_C)
+CC_FLAGS += -Wall -Wextra -Werror
+CC_FLAGS += -I$(INCLUDE_PATH) -I$(EXTERNAL_PATH)/include
 
-# dependencies
-TEST_DEPS           :=          $(patsubst $(TESTS_PATH)/%.c, $(DEP_PATH)/%.d, $(TEST_SRCS))
-BENCHMARK_DEPS      :=          $(patsubst $(BENCHMARKS_PATH)/%.c, $(DEP_PATH)/%.d, $(BENCHMARK_SRCS))
+ifeq ($(HOST_OS),Linux)
+CC_FLAGS += -D_GNU_SOURCE
+CC_FLAGS += -Wno-type-limits -Wno-sign-compare
+endif
 
-# final dependencies OBJS
-OBJS_TEST           :=          $(TEST_OBJS) $(EXTERNAL_OBJS)
-OBJS_BENCHMARK     :=          $(BENCHMARK_OBJS) $(EXTERNAL_OBJS)
+ifneq ($(DEBUG_FLAG),)
+CC_FLAGS += -fsanitize=address,undefined,bounds
+CC_FLAGS += -g -O0
+else
+CC_FLAGS += -O2
+endif
 
-# general rules for all tests
-$(OBJ_PATH)/%.o: $(TESTS_PATH)/%.c
-	@mkdir -p $(dir $@)
-	@$(CC) $(CC_FLAGS) $(CC_DEPS_FLAGS) $(DEP_PATH)/$(notdir $(@F:.o=.d)) -c $< -o $@
-	@echo " + CC\t$(CUR_DIR_NAME)/$@"
+CC_DEPS_FLAGS := -MMD -MP -MF
+LD_FLAGS := -L$(LIB_PATH) -l$(LIB_NAME)
+ifneq ($(DEBUG_FLAG),)
+LD_FLAGS += -fsanitize=address,undefined,bounds
+endif
 
-# general rules for all benchmarks
-$(OBJ_PATH)/%.o: $(BENCHMARKS_PATH)/%.c
-	@mkdir -p $(dir $@)
-	@$(CC) $(CC_FLAGS) $(CC_DEPS_FLAGS) $(DEP_PATH)/$(notdir $(@F:.o=.d)) -c $< -o $@
-	@echo " + CC\t$(CUR_DIR_NAME)/$@"
+$(OBJ_PATH)/%.o: $(CASES_PATH)/%.c
+	@mkdir -p $(dir $@) $(dir $(DEP_PATH)/$*.d)
+	@$(CC) $(CC_FLAGS) $(CC_DEPS_FLAGS) $(DEP_PATH)/$*.d -MT $@ -c $< -o $@
+	@echo " + CC\ttest/$@"
 
-# general rules for all external objects
-$(OBJ_PATH)/%.o: $(EXTERNAL_PATH)/src/%.c
-	@mkdir -p $(dir $@)
-	@$(CC) $(CC_FLAGS) -c $< -o $@
-	@echo " + CC\t$(CUR_DIR_NAME)/$@"
+$(OBJ_PATH)/external/%.o: $(EXTERNAL_PATH)/src/%.c
+	@mkdir -p $(dir $@) $(dir $(DEP_PATH)/external/$*.d)
+	@$(CC) $(CC_FLAGS) $(CC_DEPS_FLAGS) $(DEP_PATH)/external/$*.d -MT $@ -c $< -o $@
+	@echo " + CC\ttest/$@"
 
-# include the dependencies
--include $(TEST_DEPS)
--include $(BENCHMARK_DEPS)
+-include $(DEPS)
 
+.SECONDARY: $(DEPS)
 .DEFAULT_GOAL := test
-.PHONY: test benchmark create_build_dir flags
+.PHONY: all test test-% clean flags
 
-# create build directory target
-create_build_dir:
+all: $(OBJS)
 	@mkdir -p $(BUILD_PATH)
-	@mkdir -p $(OBJ_PATH)
-	@mkdir -p $(DEP_PATH)
+	@$(LD) $(OBJS) $(LD_FLAGS) -o $(BUILD_PATH)/test
+	@echo " + LD\ttest/$(notdir $(BUILD_PATH))/test"
+	@echo ""
 
-# clean target
+test: all
+	@$(BUILD_PATH)/test
+
+test-%: all
+	@$(BUILD_PATH)/test -m $*
+
 clean:
 	@rm -rf $(BUILD_PATH)
 
-# unit test
-test: create_build_dir $(OBJS_TEST)
-	@$(CC) $(LD_FLAGS) -o $(BUILD_PATH)/test $(OBJS_TEST) \
-	$(LIB_PATH)/lib$(LIBRARY_NAME)$(LIB_POSTFIX)
-	@echo " + LD\t$(CUR_DIR_NAME)/$(notdir $(BUILD_PATH))/test"
-	@echo "Build unit test ./test/build/$@\n"
-
-# unit test module target
-test-%: 
-	@$(MAKE) test
-	@$(BUILD_PATH)/test -m $*
-
-# benchmark test
-benchmark: create_build_dir $(OBJS_BENCHMARK)
-	@$(CC) $(LD_FLAGS) -o $(BUILD_PATH)/benchmark $(OBJS_BENCHMARK) \
-	$(LIB_PATH)/lib$(LIBRARY_NAME)$(LIB_POSTFIX)
-	@echo " + LD\t$(CUR_DIR_NAME)/$(notdir $(BUILD_PATH))/benchmark"
-	@echo "Build benchmark test ./test/build/$@\n"
-
-# flags target
 flags:
-	@echo "TEST_CC_FLAGS: $(CC_FLAGS)\n"
-	@echo "TEST_LD_FLAGS: $(LD_FLAGS)\n"
+	@echo "TEST_LIB_METHOD: $(LIB_METHOD)"
+	@echo "TEST_CC_FLAGS: $(CC_FLAGS)"
+	@echo "TEST_LD_FLAGS: $(LD_FLAGS)"

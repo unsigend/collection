@@ -23,7 +23,8 @@
  * "Compilers: Principles, Techniques, and Tools" by Aho, Sethi, and Ullman.
  * @note: PWJ hash
  */
-uint32_t hash_str(const char *key) {
+uint32_t hash_str(const char *key)
+{
   uint32_t hash = 0;
 
   while (*key) {

@@ -24,7 +24,8 @@
 /* Global destroy counter for testing */
 static int destroy_count = 0;
 
-static void destroy_counter(void *data) {
+static void destroy_counter(void *data)
+{
   if (data != NULL) {
     destroy_count++;
   }
@@ -34,7 +35,8 @@ static void destroy_counter(void *data) {
 static int destroy_context_count = 0;
 static void *test_context = NULL;
 
-static void destroy_counter_context(void *data, void *context) {
+static void destroy_counter_context(void *data, void *context)
+{
   if (data != NULL) {
     destroy_context_count++;
   }
@@ -46,12 +48,13 @@ static void destroy_counter_context(void *data, void *context) {
  * Dependencies: None
  * Description: Tests basic initialization of the singly linked list structure.
  */
-UTEST_TEST_CASE(slist_init) {
+UTEST_CASE(slist_init)
+{
   // Test 1: Initialize with NULL destroy function
   {
     SList list;
     slist_init(&list, NULL);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     EXPECT_TRUE(slist_empty(&list));
     EXPECT_NULL(slist_head(&list));
     EXPECT_NULL(slist_tail(&list));
@@ -62,7 +65,7 @@ UTEST_TEST_CASE(slist_init) {
   {
     SList list;
     slist_init(&list, free);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     EXPECT_TRUE(slist_empty(&list));
     EXPECT_NULL(slist_head(&list));
     EXPECT_NULL(slist_tail(&list));
@@ -75,13 +78,14 @@ UTEST_TEST_CASE(slist_init) {
  * Dependencies: None
  * Description: Tests initialization with context-aware destroy function.
  */
-UTEST_TEST_CASE(slist_init_context) {
+UTEST_CASE(slist_init_context)
+{
   // Test 1: Initialize with context
   {
     SList list;
     int context_value = 42;
     slist_init_context(&list, &context_value, destroy_counter_context);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     EXPECT_TRUE(slist_empty(&list));
     EXPECT_NULL(slist_head(&list));
     EXPECT_NULL(slist_tail(&list));
@@ -94,12 +98,13 @@ UTEST_TEST_CASE(slist_init_context) {
  * Dependencies: slist_init
  * Description: Tests the slist_size function to get the number of elements.
  */
-UTEST_TEST_CASE(slist_size) {
+UTEST_CASE(slist_size)
+{
   // Test 1: Size of empty list
   {
     SList list;
     slist_init(&list, NULL);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     slist_destroy(&list);
   }
 
@@ -109,11 +114,11 @@ UTEST_TEST_CASE(slist_size) {
     slist_init(&list, NULL);
     int a = 1, b = 2, c = 3;
     slist_push_front(&list, &a);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
     slist_push_front(&list, &b);
-    EXPECT_EQUAL_UINT(slist_size(&list), 2);
+    EXPECT_EQ_UINT(slist_size(&list), 2);
     slist_push_front(&list, &c);
-    EXPECT_EQUAL_UINT(slist_size(&list), 3);
+    EXPECT_EQ_UINT(slist_size(&list), 3);
     slist_destroy(&list);
   }
 
@@ -123,11 +128,11 @@ UTEST_TEST_CASE(slist_size) {
     slist_init(&list, NULL);
     int a = 1, b = 2, c = 3;
     slist_push_back(&list, &a);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
     slist_push_back(&list, &b);
-    EXPECT_EQUAL_UINT(slist_size(&list), 2);
+    EXPECT_EQ_UINT(slist_size(&list), 2);
     slist_push_back(&list, &c);
-    EXPECT_EQUAL_UINT(slist_size(&list), 3);
+    EXPECT_EQ_UINT(slist_size(&list), 3);
     slist_destroy(&list);
   }
 
@@ -139,13 +144,13 @@ UTEST_TEST_CASE(slist_size) {
     slist_push_back(&list, &a);
     slist_push_back(&list, &b);
     slist_pop_front(&list, NULL);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
     slist_destroy(&list);
   }
 
   // Test 5: Size with NULL list
   {
-    EXPECT_EQUAL_UINT(slist_size(NULL), 0);
+    EXPECT_EQ_UINT(slist_size(NULL), 0);
   }
 }
 
@@ -154,7 +159,8 @@ UTEST_TEST_CASE(slist_size) {
  * Dependencies: slist_init, slist_size
  * Description: Tests the slist_empty function to check if list is empty.
  */
-UTEST_TEST_CASE(slist_empty) {
+UTEST_CASE(slist_empty)
+{
   // Test 1: Empty list
   {
     SList list;
@@ -197,7 +203,8 @@ UTEST_TEST_CASE(slist_empty) {
  * Dependencies: slist_init
  * Description: Tests the slist_head function to get the head node.
  */
-UTEST_TEST_CASE(slist_head) {
+UTEST_CASE(slist_head)
+{
   // Test 1: Head of empty list
   {
     SList list;
@@ -212,10 +219,10 @@ UTEST_TEST_CASE(slist_head) {
     slist_init(&list, NULL);
     int a = 1, b = 2;
     slist_push_back(&list, &a);
-    EXPECT_NOT_NULL(slist_head(&list));
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_head(&list)), 1);
+    EXPECT_NOTNULL(slist_head(&list));
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_head(&list)), 1);
     slist_push_back(&list, &b);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_head(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_head(&list)), 1);
     slist_destroy(&list);
   }
 
@@ -226,7 +233,7 @@ UTEST_TEST_CASE(slist_head) {
     int a = 1, b = 2;
     slist_push_back(&list, &a);
     slist_push_front(&list, &b);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_head(&list)), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_head(&list)), 2);
     slist_destroy(&list);
   }
 
@@ -241,7 +248,8 @@ UTEST_TEST_CASE(slist_head) {
  * Dependencies: slist_init
  * Description: Tests the slist_tail function to get the tail node.
  */
-UTEST_TEST_CASE(slist_tail) {
+UTEST_CASE(slist_tail)
+{
   // Test 1: Tail of empty list
   {
     SList list;
@@ -256,10 +264,10 @@ UTEST_TEST_CASE(slist_tail) {
     slist_init(&list, NULL);
     int a = 1, b = 2;
     slist_push_back(&list, &a);
-    EXPECT_NOT_NULL(slist_tail(&list));
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_tail(&list)), 1);
+    EXPECT_NOTNULL(slist_tail(&list));
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_tail(&list)), 1);
     slist_push_back(&list, &b);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_tail(&list)), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_tail(&list)), 2);
     slist_destroy(&list);
   }
 
@@ -269,7 +277,7 @@ UTEST_TEST_CASE(slist_tail) {
     slist_init(&list, NULL);
     int a = 1;
     slist_push_back(&list, &a);
-    EXPECT_EQUAL_UINT(slist_head(&list), slist_tail(&list));
+    EXPECT_EQ_UINT(slist_head(&list), slist_tail(&list));
     slist_destroy(&list);
   }
 
@@ -284,7 +292,8 @@ UTEST_TEST_CASE(slist_tail) {
  * Dependencies: slist_init
  * Description: Tests the slist_front function to get the first node.
  */
-UTEST_TEST_CASE(slist_front) {
+UTEST_CASE(slist_front)
+{
   // Test 1: Front of empty list
   {
     SList list;
@@ -299,10 +308,10 @@ UTEST_TEST_CASE(slist_front) {
     slist_init(&list, NULL);
     int a = 1, b = 2;
     slist_push_back(&list, &a);
-    EXPECT_NOT_NULL(slist_front(&list));
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 1);
+    EXPECT_NOTNULL(slist_front(&list));
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 1);
     slist_push_back(&list, &b);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 1);
     slist_destroy(&list);
   }
 
@@ -312,7 +321,7 @@ UTEST_TEST_CASE(slist_front) {
     slist_init(&list, NULL);
     int a = 1;
     slist_push_back(&list, &a);
-    EXPECT_EQUAL_UINT(slist_front(&list), slist_head(&list));
+    EXPECT_EQ_UINT(slist_front(&list), slist_head(&list));
     slist_destroy(&list);
   }
 
@@ -327,7 +336,8 @@ UTEST_TEST_CASE(slist_front) {
  * Dependencies: slist_init
  * Description: Tests the slist_back function to get the last node.
  */
-UTEST_TEST_CASE(slist_back) {
+UTEST_CASE(slist_back)
+{
   // Test 1: Back of empty list
   {
     SList list;
@@ -342,11 +352,11 @@ UTEST_TEST_CASE(slist_back) {
     slist_init(&list, NULL);
     int a = 1, b = 2, c = 3;
     slist_push_back(&list, &a);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 1);
     slist_push_back(&list, &b);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 2);
     slist_push_back(&list, &c);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 3);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 3);
     slist_destroy(&list);
   }
 
@@ -356,7 +366,7 @@ UTEST_TEST_CASE(slist_back) {
     slist_init(&list, NULL);
     int a = 1;
     slist_push_back(&list, &a);
-    EXPECT_EQUAL_UINT(slist_back(&list), slist_tail(&list));
+    EXPECT_EQ_UINT(slist_back(&list), slist_tail(&list));
     slist_destroy(&list);
   }
 
@@ -371,7 +381,8 @@ UTEST_TEST_CASE(slist_back) {
  * Dependencies: slist_init, slist_push_back
  * Description: Tests the slist_next function to get the next node.
  */
-UTEST_TEST_CASE(slist_next) {
+UTEST_CASE(slist_next)
+{
   // Test 1: Next of NULL node
   {
     EXPECT_NULL(slist_next(NULL));
@@ -397,11 +408,11 @@ UTEST_TEST_CASE(slist_next) {
     slist_push_back(&list, &b);
     slist_push_back(&list, &c);
     SListNode *node = slist_front(&list);
-    EXPECT_NOT_NULL(slist_next(node));
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_next(node)), 2);
+    EXPECT_NOTNULL(slist_next(node));
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_next(node)), 2);
     node = slist_next(node);
-    EXPECT_NOT_NULL(slist_next(node));
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_next(node)), 3);
+    EXPECT_NOTNULL(slist_next(node));
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_next(node)), 3);
     node = slist_next(node);
     EXPECT_NULL(slist_next(node));
     slist_destroy(&list);
@@ -413,7 +424,8 @@ UTEST_TEST_CASE(slist_next) {
  * Dependencies: slist_init, slist_push_back
  * Description: Tests the slist_data function to get node data.
  */
-UTEST_TEST_CASE(slist_data) {
+UTEST_CASE(slist_data)
+{
   // Test 1: Data of NULL node
   {
     EXPECT_NULL(slist_data(NULL));
@@ -427,9 +439,9 @@ UTEST_TEST_CASE(slist_data) {
     slist_push_back(&list, &a);
     slist_push_back(&list, &b);
     SListNode *node = slist_front(&list);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(node), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(node), 1);
     node = slist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(node), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(node), 2);
     slist_destroy(&list);
   }
 
@@ -449,13 +461,14 @@ UTEST_TEST_CASE(slist_data) {
  * Dependencies: slist_init
  * Description: Tests destruction of the list and cleanup.
  */
-UTEST_TEST_CASE(slist_destroy) {
+UTEST_CASE(slist_destroy)
+{
   // Test 1: Destroy empty list
   {
     SList list;
     slist_init(&list, NULL);
     slist_destroy(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     EXPECT_TRUE(slist_empty(&list));
   }
 
@@ -469,7 +482,7 @@ UTEST_TEST_CASE(slist_destroy) {
     slist_push_back(&list, &c);
     destroy_count = 0;
     slist_destroy(&list);
-    EXPECT_EQUAL_INT(destroy_count, 3);
+    EXPECT_EQ_INT(destroy_count, 3);
   }
 
   // Test 3: Destroy list without destroy function
@@ -480,7 +493,7 @@ UTEST_TEST_CASE(slist_destroy) {
     slist_push_back(&list, &a);
     slist_push_back(&list, &b);
     slist_destroy(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
   }
 }
 
@@ -489,15 +502,16 @@ UTEST_TEST_CASE(slist_destroy) {
  * Dependencies: slist_init, slist_size
  * Description: Tests inserting elements at the beginning of the list.
  */
-UTEST_TEST_CASE(slist_push_front) {
+UTEST_CASE(slist_push_front)
+{
   // Test 1: Push to empty list
   {
     SList list;
     slist_init(&list, NULL);
     int a = 1;
-    EXPECT_EQUAL_INT(slist_push_front(&list, &a), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 1);
+    EXPECT_EQ_INT(slist_push_front(&list, &a), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 1);
     slist_destroy(&list);
   }
 
@@ -506,17 +520,17 @@ UTEST_TEST_CASE(slist_push_front) {
     SList list;
     slist_init(&list, NULL);
     int a = 1, b = 2, c = 3;
-    EXPECT_EQUAL_INT(slist_push_front(&list, &a), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(slist_push_front(&list, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(slist_push_front(&list, &c), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 3);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 3);
+    EXPECT_EQ_INT(slist_push_front(&list, &a), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(slist_push_front(&list, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(slist_push_front(&list, &c), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 3);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 3);
     SListNode *node = slist_front(&list);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(node), 3);
+    EXPECT_EQ_UINT(*(int *)slist_data(node), 3);
     node = slist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(node), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(node), 2);
     node = slist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(node), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(node), 1);
     slist_destroy(&list);
   }
 
@@ -524,8 +538,8 @@ UTEST_TEST_CASE(slist_push_front) {
   {
     SList list;
     slist_init(&list, NULL);
-    EXPECT_EQUAL_INT(slist_push_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
+    EXPECT_EQ_INT(slist_push_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
     EXPECT_NULL(slist_data(slist_front(&list)));
     slist_destroy(&list);
   }
@@ -536,10 +550,10 @@ UTEST_TEST_CASE(slist_push_front) {
     slist_init(&list, NULL);
     int a = 1, b = 2;
     slist_push_front(&list, &a);
-    EXPECT_EQUAL_UINT(slist_head(&list), slist_tail(&list));
+    EXPECT_EQ_UINT(slist_head(&list), slist_tail(&list));
     slist_push_front(&list, &b);
-    EXPECT_NOT_EQUAL_UINT(slist_head(&list), slist_tail(&list));
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_tail(&list)), 1);
+    EXPECT_NE_UINT(slist_head(&list), slist_tail(&list));
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_tail(&list)), 1);
     slist_destroy(&list);
   }
 }
@@ -549,15 +563,16 @@ UTEST_TEST_CASE(slist_push_front) {
  * Dependencies: slist_init, slist_size
  * Description: Tests appending elements to the end of the list.
  */
-UTEST_TEST_CASE(slist_push_back) {
+UTEST_CASE(slist_push_back)
+{
   // Test 1: Push to empty list
   {
     SList list;
     slist_init(&list, NULL);
     int a = 1;
-    EXPECT_EQUAL_INT(slist_push_back(&list, &a), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 1);
+    EXPECT_EQ_INT(slist_push_back(&list, &a), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 1);
     slist_destroy(&list);
   }
 
@@ -566,12 +581,12 @@ UTEST_TEST_CASE(slist_push_back) {
     SList list;
     slist_init(&list, NULL);
     int a = 1, b = 2, c = 3;
-    EXPECT_EQUAL_INT(slist_push_back(&list, &a), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(slist_push_back(&list, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(slist_push_back(&list, &c), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 3);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 3);
+    EXPECT_EQ_INT(slist_push_back(&list, &a), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(slist_push_back(&list, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(slist_push_back(&list, &c), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 3);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 3);
     slist_destroy(&list);
   }
 
@@ -579,8 +594,8 @@ UTEST_TEST_CASE(slist_push_back) {
   {
     SList list;
     slist_init(&list, NULL);
-    EXPECT_EQUAL_INT(slist_push_back(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
+    EXPECT_EQ_INT(slist_push_back(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
     EXPECT_NULL(slist_data(slist_back(&list)));
     slist_destroy(&list);
   }
@@ -591,10 +606,10 @@ UTEST_TEST_CASE(slist_push_back) {
     slist_init(&list, NULL);
     int a = 1, b = 2;
     slist_push_back(&list, &a);
-    EXPECT_EQUAL_UINT(slist_head(&list), slist_tail(&list));
+    EXPECT_EQ_UINT(slist_head(&list), slist_tail(&list));
     slist_push_back(&list, &b);
-    EXPECT_NOT_EQUAL_UINT(slist_head(&list), slist_tail(&list));
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_head(&list)), 1);
+    EXPECT_NE_UINT(slist_head(&list), slist_tail(&list));
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_head(&list)), 1);
     slist_destroy(&list);
   }
 }
@@ -604,13 +619,14 @@ UTEST_TEST_CASE(slist_push_back) {
  * Dependencies: slist_init, slist_push_back, slist_size
  * Description: Tests removing the first element from the list.
  */
-UTEST_TEST_CASE(slist_pop_front) {
+UTEST_CASE(slist_pop_front)
+{
   // Test 1: Pop from empty list
   {
     SList list;
     slist_init(&list, NULL);
-    EXPECT_EQUAL_INT(slist_pop_front(&list, NULL), COLLECTION_FAILURE);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_INT(slist_pop_front(&list, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     slist_destroy(&list);
   }
 
@@ -621,9 +637,9 @@ UTEST_TEST_CASE(slist_pop_front) {
     int a = 1, b = 2;
     slist_push_back(&list, &a);
     slist_push_back(&list, &b);
-    EXPECT_EQUAL_INT(slist_pop_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 2);
+    EXPECT_EQ_INT(slist_pop_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 2);
     slist_destroy(&list);
   }
 
@@ -635,9 +651,9 @@ UTEST_TEST_CASE(slist_pop_front) {
     slist_push_back(&list, &a);
     slist_push_back(&list, &b);
     void *popped = NULL;
-    EXPECT_EQUAL_INT(slist_pop_front(&list, &popped), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)popped, 1);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
+    EXPECT_EQ_INT(slist_pop_front(&list, &popped), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)popped, 1);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
     slist_destroy(&list);
   }
 
@@ -649,9 +665,9 @@ UTEST_TEST_CASE(slist_pop_front) {
     slist_push_back(&list, &a);
     slist_push_back(&list, &b);
     destroy_count = 0;
-    EXPECT_EQUAL_INT(slist_pop_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(destroy_count, 1);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
+    EXPECT_EQ_INT(slist_pop_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(destroy_count, 1);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
     slist_destroy(&list);
   }
 
@@ -663,10 +679,10 @@ UTEST_TEST_CASE(slist_pop_front) {
     slist_push_back(&list, &a);
     slist_push_back(&list, &b);
     slist_push_back(&list, &c);
-    EXPECT_EQUAL_INT(slist_pop_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(slist_pop_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(slist_pop_front(&list, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_INT(slist_pop_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(slist_pop_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(slist_pop_front(&list, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     EXPECT_TRUE(slist_empty(&list));
     slist_destroy(&list);
   }
@@ -689,13 +705,14 @@ UTEST_TEST_CASE(slist_pop_front) {
  * Dependencies: slist_init, slist_push_back, slist_size
  * Description: Tests removing all elements from the list.
  */
-UTEST_TEST_CASE(slist_clear) {
+UTEST_CASE(slist_clear)
+{
   // Test 1: Clear empty list
   {
     SList list;
     slist_init(&list, NULL);
     slist_clear(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     EXPECT_TRUE(slist_empty(&list));
     slist_destroy(&list);
   }
@@ -709,7 +726,7 @@ UTEST_TEST_CASE(slist_clear) {
     slist_push_back(&list, &b);
     slist_push_back(&list, &c);
     slist_clear(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     EXPECT_TRUE(slist_empty(&list));
     EXPECT_NULL(slist_head(&list));
     EXPECT_NULL(slist_tail(&list));
@@ -726,8 +743,8 @@ UTEST_TEST_CASE(slist_clear) {
     slist_push_back(&list, &c);
     destroy_count = 0;
     slist_clear(&list);
-    EXPECT_EQUAL_INT(destroy_count, 3);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_INT(destroy_count, 3);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     slist_destroy(&list);
   }
 
@@ -739,8 +756,8 @@ UTEST_TEST_CASE(slist_clear) {
     slist_push_back(&list, &a);
     slist_clear(&list);
     slist_push_back(&list, &b);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 2);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 2);
     slist_destroy(&list);
   }
 }
@@ -750,7 +767,8 @@ UTEST_TEST_CASE(slist_clear) {
  * Dependencies: slist_init, slist_push_back, slist_size
  * Description: Tests inserting elements after a given node.
  */
-UTEST_TEST_CASE(slist_insert_after) {
+UTEST_CASE(slist_insert_after)
+{
   // Test 1: Insert after head
   {
     SList list;
@@ -759,13 +777,13 @@ UTEST_TEST_CASE(slist_insert_after) {
     slist_push_back(&list, &a);
     slist_push_back(&list, &c);
     SListNode *node = slist_front(&list);
-    EXPECT_EQUAL_INT(slist_insert_after(&list, node, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 3);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 1);
+    EXPECT_EQ_INT(slist_insert_after(&list, node, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 3);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 1);
     node = slist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(node), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(node), 2);
     node = slist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(node), 3);
+    EXPECT_EQ_UINT(*(int *)slist_data(node), 3);
     slist_destroy(&list);
   }
 
@@ -776,9 +794,9 @@ UTEST_TEST_CASE(slist_insert_after) {
     int a = 1, b = 2;
     slist_push_back(&list, &a);
     SListNode *node = slist_tail(&list);
-    EXPECT_EQUAL_INT(slist_insert_after(&list, node, &b), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 2);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_tail(&list)), 2);
+    EXPECT_EQ_INT(slist_insert_after(&list, node, &b), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_tail(&list)), 2);
     slist_destroy(&list);
   }
 
@@ -789,8 +807,8 @@ UTEST_TEST_CASE(slist_insert_after) {
     int a = 1;
     slist_push_back(&list, &a);
     SListNode *node = slist_front(&list);
-    EXPECT_EQUAL_INT(slist_insert_after(&list, node, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 2);
+    EXPECT_EQ_INT(slist_insert_after(&list, node, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 2);
     EXPECT_NULL(slist_data(slist_next(node)));
     slist_destroy(&list);
   }
@@ -800,8 +818,8 @@ UTEST_TEST_CASE(slist_insert_after) {
     SList list;
     slist_init(&list, NULL);
     int a = 1;
-    EXPECT_EQUAL_INT(slist_insert_after(&list, NULL, &a), COLLECTION_FAILURE);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_INT(slist_insert_after(&list, NULL, &a), COLLECTION_FAILURE);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     slist_destroy(&list);
   }
 
@@ -815,16 +833,16 @@ UTEST_TEST_CASE(slist_insert_after) {
     slist_push_back(&list, &d);
     SListNode *node = slist_front(&list);
     node = slist_next(node);
-    EXPECT_EQUAL_INT(slist_insert_after(&list, node, &c), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 4);
+    EXPECT_EQ_INT(slist_insert_after(&list, node, &c), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 4);
     node = slist_front(&list);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(node), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(node), 1);
     node = slist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(node), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(node), 2);
     node = slist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(node), 3);
+    EXPECT_EQ_UINT(*(int *)slist_data(node), 3);
     node = slist_next(node);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(node), 4);
+    EXPECT_EQ_UINT(*(int *)slist_data(node), 4);
     slist_destroy(&list);
   }
 }
@@ -834,7 +852,8 @@ UTEST_TEST_CASE(slist_insert_after) {
  * Dependencies: slist_init, slist_push_back, slist_size
  * Description: Tests removing the element after a given node.
  */
-UTEST_TEST_CASE(slist_remove_after) {
+UTEST_CASE(slist_remove_after)
+{
   // Test 1: Remove after head
   {
     SList list;
@@ -844,10 +863,10 @@ UTEST_TEST_CASE(slist_remove_after) {
     slist_push_back(&list, &b);
     slist_push_back(&list, &c);
     SListNode *node = slist_front(&list);
-    EXPECT_EQUAL_INT(slist_remove_after(&list, node, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 2);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_next(node)), 3);
+    EXPECT_EQ_INT(slist_remove_after(&list, node, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_next(node)), 3);
     slist_destroy(&list);
   }
 
@@ -861,10 +880,10 @@ UTEST_TEST_CASE(slist_remove_after) {
     slist_push_back(&list, &c);
     SListNode *node = slist_front(&list);
     void *removed = NULL;
-    EXPECT_EQUAL_INT(slist_remove_after(&list, node, &removed),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)removed, 2);
-    EXPECT_EQUAL_UINT(slist_size(&list), 2);
+    EXPECT_EQ_INT(slist_remove_after(&list, node, &removed),
+                  COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)removed, 2);
+    EXPECT_EQ_UINT(slist_size(&list), 2);
     slist_destroy(&list);
   }
 
@@ -878,9 +897,9 @@ UTEST_TEST_CASE(slist_remove_after) {
     slist_push_back(&list, &c);
     SListNode *node = slist_front(&list);
     destroy_count = 0;
-    EXPECT_EQUAL_INT(slist_remove_after(&list, node, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_INT(destroy_count, 1);
-    EXPECT_EQUAL_UINT(slist_size(&list), 2);
+    EXPECT_EQ_INT(slist_remove_after(&list, node, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_INT(destroy_count, 1);
+    EXPECT_EQ_UINT(slist_size(&list), 2);
     slist_destroy(&list);
   }
 
@@ -890,8 +909,8 @@ UTEST_TEST_CASE(slist_remove_after) {
     slist_init(&list, NULL);
     int a = 1;
     slist_push_back(&list, &a);
-    EXPECT_EQUAL_INT(slist_remove_after(&list, NULL, NULL), COLLECTION_FAILURE);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
+    EXPECT_EQ_INT(slist_remove_after(&list, NULL, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
     slist_destroy(&list);
   }
 
@@ -902,8 +921,8 @@ UTEST_TEST_CASE(slist_remove_after) {
     int a = 1;
     slist_push_back(&list, &a);
     SListNode *node = slist_front(&list);
-    EXPECT_EQUAL_INT(slist_remove_after(&list, node, NULL), COLLECTION_FAILURE);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
+    EXPECT_EQ_INT(slist_remove_after(&list, node, NULL), COLLECTION_FAILURE);
+    EXPECT_EQ_UINT(slist_size(&list), 1);
     slist_destroy(&list);
   }
 
@@ -915,8 +934,8 @@ UTEST_TEST_CASE(slist_remove_after) {
     slist_push_back(&list, &a);
     slist_push_back(&list, &b);
     SListNode *node = slist_front(&list);
-    EXPECT_EQUAL_INT(slist_remove_after(&list, node, NULL), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_tail(&list), node);
+    EXPECT_EQ_INT(slist_remove_after(&list, node, NULL), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_tail(&list), node);
     slist_destroy(&list);
   }
 }
@@ -927,7 +946,8 @@ UTEST_TEST_CASE(slist_remove_after) {
  * slist_insert_after, slist_remove_after, slist_clear Description: Tests for
  * memory leaks by tracking destroy function calls.
  */
-UTEST_TEST_CASE(slist_memory_leak) {
+UTEST_CASE(slist_memory_leak)
+{
   // Test 1: All elements destroyed on slist_destroy
   {
     SList list;
@@ -939,7 +959,7 @@ UTEST_TEST_CASE(slist_memory_leak) {
     }
     destroy_count = 0;
     slist_destroy(&list);
-    EXPECT_EQUAL_INT(destroy_count, 10);
+    EXPECT_EQ_INT(destroy_count, 10);
   }
 
   // Test 2: Elements destroyed on pop_front
@@ -955,9 +975,9 @@ UTEST_TEST_CASE(slist_memory_leak) {
     for (int i = 0; i < 5; i++) {
       slist_pop_front(&list, NULL);
     }
-    EXPECT_EQUAL_INT(destroy_count, 5);
+    EXPECT_EQ_INT(destroy_count, 5);
     slist_destroy(&list);
-    EXPECT_EQUAL_INT(destroy_count, 5);
+    EXPECT_EQ_INT(destroy_count, 5);
   }
 
   // Test 3: Elements destroyed on remove_after
@@ -972,11 +992,11 @@ UTEST_TEST_CASE(slist_memory_leak) {
     destroy_count = 0;
     SListNode *node = slist_front(&list);
     slist_remove_after(&list, node, NULL);
-    EXPECT_EQUAL_INT(destroy_count, 1);
+    EXPECT_EQ_INT(destroy_count, 1);
     slist_remove_after(&list, node, NULL);
-    EXPECT_EQUAL_INT(destroy_count, 2);
+    EXPECT_EQ_INT(destroy_count, 2);
     slist_destroy(&list);
-    EXPECT_EQUAL_INT(destroy_count, 5);
+    EXPECT_EQ_INT(destroy_count, 5);
   }
 
   // Test 4: Elements destroyed on clear
@@ -990,9 +1010,9 @@ UTEST_TEST_CASE(slist_memory_leak) {
     }
     destroy_count = 0;
     slist_clear(&list);
-    EXPECT_EQUAL_INT(destroy_count, 10);
+    EXPECT_EQ_INT(destroy_count, 10);
     slist_destroy(&list);
-    EXPECT_EQUAL_INT(destroy_count, 10);
+    EXPECT_EQ_INT(destroy_count, 10);
   }
   // Test 5: Elements freed by free
   {
@@ -1003,7 +1023,7 @@ UTEST_TEST_CASE(slist_memory_leak) {
       *value = i;
       slist_push_back(&list, value);
     }
-    EXPECT_EQUAL_UINT64(slist_size(&list), 10);
+    EXPECT_EQ_UINT(slist_size(&list), 10);
     slist_destroy(&list);
   }
 }
@@ -1013,7 +1033,8 @@ UTEST_TEST_CASE(slist_memory_leak) {
  * Dependencies: All slist functions
  * Description: Integration test combining multiple operations.
  */
-UTEST_TEST_CASE(slist_integration) {
+UTEST_CASE(slist_integration)
+{
   // Test 1: Complex sequence of operations
   {
     SList list;
@@ -1022,29 +1043,29 @@ UTEST_TEST_CASE(slist_integration) {
     int values[10];
     for (int i = 0; i < 10; i++) {
       values[i] = i;
-      EXPECT_EQUAL_INT(slist_push_back(&list, &values[i]), COLLECTION_SUCCESS);
+      EXPECT_EQ_INT(slist_push_back(&list, &values[i]), COLLECTION_SUCCESS);
     }
-    EXPECT_EQUAL_UINT(slist_size(&list), 10);
+    EXPECT_EQ_UINT(slist_size(&list), 10);
 
     void *popped = NULL;
-    EXPECT_EQUAL_INT(slist_pop_front(&list, &popped), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)popped, 0);
-    EXPECT_EQUAL_UINT(slist_size(&list), 9);
+    EXPECT_EQ_INT(slist_pop_front(&list, &popped), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)popped, 0);
+    EXPECT_EQ_UINT(slist_size(&list), 9);
 
     int new_val = 99;
     SListNode *node = slist_front(&list);
-    EXPECT_EQUAL_INT(slist_insert_after(&list, node, &new_val),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(slist_size(&list), 10);
+    EXPECT_EQ_INT(slist_insert_after(&list, node, &new_val),
+                  COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(slist_size(&list), 10);
 
     void *removed = NULL;
-    EXPECT_EQUAL_INT(slist_remove_after(&list, node, &removed),
-                     COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)removed, 99);
-    EXPECT_EQUAL_UINT(slist_size(&list), 9);
+    EXPECT_EQ_INT(slist_remove_after(&list, node, &removed),
+                  COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)removed, 99);
+    EXPECT_EQ_UINT(slist_size(&list), 9);
 
     slist_clear(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     EXPECT_TRUE(slist_empty(&list));
 
     slist_destroy(&list);
@@ -1061,9 +1082,9 @@ UTEST_TEST_CASE(slist_integration) {
     slist_push_front(&list, &c);
     slist_push_back(&list, &d);
 
-    EXPECT_EQUAL_UINT(slist_size(&list), 4);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 3);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 4);
+    EXPECT_EQ_UINT(slist_size(&list), 4);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 3);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 4);
 
     slist_destroy(&list);
   }
@@ -1081,10 +1102,10 @@ UTEST_TEST_CASE(slist_integration) {
     int count = 0;
     for (SListNode *node = slist_front(&list); node != NULL;
          node = slist_next(node)) {
-      EXPECT_EQUAL_UINT(*(int *)slist_data(node), values[count]);
+      EXPECT_EQ_UINT(*(int *)slist_data(node), values[count]);
       count++;
     }
-    EXPECT_EQUAL_UINT(count, 5);
+    EXPECT_EQ_UINT(count, 5);
 
     slist_destroy(&list);
   }
@@ -1101,9 +1122,9 @@ UTEST_TEST_CASE(slist_integration) {
     int a = 1;
     slist_push_back(&list, &a);
     EXPECT_FALSE(slist_empty(&list));
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 1);
-    EXPECT_EQUAL_UINT(slist_head(&list), slist_tail(&list));
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 1);
+    EXPECT_EQ_UINT(slist_head(&list), slist_tail(&list));
 
     slist_pop_front(&list, NULL);
     EXPECT_TRUE(slist_empty(&list));
@@ -1124,18 +1145,18 @@ UTEST_TEST_CASE(slist_integration) {
     }
 
     slist_reverse(&list);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 5);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 5);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 1);
 
     void *popped = NULL;
-    EXPECT_EQUAL_INT(slist_pop_front(&list, &popped), COLLECTION_SUCCESS);
-    EXPECT_EQUAL_UINT(*(int *)popped, 5);
-    EXPECT_EQUAL_UINT(slist_size(&list), 4);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 4);
+    EXPECT_EQ_INT(slist_pop_front(&list, &popped), COLLECTION_SUCCESS);
+    EXPECT_EQ_UINT(*(int *)popped, 5);
+    EXPECT_EQ_UINT(slist_size(&list), 4);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 4);
 
     slist_reverse(&list);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 4);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 4);
 
     slist_destroy(&list);
   }
@@ -1147,13 +1168,14 @@ UTEST_TEST_CASE(slist_integration) {
  * slist_front, slist_back, slist_head, slist_tail Description: Tests reversing
  * the singly linked list.
  */
-UTEST_TEST_CASE(slist_reverse) {
+UTEST_CASE(slist_reverse)
+{
   // Test 1: Reverse empty list
   {
     SList list;
     slist_init(&list, NULL);
     slist_reverse(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 0);
+    EXPECT_EQ_UINT(slist_size(&list), 0);
     EXPECT_TRUE(slist_empty(&list));
     EXPECT_NULL(slist_head(&list));
     EXPECT_NULL(slist_tail(&list));
@@ -1167,10 +1189,10 @@ UTEST_TEST_CASE(slist_reverse) {
     int a = 1;
     slist_push_back(&list, &a);
     slist_reverse(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 1);
-    EXPECT_EQUAL_UINT(slist_head(&list), slist_tail(&list));
+    EXPECT_EQ_UINT(slist_size(&list), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 1);
+    EXPECT_EQ_UINT(slist_head(&list), slist_tail(&list));
     slist_destroy(&list);
   }
 
@@ -1182,11 +1204,11 @@ UTEST_TEST_CASE(slist_reverse) {
     slist_push_back(&list, &a);
     slist_push_back(&list, &b);
     slist_reverse(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 2);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 2);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_head(&list)), 2);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_tail(&list)), 1);
+    EXPECT_EQ_UINT(slist_size(&list), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_head(&list)), 2);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_tail(&list)), 1);
     slist_destroy(&list);
   }
 
@@ -1199,17 +1221,17 @@ UTEST_TEST_CASE(slist_reverse) {
       slist_push_back(&list, &values[i]);
     }
     slist_reverse(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 5);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 5);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 1);
+    EXPECT_EQ_UINT(slist_size(&list), 5);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 5);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 1);
     int expected[] = {5, 4, 3, 2, 1};
     int count = 0;
     for (SListNode *node = slist_front(&list); node != NULL;
          node = slist_next(node)) {
-      EXPECT_EQUAL_UINT(*(int *)slist_data(node), expected[count]);
+      EXPECT_EQ_UINT(*(int *)slist_data(node), expected[count]);
       count++;
     }
-    EXPECT_EQUAL_UINT(count, 5);
+    EXPECT_EQ_UINT(count, 5);
     slist_destroy(&list);
   }
 
@@ -1222,17 +1244,17 @@ UTEST_TEST_CASE(slist_reverse) {
     slist_push_front(&list, &b);
     slist_push_front(&list, &c);
     slist_reverse(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 3);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_front(&list)), 1);
-    EXPECT_EQUAL_UINT(*(int *)slist_data(slist_back(&list)), 3);
+    EXPECT_EQ_UINT(slist_size(&list), 3);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_front(&list)), 1);
+    EXPECT_EQ_UINT(*(int *)slist_data(slist_back(&list)), 3);
     int expected[] = {1, 2, 3};
     int count = 0;
     for (SListNode *node = slist_front(&list); node != NULL;
          node = slist_next(node)) {
-      EXPECT_EQUAL_UINT(*(int *)slist_data(node), expected[count]);
+      EXPECT_EQ_UINT(*(int *)slist_data(node), expected[count]);
       count++;
     }
-    EXPECT_EQUAL_UINT(count, 3);
+    EXPECT_EQ_UINT(count, 3);
     slist_destroy(&list);
   }
 
@@ -1246,15 +1268,15 @@ UTEST_TEST_CASE(slist_reverse) {
     }
     slist_reverse(&list);
     slist_reverse(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 4);
+    EXPECT_EQ_UINT(slist_size(&list), 4);
     int expected[] = {1, 2, 3, 4};
     int count = 0;
     for (SListNode *node = slist_front(&list); node != NULL;
          node = slist_next(node)) {
-      EXPECT_EQUAL_UINT(*(int *)slist_data(node), expected[count]);
+      EXPECT_EQ_UINT(*(int *)slist_data(node), expected[count]);
       count++;
     }
-    EXPECT_EQUAL_UINT(count, 4);
+    EXPECT_EQ_UINT(count, 4);
     slist_destroy(&list);
   }
 
@@ -1269,10 +1291,10 @@ UTEST_TEST_CASE(slist_reverse) {
     SListNode *old_head = slist_head(&list);
     SListNode *old_tail = slist_tail(&list);
     slist_reverse(&list);
-    EXPECT_NOT_EQUAL_UINT(slist_head(&list), old_head);
-    EXPECT_NOT_EQUAL_UINT(slist_tail(&list), old_tail);
-    EXPECT_EQUAL_UINT(slist_head(&list), old_tail);
-    EXPECT_EQUAL_UINT(slist_tail(&list), old_head);
+    EXPECT_NE_UINT(slist_head(&list), old_head);
+    EXPECT_NE_UINT(slist_tail(&list), old_tail);
+    EXPECT_EQ_UINT(slist_head(&list), old_tail);
+    EXPECT_EQ_UINT(slist_tail(&list), old_head);
     slist_destroy(&list);
   }
 
@@ -1283,7 +1305,7 @@ UTEST_TEST_CASE(slist_reverse) {
     slist_push_back(&list, NULL);
     slist_push_back(&list, NULL);
     slist_reverse(&list);
-    EXPECT_EQUAL_UINT(slist_size(&list), 2);
+    EXPECT_EQ_UINT(slist_size(&list), 2);
     EXPECT_NULL(slist_data(slist_front(&list)));
     EXPECT_NULL(slist_data(slist_back(&list)));
     slist_destroy(&list);
@@ -1294,25 +1316,26 @@ UTEST_TEST_CASE(slist_reverse) {
  * Test suite: slist
  * Description: Test suite for singly linked list data structure
  */
-UTEST_TEST_SUITE(slist) {
-  UTEST_RUN_TEST_CASE(slist_init);
-  UTEST_RUN_TEST_CASE(slist_init_context);
-  UTEST_RUN_TEST_CASE(slist_size);
-  UTEST_RUN_TEST_CASE(slist_empty);
-  UTEST_RUN_TEST_CASE(slist_head);
-  UTEST_RUN_TEST_CASE(slist_tail);
-  UTEST_RUN_TEST_CASE(slist_front);
-  UTEST_RUN_TEST_CASE(slist_back);
-  UTEST_RUN_TEST_CASE(slist_next);
-  UTEST_RUN_TEST_CASE(slist_data);
-  UTEST_RUN_TEST_CASE(slist_destroy);
-  UTEST_RUN_TEST_CASE(slist_push_front);
-  UTEST_RUN_TEST_CASE(slist_push_back);
-  UTEST_RUN_TEST_CASE(slist_pop_front);
-  UTEST_RUN_TEST_CASE(slist_clear);
-  UTEST_RUN_TEST_CASE(slist_insert_after);
-  UTEST_RUN_TEST_CASE(slist_remove_after);
-  UTEST_RUN_TEST_CASE(slist_reverse);
-  UTEST_RUN_TEST_CASE(slist_memory_leak);
-  UTEST_RUN_TEST_CASE(slist_integration);
+UTEST_SUITE(slist)
+{
+  UTEST_RUNCASE(slist_init);
+  UTEST_RUNCASE(slist_init_context);
+  UTEST_RUNCASE(slist_size);
+  UTEST_RUNCASE(slist_empty);
+  UTEST_RUNCASE(slist_head);
+  UTEST_RUNCASE(slist_tail);
+  UTEST_RUNCASE(slist_front);
+  UTEST_RUNCASE(slist_back);
+  UTEST_RUNCASE(slist_next);
+  UTEST_RUNCASE(slist_data);
+  UTEST_RUNCASE(slist_destroy);
+  UTEST_RUNCASE(slist_push_front);
+  UTEST_RUNCASE(slist_push_back);
+  UTEST_RUNCASE(slist_pop_front);
+  UTEST_RUNCASE(slist_clear);
+  UTEST_RUNCASE(slist_insert_after);
+  UTEST_RUNCASE(slist_remove_after);
+  UTEST_RUNCASE(slist_reverse);
+  UTEST_RUNCASE(slist_memory_leak);
+  UTEST_RUNCASE(slist_integration);
 }

@@ -25,57 +25,66 @@
 
 int set_init(Set *set, uint32_t (*hash)(const void *key),
              bool (*match)(const void *key1, const void *key2),
-             void (*destroy)(void *)) {
+             void (*destroy)(void *))
+{
   if (!set)
     return COLLECTION_FAILURE;
   memset(set, 0, sizeof(Set));
   return chtbl_init(&set->chtbl, hash, match, destroy, NULL);
 }
 
-void set_destroy(Set *set) {
+void set_destroy(Set *set)
+{
   if (!set)
     return;
   chtbl_destroy(&set->chtbl);
   memset(set, 0, sizeof(Set));
 }
 
-bool set_empty(const Set *set) {
+bool set_empty(const Set *set)
+{
   if (!set)
     return true;
   return chtbl_size(&set->chtbl) == 0;
 }
 
-size_t set_size(const Set *set) {
+size_t set_size(const Set *set)
+{
   if (!set)
     return 0;
   return chtbl_size(&set->chtbl);
 }
 
-int set_insert(Set *set, const void *data) {
+int set_insert(Set *set, const void *data)
+{
   if (!set || !data)
     return COLLECTION_FAILURE;
   return chtbl_insert(&set->chtbl, data, NULL);
 }
 
-int set_remove(Set *set, const void *data) {
+int set_remove(Set *set, const void *data)
+{
   if (!set || !data)
     return COLLECTION_FAILURE;
   return chtbl_remove(&set->chtbl, data, NULL);
 }
 
-void set_clear(Set *set) {
+void set_clear(Set *set)
+{
   if (!set)
     return;
   chtbl_clear(&set->chtbl);
 }
 
-bool set_contains(const Set *set, const void *data) {
+bool set_contains(const Set *set, const void *data)
+{
   if (!set || !data)
     return false;
   return chtbl_in(&set->chtbl, data);
 }
 
-int set_intersection(Set *result, const Set *set1, const Set *set2) {
+int set_intersection(Set *result, const Set *set1, const Set *set2)
+{
   if (!result || !set1 || !set2)
     return COLLECTION_FAILURE;
   if (!set_empty(result))
@@ -110,7 +119,8 @@ int set_intersection(Set *result, const Set *set1, const Set *set2) {
   return COLLECTION_SUCCESS;
 }
 
-int set_union(Set *result, const Set *set1, const Set *set2) {
+int set_union(Set *result, const Set *set1, const Set *set2)
+{
   if (!result || !set1 || !set2)
     return COLLECTION_FAILURE;
   if (!set_empty(result))
@@ -146,7 +156,8 @@ int set_union(Set *result, const Set *set1, const Set *set2) {
   return COLLECTION_SUCCESS;
 }
 
-int set_difference(Set *result, const Set *set1, const Set *set2) {
+int set_difference(Set *result, const Set *set1, const Set *set2)
+{
   if (!result || !set1 || !set2)
     return COLLECTION_FAILURE;
   if (!set_empty(result))
@@ -173,7 +184,8 @@ int set_difference(Set *result, const Set *set1, const Set *set2) {
   return COLLECTION_SUCCESS;
 }
 
-bool set_equal(const Set *set1, const Set *set2) {
+bool set_equal(const Set *set1, const Set *set2)
+{
   if (set1 == set2 && set1)
     return true;
   if (!set1 || !set2)
@@ -182,7 +194,8 @@ bool set_equal(const Set *set1, const Set *set2) {
   return set_size(set1) == set_size(set2) && set_subset(set1, set2);
 }
 
-bool set_subset(const Set *set1, const Set *set2) {
+bool set_subset(const Set *set1, const Set *set2)
+{
   if (!set1 || !set2)
     return false;
 
