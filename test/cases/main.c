@@ -3,21 +3,13 @@
 
    Usage: ./test -j[nthreads] [suite] */
 
+#include "utest/flags.h"
 #include <stdlib.h>
 #include <utest.h>
 
 #define NTHREADS 5
 #define NTHREADMAX 64
 
-extern UTEST_SUITE(hash);
-extern UTEST_SUITE(util);
-extern UTEST_SUITE(chtbl);
-extern UTEST_SUITE(clist);
-extern UTEST_SUITE(dlist);
-extern UTEST_SUITE(queue);
-extern UTEST_SUITE(set);
-extern UTEST_SUITE(slist);
-extern UTEST_SUITE(stack);
 extern UTEST_SUITE(vector);
 
 int main(int argc, char *argv[])
@@ -25,18 +17,9 @@ int main(int argc, char *argv[])
   int nthreads = NTHREADS;
   const char *suite = "all";
 
-  UTEST_INIT(UTF_STOPONASS | UTF_SHOWSUITE);
+  UTEST_INIT(UTF_STOPONASS | UTF_SHOWSUITE | UTF_STOPONCASE);
 
   /* add test suites */
-  UTEST_ADDSUITE(hash);
-  UTEST_ADDSUITE(util);
-  UTEST_ADDSUITE(chtbl);
-  UTEST_ADDSUITE(clist);
-  UTEST_ADDSUITE(dlist);
-  UTEST_ADDSUITE(queue);
-  UTEST_ADDSUITE(set);
-  UTEST_ADDSUITE(slist);
-  UTEST_ADDSUITE(stack);
   UTEST_ADDSUITE(vector);
 
   for (int i = 1; i < argc; i++) {
