@@ -6,3 +6,6 @@ lib/
 RULES.md
 compile_commands.json
 .cache/
+doc.md
+src-back/
+include-back/

@@ -1,4 +1,4 @@
-/* collection - A generic data structure and algorithms library for modern C
+/* collection - A generic data structure and algorithms library
  * Copyright (C) 2025 Yixiang Qiu
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,256 +15,187 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <collection/vector.h>
-#include <stdbool.h>
+#include <errno.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector.h>
 
-// the factor to resize the capacity of the vector
-#define VECTOR_RESIZE_FACTOR 2
+#define MINCAP 16
+#define GROWFACTOR 2
 
-/**
- * Destroy the elements in the range [index, index + count).
- * @param vector The vector to destroy the elements in.
- * @param index The index of the first element to destroy.
- * @param count The number of elements to destroy.
- * @complexity O(n)
- */
-static void _vector_destroy_range(Vector *vector, size_t index, size_t count)
+#define GET(vec, buf, idx)                                                     \
+  ((void *)((char *)(buf) + (idx) * (vec)->elesz)) /* Get the element  */
+
+#define overflowcheck(sz, n)                                                   \
+  do {                                                                         \
+    if ((n) > SIZE_MAX / (sz)) {                                               \
+      errno = ERANGE;                                                          \
+      return -1;                                                               \
+    }                                                                          \
+  } while (0) /* Check if the size is overflow */
+
+static void destroy(struct vector *vec, size_t start, size_t end)
 {
-  if (vector->destroy) {
-    for (size_t i = index; i < index + count; i++) {
-      vector->destroy(vector->data[i]);
-    }
-  }
-}
-
-/**
- * Resize the capacity of the vector to the new capacity.
- * @param vector The vector to resize.
- * @param new_capacity The new capacity of the vector.
- * @return 0 if successful, -1 if failed (memory allocation failure)
- * @complexity O(1)
- */
-static int _vector_resize_capacity(Vector *vector, size_t new_capacity)
-{
-  if (!new_capacity) {
-    free(vector->data);
-    vector->data = NULL;
-    vector->capacity = 0;
-    return COLLECTION_SUCCESS;
-  }
-  // allocate or deallocate memory for the vector data
-  void **new_data = realloc(vector->data, new_capacity * sizeof(void *));
-  if (new_data == NULL) {
-    return COLLECTION_FAILURE;
-  }
-  vector->data = new_data;
-  vector->capacity = new_capacity;
-  return COLLECTION_SUCCESS;
-}
-
-bool vector_empty(const Vector *vector)
-{
-  return vector ? vector->size == 0 : false;
-}
-
-void **vector_data(const Vector *vector)
-{
-  return vector ? vector->data : NULL;
-}
-
-size_t vector_size(const Vector *vector) { return vector ? vector->size : 0; }
-
-size_t vector_capacity(const Vector *vector)
-{
-  return vector ? vector->capacity : 0;
-}
-
-int vector_shrink_to_fit(Vector *vector)
-{
-  if (!vector)
-    return COLLECTION_FAILURE;
-  if (vector->size == vector->capacity)
-    return COLLECTION_SUCCESS;
-  return _vector_resize_capacity(vector, vector->size);
-}
-
-int vector_resize(Vector *vector, size_t new_size)
-{
-  if (!vector)
-    return COLLECTION_FAILURE;
-  if (new_size == vector->size) {
-    return COLLECTION_SUCCESS;
-  }
-  int result;
-  // expand the capacity
-  if (new_size > vector->capacity) {
-    result = _vector_resize_capacity(vector, new_size);
-    if (result != COLLECTION_SUCCESS) {
-      return COLLECTION_FAILURE;
-    }
-    memset(vector->data + vector->size, 0,
-           (new_size - vector->size) * sizeof(void *));
-  }
-  // shrink the size
-  else if (new_size < vector->size) {
-    _vector_destroy_range(vector, new_size, vector->size - new_size);
-    memset(vector->data + new_size, 0,
-           (vector->size - new_size) * sizeof(void *));
-  }
-  // expand the size
-  else if (new_size > vector->size) {
-    memset(vector->data + vector->size, 0,
-           (new_size - vector->size) * sizeof(void *));
-  }
-  vector->size = new_size;
-  return COLLECTION_SUCCESS;
-}
-
-void vector_init(Vector *vector, void (*destroy)(void *))
-{
-  if (!vector)
+  if (!vec || start >= end || start >= vec->sz)
     return;
-  vector->data = NULL;
-  vector->size = 0;
-  vector->capacity = 0;
-  vector->destroy = destroy;
+  if (vec->destroy) {
+    for (size_t i = start; i < end; i++)
+      vec->destroy(GET(vec, vec->buf, i));
+  }
 }
 
-void vector_destroy(Vector *vector)
+int vec_init(struct vector *vec, size_t elesz, void (*destroy)(void *))
 {
-  if (!vector)
+  if (!vec || !elesz)
+    return -1;
+  memset(vec, 0, sizeof(struct vector));
+  vec->elesz = elesz;
+  vec->destroy = destroy;
+  return 0;
+}
+
+void vec_fini(struct vector *vec)
+{
+  if (!vec)
     return;
-  if (vector->data) {
-    _vector_destroy_range(vector, 0, vector->size);
-    free(vector->data);
-    vector->data = NULL;
-  }
-  vector->size = 0;
-  vector->capacity = 0;
-  vector->destroy = NULL;
+  vec_clear(vec);
+  if (vec->buf)
+    free(vec->buf);
 }
 
-void *vector_at(const Vector *vector, size_t index)
+void *vec_at(const struct vector *vec, size_t idx)
 {
-  if (!vector)
+  if (!vec || idx >= vec->sz)
     return NULL;
-  if (index >= vector->size) {
-    return NULL;
-  }
-  return vector->data[index];
+  return GET(vec, vec->buf, idx);
 }
 
-void *vector_back(const Vector *vector)
+void vec_clear(struct vector *vec)
 {
-  if (!vector)
-    return NULL;
-  if (vector->size == 0) {
-    return NULL;
-  }
-  return vector->data[vector->size - 1];
-}
-
-void *vector_front(const Vector *vector)
-{
-  if (!vector)
-    return NULL;
-  if (vector->size == 0) {
-    return NULL;
-  }
-  return vector->data[0];
-}
-
-int vector_push_back(Vector *vector, void *element)
-{
-  if (!vector)
-    return COLLECTION_FAILURE;
-  if (vector->size >= vector->capacity) {
-    const size_t new_capacity =
-        vector->capacity ? vector->capacity * VECTOR_RESIZE_FACTOR : 1;
-    if (_vector_resize_capacity(vector, new_capacity) != COLLECTION_SUCCESS) {
-      return COLLECTION_FAILURE;
-    }
-  }
-  vector->data[vector->size++] = element;
-  return COLLECTION_SUCCESS;
-}
-
-int vector_pop_back(Vector *vector, void **data)
-{
-  if (!vector)
-    return COLLECTION_FAILURE;
-  if (vector->size == 0) {
-    return COLLECTION_FAILURE;
-  }
-  vector->size--;
-  if (data) {
-    *data = vector->data[vector->size];
-  }
-  if (!data && vector->destroy) {
-    vector->destroy(vector->data[vector->size]);
-  }
-  vector->data[vector->size] = NULL;
-  return COLLECTION_SUCCESS;
-}
-
-void vector_clear(Vector *vector)
-{
-  if (!vector || !vector->data)
+  if (!vec)
     return;
-  if (vector->destroy) {
-    _vector_destroy_range(vector, 0, vector->size);
-  }
-  memset(vector->data, 0, vector->size * sizeof(void *));
-  vector->size = 0;
+  destroy(vec, 0, vec->sz);
+  vec->sz = 0;
 }
 
-int vector_insert(Vector *vector, size_t index, void *element)
+int vec_resize(struct vector *vec, size_t newsz)
 {
-  if (!vector)
-    return COLLECTION_FAILURE;
-  if (index > vector->size) {
-    return COLLECTION_FAILURE;
-  }
-  if (index == vector->size) {
-    vector_push_back(vector, element);
-    return COLLECTION_SUCCESS;
-  }
-  // expand the capacity
-  if (vector->size >= vector->capacity) {
-    const size_t new_capacity =
-        vector->capacity ? vector->capacity * VECTOR_RESIZE_FACTOR : 1;
-    // overflow check
-    if (new_capacity < vector->capacity)
-      return COLLECTION_FAILURE;
-    if (_vector_resize_capacity(vector, new_capacity) != COLLECTION_SUCCESS) {
-      return COLLECTION_FAILURE;
+  if (!vec)
+    return -1;
+  if (newsz == vec->sz)
+    return 0;
+  if (newsz > vec->sz) {
+    if (newsz <= vec->cap) {
+      vec->sz = newsz;
+      return 0;
+    } else {
+      overflowcheck(vec->elesz, newsz);
+      void *newbuf = realloc(vec->buf, newsz * vec->elesz);
+      if (!newbuf)
+        return -1;
+      vec->buf = newbuf;
+      vec->cap = newsz;
+      vec->sz = newsz;
+      return 0;
     }
+  } else {
+    destroy(vec, newsz, vec->sz);
+    vec->sz = newsz;
+    return 0;
   }
-  memmove(vector->data + index + 1, vector->data + index,
-          (vector->size - index) * sizeof(void *));
-  vector->data[index] = element;
-  vector->size++;
-  return COLLECTION_SUCCESS;
 }
 
-int vector_remove(Vector *vector, size_t index, void **data)
+int vec_shrink(struct vector *vec)
 {
-  if (!vector)
-    return COLLECTION_FAILURE;
-  if (index >= vector->size) {
-    return COLLECTION_FAILURE;
+  if (!vec)
+    return -1;
+  if (vec->sz == vec->cap)
+    return 0;
+  if (!vec->sz)
+    return 0;
+  overflowcheck(vec->elesz, vec->sz);
+  void *newbuf = realloc(vec->buf, vec->sz * vec->elesz);
+  if (!newbuf)
+    return -1;
+  vec->buf = newbuf;
+  vec->cap = vec->sz;
+  return 0;
+}
+
+int vec_pushback(struct vector *vec, void *ele)
+{
+  if (!vec || !ele)
+    return -1;
+  if (vec->sz == vec->cap) {
+    size_t newcap = vec->cap ? vec->cap * GROWFACTOR : MINCAP;
+    overflowcheck(vec->elesz, newcap);
+    void *newbuf = realloc(vec->buf, newcap * vec->elesz);
+    if (!newbuf)
+      return -1;
+    vec->buf = newbuf;
+    vec->cap = newcap;
   }
-  if (data) {
-    *data = vector->data[index];
+  memcpy(GET(vec, vec->buf, vec->sz), ele, vec->elesz);
+  vec->sz++;
+  return 0;
+}
+
+int vec_popback(struct vector *vec, void *dest)
+{
+  if (!vec || vec_empty(vec))
+    return -1;
+
+  if (dest)
+    memcpy(dest, vec_back(vec), vec->elesz);
+  else if (vec->destroy)
+    vec->destroy(vec_back(vec));
+
+  vec->sz--;
+  return 0;
+}
+
+int vec_insert(struct vector *vec, size_t idx, void *ele)
+{
+  if (!vec || !ele)
+    return -1;
+  if (idx >= vec->sz)
+    return vec_pushback(vec, ele);
+
+  if (vec->sz == vec->cap) {
+    size_t newcap = vec->cap ? vec->cap * GROWFACTOR : MINCAP;
+    overflowcheck(vec->elesz, newcap);
+    void *newbuf = malloc(newcap * vec->elesz);
+    if (!newbuf)
+      return -1;
+    memcpy(newbuf, vec->buf, vec->elesz * idx);
+    memcpy((char *)newbuf + vec->elesz * idx, ele, vec->elesz);
+    memcpy((char *)newbuf + vec->elesz * (idx + 1), GET(vec, vec->buf, idx),
+           vec->elesz * (vec->sz - idx));
+    free(vec->buf);
+    vec->buf = newbuf;
+    vec->cap = newcap;
+    vec->sz++;
+    return 0;
   }
-  if (!data && vector->destroy) {
-    vector->destroy(vector->data[index]);
-  }
-  memmove(vector->data + index, vector->data + index + 1,
-          (vector->size - index - 1) * sizeof(void *));
-  vector->size--;
-  vector->data[vector->size] = NULL;
-  return COLLECTION_SUCCESS;
+  memmove(GET(vec, vec->buf, idx + 1), GET(vec, vec->buf, idx),
+          vec->elesz * (vec->sz - idx));
+  memcpy(GET(vec, vec->buf, idx), ele, vec->elesz);
+  vec->sz++;
+  return 0;
+}
+
+int vec_remove(struct vector *vec, size_t idx, void *dest)
+{
+  if (!vec || idx >= vec->sz)
+    return -1;
+  if (dest)
+    memcpy(dest, GET(vec, vec->buf, idx), vec->elesz);
+  else if (vec->destroy)
+    vec->destroy(GET(vec, vec->buf, idx));
+  memmove(GET(vec, vec->buf, idx), GET(vec, vec->buf, idx + 1),
+          vec->elesz * (vec->sz - idx - 1));
+  vec->sz--;
+  return 0;
 }

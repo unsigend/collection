@@ -140,6 +140,8 @@ flags:
 	@$(MAKE) -C $(TEST_PATH) flags
 
 clang:
+	@$(MAKE) clean
+	@rm -rf compile_commands.json .cache/
 	@bear -- make test
 
 format:
