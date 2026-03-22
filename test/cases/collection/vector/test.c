@@ -1,6 +1,6 @@
-#include "basic.h"
-#include "edge.h"
-#include "integration.h"
+#include "unit/basic.h"
+#include "unit/edge.h"
+#include "unit/integration.h"
 
 UTEST_SUITE(vector)
 {
