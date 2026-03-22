@@ -23,8 +23,10 @@
 
 struct stack;
 
-#define stack_empty(stack) vec_empty(&(stack)->vec)
-#define stack_size(stack) vec_size(&(stack)->vec)
+#define stack_empty(stack)                                                     \
+  vec_empty(&(stack)->vec) /* Check if the stack is empty */
+#define stack_size(stack)                                                      \
+  vec_size(&(stack)->vec) /* Get the size of the stack */
 
 int stack_init(struct stack *stack, size_t elesz, void (*destroy)(void *));
 void stack_fini(struct stack *stack);

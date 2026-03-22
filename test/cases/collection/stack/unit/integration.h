@@ -46,7 +46,7 @@ UTEST_CASE(integration)
       x = (int)idx;
       EXPECT_EQ_INT(stack_push(&s, &x), 0);
     }
-    EXPECT_EQ_UINT(stack_size(&s), 5u);
+    EXPECT_EQ_UINT(stack_size(&s), 5);
     EXPECT_FALSE(stack_empty(&s));
     for (idx = 0; idx < 5; idx++) {
       p = stack_peek(&s);
@@ -107,10 +107,10 @@ UTEST_CASE(integration)
     EXPECT_EQ_INT(stack_push(&s, &x), 0);
     EXPECT_EQ_INT(*(int *)stack_peek(&s), 20);
     EXPECT_EQ_INT(stack_pop(&s, NULL), 0);
-    EXPECT_EQ_UINT(stack_size(&s), 1u);
+    EXPECT_EQ_UINT(stack_size(&s), 1);
     x = 30;
     EXPECT_EQ_INT(stack_push(&s, &x), 0);
-    EXPECT_EQ_UINT(stack_size(&s), 2u);
+    EXPECT_EQ_UINT(stack_size(&s), 2);
     EXPECT_EQ_INT(*(int *)stack_peek(&s), 30);
     EXPECT_NOTNULL(stack_peek(&s));
     stack_fini(&s);
@@ -121,18 +121,18 @@ UTEST_CASE(integration)
     unsigned char a, b, c, out;
 
     EXPECT_EQ_INT(stack_init(&s, sizeof(unsigned char), NULL), 0);
-    a = 7u;
-    b = 8u;
-    c = 9u;
+    a = 7;
+    b = 8;
+    c = 9;
     EXPECT_EQ_INT(stack_push(&s, &a), 0);
     EXPECT_EQ_INT(stack_push(&s, &b), 0);
     EXPECT_EQ_INT(stack_push(&s, &c), 0);
-    EXPECT_EQ_UINT(stack_size(&s), 3u);
-    out = 0u;
+    EXPECT_EQ_UINT(stack_size(&s), 3);
+    out = 0;
     EXPECT_EQ_INT(stack_pop(&s, &out), 0);
     EXPECT_EQ_INT((int)out, 9);
     EXPECT_EQ_INT((int)*(unsigned char *)stack_peek(&s), 8);
-    out = 0u;
+    out = 0;
     EXPECT_EQ_INT(stack_pop(&s, &out), 0);
     EXPECT_EQ_INT((int)out, 8);
     EXPECT_EQ_INT((int)*(unsigned char *)stack_peek(&s), 7);
@@ -181,7 +181,7 @@ UTEST_CASE(integration)
     EXPECT_TRUE(stack_empty(&s));
     x = 7;
     stack_push(&s, &x);
-    EXPECT_EQ_UINT(stack_size(&s), 1u);
+    EXPECT_EQ_UINT(stack_size(&s), 1);
     EXPECT_EQ_INT(*(int *)stack_peek(&s), 7);
     x = 8;
     EXPECT_EQ_INT(stack_push(&s, &x), 0);
@@ -238,7 +238,7 @@ UTEST_CASE(integration)
       x = (int)(3 - idx);
       EXPECT_EQ_INT(stack_push(&s, &x), 0);
     }
-    EXPECT_EQ_UINT(stack_size(&s), 3u);
+    EXPECT_EQ_UINT(stack_size(&s), 3);
     for (idx = 0; idx < 3; idx++) {
       EXPECT_NOTNULL(stack_peek(&s));
       EXPECT_EQ_INT(*(int *)stack_peek(&s), (int)(idx + 1));
@@ -262,7 +262,7 @@ UTEST_CASE(integration)
     stack_push(&s, &x);
     x = 2000;
     stack_push(&s, &x);
-    EXPECT_EQ_UINT(stack_size(&s), 7u);
+    EXPECT_EQ_UINT(stack_size(&s), 7);
     EXPECT_EQ_INT(*(int *)stack_peek(&s), 2000);
     EXPECT_EQ_INT(stack_pop(&s, NULL), 0);
     EXPECT_EQ_INT(*(int *)stack_peek(&s), 1000);
@@ -270,12 +270,12 @@ UTEST_CASE(integration)
     EXPECT_EQ_INT(*(int *)stack_peek(&s), 8);
     EXPECT_EQ_INT(stack_pop(&s, NULL), 0);
     EXPECT_EQ_INT(*(int *)stack_peek(&s), 6);
-    EXPECT_EQ_UINT(stack_size(&s), 4u);
+    EXPECT_EQ_UINT(stack_size(&s), 4);
     stack_clear(&s);
     EXPECT_TRUE(stack_empty(&s));
     x = 9;
     stack_push(&s, &x);
-    EXPECT_EQ_UINT(stack_size(&s), 1u);
+    EXPECT_EQ_UINT(stack_size(&s), 1);
     stack_fini(&s);
   }
 
@@ -313,7 +313,7 @@ UTEST_CASE(integration)
     EXPECT_EQ_INT(stack_pop(&s, &out), 0);
     EXPECT_EQ_INT(out.x, 2);
     EXPECT_EQ_INT(out.y, 20);
-    EXPECT_EQ_UINT(stack_size(&s), 1u);
+    EXPECT_EQ_UINT(stack_size(&s), 1);
     stack_fini(&s);
   }
 

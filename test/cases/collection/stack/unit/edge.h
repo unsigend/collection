@@ -44,7 +44,7 @@ UTEST_CASE(edge)
     x = 0;
     EXPECT_EQ_INT(stack_push(&s, &x), -1);
     EXPECT_EQ_INT(errno, ERANGE);
-    EXPECT_EQ_UINT(stack_size(&s), 0u);
+    EXPECT_EQ_UINT(stack_size(&s), 0);
     stack_fini(&s);
   }
 
@@ -130,11 +130,11 @@ UTEST_CASE(edge)
     b = 201;
     EXPECT_EQ_INT(stack_push(&s, &a), 0);
     EXPECT_EQ_INT(stack_push(&s, &b), 0);
-    EXPECT_EQ_UINT(*(uint8_t *)stack_peek(&s), 201u);
+    EXPECT_EQ_UINT(*(uint8_t *)stack_peek(&s), 201);
     out = 0;
     EXPECT_EQ_INT(stack_pop(&s, &out), 0);
-    EXPECT_EQ_UINT(out, 201u);
-    EXPECT_EQ_UINT(*(uint8_t *)stack_peek(&s), 200u);
+    EXPECT_EQ_UINT(out, 201);
+    EXPECT_EQ_UINT(*(uint8_t *)stack_peek(&s), 200);
     stack_fini(&s);
   }
 

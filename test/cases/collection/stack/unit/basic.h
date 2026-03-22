@@ -22,7 +22,7 @@ UTEST_CASE(basic)
 
     EXPECT_EQ_INT(stack_init(&s, sizeof(int), NULL), 0);
     EXPECT_TRUE(stack_empty(&s));
-    EXPECT_EQ_UINT(stack_size(&s), 0u);
+    EXPECT_EQ_UINT(stack_size(&s), 0);
     EXPECT_NULL(stack_peek(&s));
     EXPECT_EQ_INT(stack_pop(&s, NULL), -1);
     stack_fini(&s);
@@ -37,7 +37,7 @@ UTEST_CASE(basic)
     x = 10;
     EXPECT_EQ_INT(stack_push(&s, &x), 0);
     EXPECT_FALSE(stack_empty(&s));
-    EXPECT_EQ_UINT(stack_size(&s), 1u);
+    EXPECT_EQ_UINT(stack_size(&s), 1);
     p = stack_peek(&s);
     EXPECT_NOTNULL(p);
     EXPECT_EQ_INT(*(int *)p, 10);
@@ -57,7 +57,7 @@ UTEST_CASE(basic)
     EXPECT_EQ_INT(stack_push(&s, &a), 0);
     EXPECT_EQ_INT(stack_push(&s, &b), 0);
     EXPECT_EQ_INT(stack_push(&s, &c), 0);
-    EXPECT_EQ_UINT(stack_size(&s), 3u);
+    EXPECT_EQ_UINT(stack_size(&s), 3);
     p = stack_peek(&s);
     EXPECT_NOTNULL(p);
     EXPECT_EQ_INT(*(int *)p, 3);
@@ -86,9 +86,9 @@ UTEST_CASE(basic)
     stack_push(&s, &c);
     stack_clear(&s);
     EXPECT_TRUE(stack_empty(&s));
-    EXPECT_EQ_UINT(stack_size(&s), 0u);
+    EXPECT_EQ_UINT(stack_size(&s), 0);
     EXPECT_EQ_INT(stack_push(&s, &a), 0);
-    EXPECT_EQ_UINT(stack_size(&s), 1u);
+    EXPECT_EQ_UINT(stack_size(&s), 1);
     stack_fini(&s);
   }
 
@@ -101,7 +101,7 @@ UTEST_CASE(basic)
     b = 2.71;
     EXPECT_EQ_INT(stack_push(&s, &a), 0);
     EXPECT_EQ_INT(stack_push(&s, &b), 0);
-    EXPECT_EQ_UINT(stack_size(&s), 2u);
+    EXPECT_EQ_UINT(stack_size(&s), 2);
     EXPECT_NOTNULL(stack_peek(&s));
     EXPECT_EQ_DOUBLE(*(double *)stack_peek(&s), 2.71);
     out = 0.0;
