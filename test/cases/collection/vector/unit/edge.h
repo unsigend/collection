@@ -14,7 +14,7 @@ static void edg_dtor_inc(void *p)
 UTEST_CASE(edge)
 {
   {
-    EXPECT_NULL(vec_at(NULL, 0u));
+    EXPECT_NULL(vec_at(NULL, 0));
     EXPECT_NULL(vec_at(NULL, SIZE_MAX));
   }
 
@@ -25,7 +25,7 @@ UTEST_CASE(edge)
     EXPECT_NULL(vec_front(&v));
     EXPECT_NULL(vec_back(&v));
     EXPECT_GE_UINT(vec_capacity(&v), vec_size(&v));
-    EXPECT_NULL(vec_at(&v, 0u));
+    EXPECT_NULL(vec_at(&v, 0));
     EXPECT_NULL(vec_at(&v, SIZE_MAX));
     vec_fini(&v);
   }
@@ -37,7 +37,7 @@ UTEST_CASE(edge)
     EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
     x = 1;
     vec_pushback(&v, &x);
-    EXPECT_NULL(vec_at(&v, 1u));
+    EXPECT_NULL(vec_at(&v, 1));
     EXPECT_NULL(vec_at(&v, SIZE_MAX));
     vec_fini(&v);
   }
@@ -47,9 +47,9 @@ UTEST_CASE(edge)
 
     errno = 0;
     EXPECT_EQ_INT(vec_init(&v, SIZE_MAX, NULL), 0);
-    EXPECT_EQ_INT(vec_resize(&v, 2u), -1);
+    EXPECT_EQ_INT(vec_resize(&v, 2), -1);
     EXPECT_EQ_INT(errno, ERANGE);
-    EXPECT_EQ_UINT(vec_size(&v), 0u);
+    EXPECT_EQ_UINT(vec_size(&v), 0);
     vec_fini(&v);
   }
 
@@ -57,10 +57,10 @@ UTEST_CASE(edge)
     struct vector v;
 
     errno = 0;
-    EXPECT_EQ_INT(vec_init(&v, 2u, NULL), 0);
+    EXPECT_EQ_INT(vec_init(&v, 2, NULL), 0);
     EXPECT_EQ_INT(vec_resize(&v, SIZE_MAX), -1);
     EXPECT_EQ_INT(errno, ERANGE);
-    EXPECT_EQ_UINT(vec_size(&v), 0u);
+    EXPECT_EQ_UINT(vec_size(&v), 0);
     vec_fini(&v);
   }
 
@@ -73,7 +73,7 @@ UTEST_CASE(edge)
     x = 0;
     EXPECT_EQ_INT(vec_pushback(&v, &x), -1);
     EXPECT_EQ_INT(errno, ERANGE);
-    EXPECT_EQ_UINT(vec_size(&v), 0u);
+    EXPECT_EQ_UINT(vec_size(&v), 0);
     vec_fini(&v);
   }
 
@@ -84,9 +84,9 @@ UTEST_CASE(edge)
     errno = 0;
     EXPECT_EQ_INT(vec_init(&v, SIZE_MAX, NULL), 0);
     x = 0;
-    EXPECT_EQ_INT(vec_insert(&v, 0u, &x), -1);
+    EXPECT_EQ_INT(vec_insert(&v, 0, &x), -1);
     EXPECT_EQ_INT(errno, ERANGE);
-    EXPECT_EQ_UINT(vec_size(&v), 0u);
+    EXPECT_EQ_UINT(vec_size(&v), 0);
     vec_fini(&v);
   }
 
@@ -97,7 +97,7 @@ UTEST_CASE(edge)
     EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
     x = 1;
     vec_pushback(&v, &x);
-    EXPECT_EQ_INT(vec_resize(&v, 0u), 0);
+    EXPECT_EQ_INT(vec_resize(&v, 0), 0);
     EXPECT_TRUE(vec_empty(&v));
     EXPECT_EQ_INT(vec_popback(&v, NULL), -1);
     vec_fini(&v);
@@ -115,10 +115,10 @@ UTEST_CASE(edge)
     vec_pushback(&v, &a);
     vec_pushback(&v, &b);
     vec_pushback(&v, &c);
-    EXPECT_EQ_INT(vec_resize(&v, 1u), 0);
+    EXPECT_EQ_INT(vec_resize(&v, 1), 0);
     EXPECT_EQ_INT(edg_dtor_n, 2);
-    EXPECT_EQ_UINT(vec_size(&v), 1u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0u), 1);
+    EXPECT_EQ_UINT(vec_size(&v), 1);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 1);
     vec_fini(&v);
   }
 
@@ -128,16 +128,16 @@ UTEST_CASE(edge)
     int x;
 
     EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    EXPECT_EQ_INT(vec_resize(&v, 8u), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 8u);
+    EXPECT_EQ_INT(vec_resize(&v, 8), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 8);
     EXPECT_GE_UINT(vec_capacity(&v), vec_size(&v));
     for (idx = 0; idx < 4; idx++) {
       void *p = vec_at(&v, idx);
       EXPECT_NOTNULL(p);
       *(int *)p = (int)idx;
     }
-    EXPECT_EQ_INT(vec_resize(&v, 8u), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 8u);
+    EXPECT_EQ_INT(vec_resize(&v, 8), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 8);
     for (idx = 4; idx < 8; idx++) {
       void *p = vec_at(&v, idx);
       EXPECT_NOTNULL(p);
@@ -153,7 +153,7 @@ UTEST_CASE(edge)
     size_t c0, c1, c2, c3;
 
     EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    EXPECT_EQ_INT(vec_resize(&v, 3u), 0);
+    EXPECT_EQ_INT(vec_resize(&v, 3), 0);
     c0 = vec_capacity(&v);
     EXPECT_EQ_INT(vec_shrink(&v), 0);
     c1 = vec_capacity(&v);
@@ -161,7 +161,7 @@ UTEST_CASE(edge)
     EXPECT_LE_UINT(c1, c0);
     x = 1;
     EXPECT_EQ_INT(vec_pushback(&v, &x), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 4u);
+    EXPECT_EQ_UINT(vec_size(&v), 4);
     c2 = vec_capacity(&v);
     EXPECT_GE_UINT(c2, vec_size(&v));
     EXPECT_EQ_INT(vec_shrink(&v), 0);
@@ -176,7 +176,7 @@ UTEST_CASE(edge)
     int x;
 
     EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    EXPECT_EQ_INT(vec_resize(&v, 2u), 0);
+    EXPECT_EQ_INT(vec_resize(&v, 2), 0);
     vec_clear(&v);
     EXPECT_EQ_INT(vec_shrink(&v), 0);
     EXPECT_TRUE(vec_empty(&v));
@@ -205,7 +205,7 @@ UTEST_CASE(edge)
     EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
     x = 1;
     vec_pushback(&v, &x);
-    EXPECT_EQ_INT(vec_remove(&v, 1u, NULL), -1);
+    EXPECT_EQ_INT(vec_remove(&v, 1, NULL), -1);
     vec_fini(&v);
   }
 
@@ -216,8 +216,8 @@ UTEST_CASE(edge)
     EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
     x = 1;
     vec_pushback(&v, &x);
-    EXPECT_EQ_INT(vec_insert(&v, 2u, &x), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 2u);
+    EXPECT_EQ_INT(vec_insert(&v, 2, &x), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 2);
     vec_fini(&v);
   }
 
@@ -229,7 +229,7 @@ UTEST_CASE(edge)
     x = 42;
     vec_pushback(&v, &x);
     out = 0;
-    EXPECT_EQ_INT(vec_remove(&v, 0u, &out), 0);
+    EXPECT_EQ_INT(vec_remove(&v, 0, &out), 0);
     EXPECT_EQ_INT(out, 42);
     EXPECT_TRUE(vec_empty(&v));
     vec_fini(&v);
@@ -255,8 +255,8 @@ UTEST_CASE(edge)
     EXPECT_EQ_INT(vec_pushback(&v, NULL), -1);
     x = 1;
     vec_pushback(&v, &x);
-    EXPECT_EQ_INT(vec_insert(&v, 0u, NULL), -1);
-    EXPECT_EQ_UINT(vec_size(&v), 1u);
+    EXPECT_EQ_INT(vec_insert(&v, 0, NULL), -1);
+    EXPECT_EQ_UINT(vec_size(&v), 1);
     vec_fini(&v);
   }
 

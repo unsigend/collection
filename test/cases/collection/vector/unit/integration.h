@@ -46,31 +46,31 @@ UTEST_CASE(integration)
       x = (int)idx;
       EXPECT_EQ_INT(vec_pushback(&v, &x), 0);
     }
-    EXPECT_EQ_UINT(vec_size(&v), 5u);
+    EXPECT_EQ_UINT(vec_size(&v), 5);
     for (idx = 0; idx < 5; idx++) {
       EXPECT_NOTNULL(vec_at(&v, idx));
       EXPECT_EQ_INT(*(int *)vec_at(&v, idx), (int)idx);
     }
     x = -1;
-    EXPECT_EQ_INT(vec_insert(&v, 0u, &x), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 6u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0u), -1);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 5u), 4);
+    EXPECT_EQ_INT(vec_insert(&v, 0, &x), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 6);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), -1);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 5), 4);
     out = 0;
-    EXPECT_EQ_INT(vec_remove(&v, 5u, &out), 0);
+    EXPECT_EQ_INT(vec_remove(&v, 5, &out), 0);
     EXPECT_EQ_INT(out, 4);
-    EXPECT_EQ_UINT(vec_size(&v), 5u);
+    EXPECT_EQ_UINT(vec_size(&v), 5);
     EXPECT_EQ_INT(*(int *)vec_back(&v), 3);
-    EXPECT_EQ_INT(vec_remove(&v, 0u, NULL), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 4u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0u), 0);
+    EXPECT_EQ_INT(vec_remove(&v, 0, NULL), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 4);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 0);
     x = 99;
-    EXPECT_EQ_INT(vec_insert(&v, 2u, &x), 0);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 2u), 99);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 3u), 2);
+    EXPECT_EQ_INT(vec_insert(&v, 2, &x), 0);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 2), 99);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 3), 2);
     EXPECT_EQ_INT(vec_popback(&v, &out), 0);
     EXPECT_EQ_INT(out, 3);
-    EXPECT_EQ_UINT(vec_size(&v), 4u);
+    EXPECT_EQ_UINT(vec_size(&v), 4);
     vec_fini(&v);
   }
 
@@ -81,31 +81,31 @@ UTEST_CASE(integration)
     void *p;
 
     EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    EXPECT_EQ_INT(vec_resize(&v, 8u), 0);
+    EXPECT_EQ_INT(vec_resize(&v, 8), 0);
     for (idx = 0; idx < 8; idx++) {
       p = vec_at(&v, idx);
       EXPECT_NOTNULL(p);
       x = (int)(idx * 10);
       memcpy(p, &x, sizeof(int));
     }
-    EXPECT_EQ_INT(vec_resize(&v, 4u), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 4u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 3u), 30);
-    EXPECT_EQ_INT(vec_resize(&v, 6u), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 6u);
+    EXPECT_EQ_INT(vec_resize(&v, 4), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 4);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 3), 30);
+    EXPECT_EQ_INT(vec_resize(&v, 6), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 6);
     EXPECT_GE_UINT(vec_capacity(&v), vec_size(&v));
-    p = vec_at(&v, 4u);
+    p = vec_at(&v, 4);
     EXPECT_NOTNULL(p);
     x = 404;
     memcpy(p, &x, sizeof(int));
-    p = vec_at(&v, 5u);
+    p = vec_at(&v, 5);
     EXPECT_NOTNULL(p);
     x = 505;
     memcpy(p, &x, sizeof(int));
     for (idx = 0; idx < 4; idx++)
       EXPECT_EQ_INT(*(int *)vec_at(&v, idx), (int)(idx * 10));
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 4u), 404);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 5u), 505);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 4), 404);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 5), 505);
     vec_fini(&v);
   }
 
@@ -131,9 +131,9 @@ UTEST_CASE(integration)
       x = (int)(100 + idx);
       EXPECT_EQ_INT(vec_pushback(&v, &x), 0);
     }
-    EXPECT_EQ_UINT(vec_size(&v), 8u);
+    EXPECT_EQ_UINT(vec_size(&v), 8);
     EXPECT_GE_UINT(vec_capacity(&v), vec_size(&v));
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 4u), 5);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 4), 5);
     EXPECT_EQ_INT(*(int *)vec_back(&v), 102);
     vec_fini(&v);
   }
@@ -149,14 +149,14 @@ UTEST_CASE(integration)
     vec_pushback(&v, &x);
     x = 3;
     vec_pushback(&v, &x);
-    EXPECT_EQ_INT(vec_remove(&v, 0u, NULL), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 2u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0u), 2);
+    EXPECT_EQ_INT(vec_remove(&v, 0, NULL), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 2);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 2);
     x = 4;
     vec_pushback(&v, &x);
-    EXPECT_EQ_INT(vec_remove(&v, 0u, NULL), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 2u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0u), 3);
+    EXPECT_EQ_INT(vec_remove(&v, 0, NULL), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 2);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 3);
     EXPECT_EQ_INT(*(int *)vec_back(&v), 4);
     vec_fini(&v);
   }
@@ -173,15 +173,15 @@ UTEST_CASE(integration)
     x = 10;
     vec_pushback(&v, &x);
     x = 20;
-    EXPECT_EQ_INT(vec_insert(&v, 0u, &x), 0);
+    EXPECT_EQ_INT(vec_insert(&v, 0, &x), 0);
     EXPECT_EQ_INT(*(int *)vec_front(&v), 20);
     EXPECT_EQ_INT(*(int *)vec_back(&v), 10);
     EXPECT_EQ_INT(vec_popback(&v, NULL), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 1u);
+    EXPECT_EQ_UINT(vec_size(&v), 1);
     x = 30;
-    EXPECT_EQ_INT(vec_insert(&v, 1u, &x), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 2u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 1u), 30);
+    EXPECT_EQ_INT(vec_insert(&v, 1, &x), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 2);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 1), 30);
     for (idx = 0; idx < 2; idx++)
       EXPECT_NOTNULL(vec_at(&v, idx));
     vec_fini(&v);
@@ -192,21 +192,21 @@ UTEST_CASE(integration)
     unsigned char a, b, c, out;
 
     EXPECT_EQ_INT(vec_init(&v, sizeof(unsigned char), NULL), 0);
-    a = 7u;
-    b = 8u;
-    c = 9u;
+    a = 7;
+    b = 8;
+    c = 9;
     EXPECT_EQ_INT(vec_pushback(&v, &a), 0);
     EXPECT_EQ_INT(vec_pushback(&v, &b), 0);
-    c = 5u;
-    EXPECT_EQ_INT(vec_insert(&v, 1u, &c), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 3u);
-    EXPECT_EQ_INT((int)*(unsigned char *)vec_at(&v, 0u), 7);
-    EXPECT_EQ_INT((int)*(unsigned char *)vec_at(&v, 1u), 5);
-    EXPECT_EQ_INT((int)*(unsigned char *)vec_at(&v, 2u), 8);
-    out = 0u;
-    EXPECT_EQ_INT(vec_remove(&v, 1u, &out), 0);
+    c = 5;
+    EXPECT_EQ_INT(vec_insert(&v, 1, &c), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 3);
+    EXPECT_EQ_INT((int)*(unsigned char *)vec_at(&v, 0), 7);
+    EXPECT_EQ_INT((int)*(unsigned char *)vec_at(&v, 1), 5);
+    EXPECT_EQ_INT((int)*(unsigned char *)vec_at(&v, 2), 8);
+    out = 0;
+    EXPECT_EQ_INT(vec_remove(&v, 1, &out), 0);
     EXPECT_EQ_INT((int)out, 5);
-    EXPECT_EQ_UINT(vec_size(&v), 2u);
+    EXPECT_EQ_UINT(vec_size(&v), 2);
     vec_fini(&v);
   }
 
@@ -221,10 +221,10 @@ UTEST_CASE(integration)
       x = (int)(idx + 10);
       vec_pushback(&v, &x);
     }
-    EXPECT_EQ_INT(vec_resize(&v, 2u), 0);
+    EXPECT_EQ_INT(vec_resize(&v, 2), 0);
     EXPECT_EQ_INT(intg_dtor_n, 2);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0u), 10);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 1u), 11);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 10);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 1), 11);
     vec_clear(&v);
     EXPECT_EQ_INT(intg_dtor_n, 4);
     EXPECT_TRUE(vec_empty(&v));
@@ -248,19 +248,19 @@ UTEST_CASE(integration)
     vec_pushback(&v, &x);
     x = 3;
     vec_pushback(&v, &x);
-    EXPECT_EQ_INT(vec_resize(&v, 0u), 0);
+    EXPECT_EQ_INT(vec_resize(&v, 0), 0);
     EXPECT_TRUE(vec_empty(&v));
     x = 7;
     vec_pushback(&v, &x);
-    EXPECT_EQ_UINT(vec_size(&v), 1u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0u), 7);
+    EXPECT_EQ_UINT(vec_size(&v), 1);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 7);
     x = 8;
-    EXPECT_EQ_INT(vec_insert(&v, 0u, &x), 0);
+    EXPECT_EQ_INT(vec_insert(&v, 0, &x), 0);
     out = 0;
-    EXPECT_EQ_INT(vec_remove(&v, 1u, &out), 0);
+    EXPECT_EQ_INT(vec_remove(&v, 1, &out), 0);
     EXPECT_EQ_INT(out, 7);
-    EXPECT_EQ_UINT(vec_size(&v), 1u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0u), 8);
+    EXPECT_EQ_UINT(vec_size(&v), 1);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 8);
     vec_fini(&v);
   }
 
@@ -286,7 +286,7 @@ UTEST_CASE(integration)
     x = 100;
     vec_pushback(&v, &x);
     x = 200;
-    EXPECT_EQ_INT(vec_insert(&v, 0u, &x), 0);
+    EXPECT_EQ_INT(vec_insert(&v, 0, &x), 0);
     EXPECT_EQ_INT(*(int *)vec_front(&v), 200);
     EXPECT_EQ_INT(*(int *)vec_back(&v), 100);
     vec_fini(&v);
@@ -299,12 +299,12 @@ UTEST_CASE(integration)
 
     EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
     x = 3;
-    EXPECT_EQ_INT(vec_insert(&v, 0u, &x), 0);
+    EXPECT_EQ_INT(vec_insert(&v, 0, &x), 0);
     x = 2;
-    EXPECT_EQ_INT(vec_insert(&v, 0u, &x), 0);
+    EXPECT_EQ_INT(vec_insert(&v, 0, &x), 0);
     x = 1;
-    EXPECT_EQ_INT(vec_insert(&v, 0u, &x), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 3u);
+    EXPECT_EQ_INT(vec_insert(&v, 0, &x), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 3);
     for (idx = 0; idx < 3; idx++) {
       EXPECT_NOTNULL(vec_at(&v, idx));
       EXPECT_EQ_INT(*(int *)vec_at(&v, idx), (int)(idx + 1));
@@ -323,18 +323,18 @@ UTEST_CASE(integration)
       vec_pushback(&v, &x);
     }
     x = 1000;
-    EXPECT_EQ_INT(vec_insert(&v, 2u, &x), 0);
+    EXPECT_EQ_INT(vec_insert(&v, 2, &x), 0);
     x = 2000;
-    EXPECT_EQ_INT(vec_insert(&v, 6u, &x), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 7u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 2u), 1000);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 3u), 4);
+    EXPECT_EQ_INT(vec_insert(&v, 6, &x), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 7);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 2), 1000);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 3), 4);
     EXPECT_EQ_INT(*(int *)vec_back(&v), 2000);
-    EXPECT_EQ_INT(vec_remove(&v, 0u, NULL), 0);
-    EXPECT_EQ_INT(vec_remove(&v, 5u, NULL), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 5u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0u), 2);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 1u), 1000);
+    EXPECT_EQ_INT(vec_remove(&v, 0, NULL), 0);
+    EXPECT_EQ_INT(vec_remove(&v, 5, NULL), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 5);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 2);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 1), 1000);
     EXPECT_EQ_INT(*(int *)vec_back(&v), 8);
     vec_fini(&v);
   }
@@ -349,16 +349,16 @@ UTEST_CASE(integration)
       x = (int)idx;
       vec_pushback(&v, &x);
     }
-    EXPECT_EQ_INT(vec_resize(&v, 3u), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 3u);
+    EXPECT_EQ_INT(vec_resize(&v, 3), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 3);
     x = 30;
     vec_pushback(&v, &x);
     x = 40;
-    EXPECT_EQ_INT(vec_insert(&v, 1u, &x), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 5u);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0u), 0);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 1u), 40);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 2u), 1);
+    EXPECT_EQ_INT(vec_insert(&v, 1, &x), 0);
+    EXPECT_EQ_UINT(vec_size(&v), 5);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 0);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 1), 40);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 2), 1);
     EXPECT_EQ_INT(*(int *)vec_back(&v), 30);
     EXPECT_EQ_INT(vec_shrink(&v), 0);
     EXPECT_GE_UINT(vec_capacity(&v), vec_size(&v));
@@ -366,7 +366,7 @@ UTEST_CASE(integration)
     EXPECT_TRUE(vec_empty(&v));
     x = 9;
     vec_pushback(&v, &x);
-    EXPECT_EQ_UINT(vec_size(&v), 1u);
+    EXPECT_EQ_UINT(vec_size(&v), 1);
     vec_fini(&v);
   }
 
@@ -384,18 +384,18 @@ UTEST_CASE(integration)
     EXPECT_EQ_INT(vec_pushback(&v, &a), 0);
     EXPECT_EQ_INT(vec_pushback(&v, &b), 0);
     EXPECT_EQ_INT(vec_pushback(&v, &c), 0);
-    EXPECT_NOTNULL(vec_at(&v, 1u));
-    EXPECT_EQ_INT(((struct intg_pair *)vec_at(&v, 1u))->x, 2);
-    EXPECT_EQ_INT(((struct intg_pair *)vec_at(&v, 1u))->y, 20);
+    EXPECT_NOTNULL(vec_at(&v, 1));
+    EXPECT_EQ_INT(((struct intg_pair *)vec_at(&v, 1))->x, 2);
+    EXPECT_EQ_INT(((struct intg_pair *)vec_at(&v, 1))->y, 20);
     a.x = 0;
     a.y = 0;
-    EXPECT_EQ_INT(vec_insert(&v, 1u, &a), 0);
-    EXPECT_EQ_INT(((struct intg_pair *)vec_at(&v, 1u))->x, 0);
-    EXPECT_EQ_INT(((struct intg_pair *)vec_at(&v, 2u))->x, 2);
-    EXPECT_EQ_INT(vec_remove(&v, 3u, &out), 0);
+    EXPECT_EQ_INT(vec_insert(&v, 1, &a), 0);
+    EXPECT_EQ_INT(((struct intg_pair *)vec_at(&v, 1))->x, 0);
+    EXPECT_EQ_INT(((struct intg_pair *)vec_at(&v, 2))->x, 2);
+    EXPECT_EQ_INT(vec_remove(&v, 3, &out), 0);
     EXPECT_EQ_INT(out.x, 3);
     EXPECT_EQ_INT(out.y, 30);
-    EXPECT_EQ_UINT(vec_size(&v), 3u);
+    EXPECT_EQ_UINT(vec_size(&v), 3);
     vec_fini(&v);
   }
 
@@ -410,10 +410,10 @@ UTEST_CASE(integration)
     n1.id = 800;
     EXPECT_EQ_INT(vec_pushback(&v, &n0), 0);
     EXPECT_EQ_INT(vec_pushback(&v, &n1), 0);
-    EXPECT_NOTNULL(vec_at(&v, 0u));
-    EXPECT_EQ_INT((int)((struct intg_nested *)vec_at(&v, 0u))->layer, 7);
-    EXPECT_EQ_INT(((struct intg_nested *)vec_at(&v, 0u))->id, 700);
-    EXPECT_EQ_INT((int)((struct intg_nested *)vec_at(&v, 1u))->layer, 8);
+    EXPECT_NOTNULL(vec_at(&v, 0));
+    EXPECT_EQ_INT((int)((struct intg_nested *)vec_at(&v, 0))->layer, 7);
+    EXPECT_EQ_INT(((struct intg_nested *)vec_at(&v, 0))->id, 700);
+    EXPECT_EQ_INT((int)((struct intg_nested *)vec_at(&v, 1))->layer, 8);
     EXPECT_EQ_INT(((struct intg_nested *)vec_back(&v))->id, 800);
     vec_fini(&v);
   }
@@ -475,7 +475,7 @@ UTEST_CASE(integration)
     vec_pushback(&v, &h0);
     vec_pushback(&v, &h1);
     memset(&out, 0, sizeof(out));
-    EXPECT_EQ_INT(vec_remove(&v, 0u, &out), 0);
+    EXPECT_EQ_INT(vec_remove(&v, 0, &out), 0);
     EXPECT_EQ_INT(intg_heap_dtor_n, 0);
     EXPECT_NOTNULL(out.p);
     EXPECT_EQ_INT(*out.p, 1);
@@ -497,12 +497,12 @@ UTEST_CASE(integration)
       *h.p = (int)(idx * 10);
       EXPECT_EQ_INT(vec_pushback(&v, &h), 0);
     }
-    EXPECT_EQ_INT(vec_resize(&v, 2u), 0);
+    EXPECT_EQ_INT(vec_resize(&v, 2), 0);
     EXPECT_EQ_INT(intg_heap_dtor_n, 2);
-    EXPECT_NOTNULL(vec_at(&v, 0u));
-    EXPECT_NOTNULL(((struct intg_heap_box *)vec_at(&v, 0u))->p);
-    EXPECT_EQ_INT(*((struct intg_heap_box *)vec_at(&v, 0u))->p, 0);
-    EXPECT_EQ_INT(*((struct intg_heap_box *)vec_at(&v, 1u))->p, 10);
+    EXPECT_NOTNULL(vec_at(&v, 0));
+    EXPECT_NOTNULL(((struct intg_heap_box *)vec_at(&v, 0))->p);
+    EXPECT_EQ_INT(*((struct intg_heap_box *)vec_at(&v, 0))->p, 0);
+    EXPECT_EQ_INT(*((struct intg_heap_box *)vec_at(&v, 1))->p, 10);
     vec_fini(&v);
     EXPECT_EQ_INT(intg_heap_dtor_n, 4);
   }
@@ -518,8 +518,8 @@ UTEST_CASE(integration)
     EXPECT_NOTNULL(h.p);
     *h.p = 99;
     EXPECT_EQ_INT(vec_pushback(&v, &h), 0);
-    EXPECT_NOTNULL(vec_at(&v, 0u));
-    slot = (struct intg_heap_box *)vec_at(&v, 0u);
+    EXPECT_NOTNULL(vec_at(&v, 0));
+    slot = (struct intg_heap_box *)vec_at(&v, 0);
     EXPECT_NOTNULL(slot->p);
     free(slot->p);
     slot->p = NULL;
@@ -542,11 +542,11 @@ UTEST_CASE(integration)
     vec_pushback(&v, &h1);
     h2.p = (int *)malloc(sizeof(int));
     *h2.p = 50;
-    EXPECT_EQ_INT(vec_insert(&v, 1u, &h2), 0);
-    EXPECT_EQ_INT(*((struct intg_heap_box *)vec_at(&v, 0u))->p, 1);
-    EXPECT_EQ_INT(*((struct intg_heap_box *)vec_at(&v, 1u))->p, 50);
-    EXPECT_EQ_INT(*((struct intg_heap_box *)vec_at(&v, 2u))->p, 2);
-    EXPECT_EQ_INT(vec_remove(&v, 1u, NULL), 0);
+    EXPECT_EQ_INT(vec_insert(&v, 1, &h2), 0);
+    EXPECT_EQ_INT(*((struct intg_heap_box *)vec_at(&v, 0))->p, 1);
+    EXPECT_EQ_INT(*((struct intg_heap_box *)vec_at(&v, 1))->p, 50);
+    EXPECT_EQ_INT(*((struct intg_heap_box *)vec_at(&v, 2))->p, 2);
+    EXPECT_EQ_INT(vec_remove(&v, 1, NULL), 0);
     EXPECT_EQ_INT(intg_heap_dtor_n, 1);
     vec_fini(&v);
     EXPECT_EQ_INT(intg_heap_dtor_n, 3);
