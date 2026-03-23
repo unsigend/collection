@@ -170,8 +170,3 @@ int main(void)
   return 0;
 }
 ```
-</think>
-Fixing the example: using standard `/* */` block comments like `stack.md` and `deque.md` (the `/_ _/` rule appears to mean block comments, not `//`).
-
-<｜tool▁calls▁begin｜><｜tool▁call▁begin｜>
-StrReplace
