@@ -3,7 +3,6 @@
 
    Usage: ./test -j[nthreads] [suite] */
 
-#include "utest/flags.h"
 #include <stdlib.h>
 #include <utest.h>
 
@@ -15,6 +14,7 @@ extern UTEST_SUITE(stack);
 extern UTEST_SUITE(deque);
 extern UTEST_SUITE(queue);
 extern UTEST_SUITE(slist);
+extern UTEST_SUITE(dlist);
 
 int main(int argc, char *argv[])
 {
@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
   UTEST_ADDSUITE(deque);
   UTEST_ADDSUITE(queue);
   UTEST_ADDSUITE(slist);
+  UTEST_ADDSUITE(dlist);
 
   for (int i = 1; i < argc; i++) {
     if (strncmp(argv[i], "-j", 2) == 0) {
