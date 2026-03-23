@@ -52,6 +52,8 @@ static void flatten(struct deque *deq, void *buf);
 /* Destroy the elements in the range [start, end) */
 static void destroy(struct deque *deq, size_t start, size_t end);
 
+static int expand(struct deque *deq);
+
 int deq_init(struct deque *deq, size_t elesz, void (*destroy)(void *))
 {
   if (!deq || !elesz)
@@ -135,19 +137,9 @@ int deq_insert(struct deque *deq, size_t idx, void *ele)
     return deq_pushback(deq, ele);
   if (idx == 0)
     return deq_pushfront(deq, ele);
+  if (deq->sz == deq->cap && expand(deq) == -1)
+    return -1;
 
-  if (deq->sz == deq->cap) {
-    size_t newcap = deq->cap ? deq->cap * GROWFACTOR : MINCAP;
-    overflowcheck(deq->elesz, newcap);
-    void *newbuf = malloc(newcap * deq->elesz);
-    if (!newbuf)
-      return -1;
-    flatten(deq, newbuf);
-    free(deq->buf);
-    deq->buf = newbuf;
-    deq->cap = newcap;
-    deq->head = 0;
-  }
   size_t pidx = PINDEX(deq, idx);
   size_t phead = deq->head;
   size_t pend = PINDEX(deq, deq->sz);
@@ -258,18 +250,8 @@ int deq_pushback(struct deque *deq, void *ele)
 {
   if (!deq || !ele)
     return -1;
-  if (deq->sz == deq->cap) {
-    size_t newcap = deq->cap ? deq->cap * GROWFACTOR : MINCAP;
-    overflowcheck(deq->elesz, newcap);
-    void *newbuf = malloc(newcap * deq->elesz);
-    if (!newbuf)
-      return -1;
-    flatten(deq, newbuf);
-    free(deq->buf);
-    deq->buf = newbuf;
-    deq->cap = newcap;
-    deq->head = 0;
-  }
+  if (deq->sz == deq->cap && expand(deq) == -1)
+    return -1;
   memcpy(GET(deq->buf, PINDEX(deq, deq->sz), deq->elesz), ele, deq->elesz);
   deq->sz++;
   return 0;
@@ -279,18 +261,8 @@ int deq_pushfront(struct deque *deq, void *ele)
 {
   if (!deq || !ele)
     return -1;
-  if (deq->sz == deq->cap) {
-    size_t newcap = deq->cap ? deq->cap * GROWFACTOR : MINCAP;
-    overflowcheck(deq->elesz, newcap);
-    void *newbuf = malloc(newcap * deq->elesz);
-    if (!newbuf)
-      return -1;
-    flatten(deq, newbuf);
-    free(deq->buf);
-    deq->buf = newbuf;
-    deq->cap = newcap;
-    deq->head = 0;
-  }
+  if (deq->sz == deq->cap && expand(deq) == -1)
+    return -1;
   size_t newhead = (deq->head + deq->cap - 1) % deq->cap;
   memcpy(GET(deq->buf, newhead, deq->elesz), ele, deq->elesz);
   deq->head = newhead;
@@ -330,6 +302,21 @@ void deq_clear(struct deque *deq)
   destroy(deq, 0, deq->sz);
   deq->sz = 0;
   deq->head = 0;
+}
+
+static int expand(struct deque *deq)
+{
+  size_t newcap = deq->cap ? deq->cap * GROWFACTOR : MINCAP;
+  overflowcheck(deq->elesz, newcap);
+  void *newbuf = malloc(newcap * deq->elesz);
+  if (!newbuf)
+    return -1;
+  flatten(deq, newbuf);
+  free(deq->buf);
+  deq->buf = newbuf;
+  deq->cap = newcap;
+  deq->head = 0;
+  return 0;
 }
 
 static void destroy(struct deque *deq, size_t start, size_t end)

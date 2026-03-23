@@ -36,15 +36,7 @@
     }                                                                          \
   } while (0) /* Check if the size is overflow */
 
-static void destroy(struct vector *vec, size_t start, size_t end)
-{
-  if (!vec || start >= end || start >= vec->sz)
-    return;
-  if (vec->destroy) {
-    for (size_t i = start; i < end; i++)
-      vec->destroy(GET(vec, vec->buf, i));
-  }
-}
+static void destroy(struct vector *vec, size_t start, size_t end);
 
 int vec_init(struct vector *vec, size_t elesz, void (*destroy)(void *))
 {
@@ -111,9 +103,7 @@ int vec_shrink(struct vector *vec)
 {
   if (!vec)
     return -1;
-  if (vec->sz == vec->cap)
-    return 0;
-  if (!vec->sz)
+  if (vec->sz == vec->cap || !vec->sz)
     return 0;
   overflowcheck(vec->elesz, vec->sz);
   void *newbuf = realloc(vec->buf, vec->sz * vec->elesz);
@@ -198,4 +188,14 @@ int vec_remove(struct vector *vec, size_t idx, void *dest)
           vec->elesz * (vec->sz - idx - 1));
   vec->sz--;
   return 0;
+}
+
+static void destroy(struct vector *vec, size_t start, size_t end)
+{
+  if (!vec || start >= end || start >= vec->sz)
+    return;
+  if (vec->destroy) {
+    for (size_t i = start; i < end; i++)
+      vec->destroy(GET(vec, vec->buf, i));
+  }
 }
