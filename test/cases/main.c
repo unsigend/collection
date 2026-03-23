@@ -15,6 +15,7 @@ extern UTEST_SUITE(deque);
 extern UTEST_SUITE(queue);
 extern UTEST_SUITE(slist);
 extern UTEST_SUITE(dlist);
+extern UTEST_SUITE(heap);
 
 extern UTEST_SUITE(util);
 
@@ -32,6 +33,7 @@ int main(int argc, char *argv[])
   UTEST_ADDSUITE(queue);
   UTEST_ADDSUITE(slist);
   UTEST_ADDSUITE(dlist);
+  UTEST_ADDSUITE(heap);
 
   UTEST_ADDSUITE(util);
 
