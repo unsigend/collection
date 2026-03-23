@@ -1,5 +1,5 @@
 ---
-title: Doubly Linked List
+title: Dlist
 description: Pointer based doubly linked list with node level insertion and removal
 ---
 

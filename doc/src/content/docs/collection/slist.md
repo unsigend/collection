@@ -1,5 +1,5 @@
 ---
-title: Singly Linked List
+title: Slist
 description: Pointer based singly linked list with node level operations
 ---
 
