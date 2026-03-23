@@ -14,6 +14,7 @@ extern UTEST_SUITE(vector);
 extern UTEST_SUITE(stack);
 extern UTEST_SUITE(deque);
 extern UTEST_SUITE(queue);
+extern UTEST_SUITE(slist);
 
 int main(int argc, char *argv[])
 {
@@ -27,6 +28,7 @@ int main(int argc, char *argv[])
   UTEST_ADDSUITE(stack);
   UTEST_ADDSUITE(deque);
   UTEST_ADDSUITE(queue);
+  UTEST_ADDSUITE(slist);
 
   for (int i = 1; i < argc; i++) {
     if (strncmp(argv[i], "-j", 2) == 0) {
