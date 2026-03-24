@@ -40,11 +40,11 @@
 
 /* Shift left n elements from [dest+1, dest+n] to [dest, dest+n-1], dest is the
    logical index */
-static void shiftleft(struct deque *deq, size_t dest, size_t n);
+static inline void shiftleft(struct deque *deq, size_t dest, size_t n);
 
 /* Shift right n elements from [dest-n, dest-1] to [dest-n+1, dest], dest is the
    logical index */
-static void shiftright(struct deque *deq, size_t dest, size_t n);
+static inline void shiftright(struct deque *deq, size_t dest, size_t n);
 
 /* Flatten the deque to the buffer */
 static void flatten(struct deque *deq, void *buf);
@@ -354,14 +354,14 @@ static void flatten(struct deque *deq, void *buf)
   }
 }
 
-static void shiftleft(struct deque *deq, size_t dest, size_t n)
+static inline void shiftleft(struct deque *deq, size_t dest, size_t n)
 {
   for (size_t i = 0; i < n; i++)
     memcpy(GET(deq->buf, PINDEX(deq, dest + i), deq->elesz),
            GET(deq->buf, PINDEX(deq, dest + i + 1), deq->elesz), deq->elesz);
 }
 
-static void shiftright(struct deque *deq, size_t dest, size_t n)
+static inline void shiftright(struct deque *deq, size_t dest, size_t n)
 {
   for (size_t i = 0; i < n; i++)
     memcpy(GET(deq->buf, PINDEX(deq, dest - i), deq->elesz),
