@@ -18,6 +18,7 @@ extern UTEST_SUITE(dlist);
 extern UTEST_SUITE(heap);
 
 extern UTEST_SUITE(util);
+extern UTEST_SUITE(hash);
 
 int main(int argc, char *argv[])
 {
@@ -36,6 +37,7 @@ int main(int argc, char *argv[])
   UTEST_ADDSUITE(heap);
 
   UTEST_ADDSUITE(util);
+  UTEST_ADDSUITE(hash);
 
   for (int i = 1; i < argc; i++) {
     if (strncmp(argv[i], "-j", 2) == 0) {
