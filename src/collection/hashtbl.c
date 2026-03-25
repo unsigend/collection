@@ -25,9 +25,6 @@
 #define NBUCKETS 16
 #define GROWFACTOR 2
 
-/* TODO: extract duplicate logics and implement node based find. Implement
- * iterator for hashtbl.*/
-
 static inline struct hashtbl_node *node_create(void *key, void *val);
 static inline struct hashtbl_node **buckets_create(size_t bucketsz);
 
@@ -95,11 +92,8 @@ int hashtbl_insert(struct hashtbl *ht, void *key, void *val)
 {
   if (!ht || !key)
     return -1;
-  /* TODO: buggy, since both found and found with val == NULL are considered as
-     not found, task: extract logic based on node find */
-  if (hashtbl_find(ht, key))
+  if (hashtbl_findnode(ht, key))
     return -1;
-
   if (!hashtbl_bucketsz(ht)) {
     ht->bucketsz = NBUCKETS;
     ht->buckets = buckets_create(ht->bucketsz);
@@ -123,14 +117,7 @@ int hashtbl_update(struct hashtbl *ht, void *key, void *newval, void **dest)
 {
   if (!ht || !key || !newval)
     return -1;
-  uint32_t hash = ht->fns->hash(key);
-  size_t idx = hashidx(hash, ht->bucketsz);
-  struct hashtbl_node *node = ht->buckets[idx];
-  while (node) {
-    if (ht->fns->cmp(node->key, key) == 0)
-      break;
-    node = node->next;
-  }
+  struct hashtbl_node *node = hashtbl_findnode(ht, key);
   if (!node)
     return -1;
   if (dest)
@@ -179,6 +166,12 @@ int hashtbl_remove(struct hashtbl *ht, void *key, void **dest)
 
 void *hashtbl_find(struct hashtbl *ht, void *key)
 {
+  struct hashtbl_node *node = hashtbl_findnode(ht, key);
+  return node ? node->val : NULL;
+}
+
+struct hashtbl_node *hashtbl_findnode(struct hashtbl *ht, void *key)
+{
   if (!ht || !key || hashtbl_empty(ht))
     return NULL;
   uint32_t hash = ht->fns->hash(key);
@@ -186,7 +179,7 @@ void *hashtbl_find(struct hashtbl *ht, void *key)
   struct hashtbl_node *node = ht->buckets[idx];
   while (node) {
     if (ht->fns->cmp(node->key, key) == 0)
-      return node->val;
+      return node;
     node = node->next;
   }
   return NULL;

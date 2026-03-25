@@ -49,8 +49,7 @@ int hashtbl_update(struct hashtbl *ht, void *key, void *newval, void **dest);
 int hashtbl_remove(struct hashtbl *ht, void *key, void **dest);
 
 void *hashtbl_find(struct hashtbl *ht, void *key);
-struct hashtbl_node *hashtbl_findnode(struct hashtbl *ht,
-                                      void *key); /* TODO: implement */
+struct hashtbl_node *hashtbl_findnode(struct hashtbl *ht, void *key);
 
 void hashtbl_clear(struct hashtbl *ht);
 

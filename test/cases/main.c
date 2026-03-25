@@ -16,6 +16,7 @@ extern UTEST_SUITE(queue);
 extern UTEST_SUITE(slist);
 extern UTEST_SUITE(dlist);
 extern UTEST_SUITE(heap);
+extern UTEST_SUITE(hashtbl);
 
 extern UTEST_SUITE(util);
 extern UTEST_SUITE(hash);
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
   UTEST_ADDSUITE(slist);
   UTEST_ADDSUITE(dlist);
   UTEST_ADDSUITE(heap);
+  UTEST_ADDSUITE(hashtbl);
 
   UTEST_ADDSUITE(util);
   UTEST_ADDSUITE(hash);
