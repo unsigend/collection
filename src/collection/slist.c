@@ -1,4 +1,4 @@
-/* collection - A generic data structure and algorithms library for modern C
+/* collection - A generic data structure and algorithms library
  * Copyright (C) 2025 Yixiang Qiu
  *
  * This program is free software: you can redistribute it and/or modify
