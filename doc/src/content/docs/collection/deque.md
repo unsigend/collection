@@ -3,7 +3,7 @@ title: Deque
 description: Double-ended queue of fixed-size elements with front and back operations
 ---
 
-A deque stores elements in a linear order indexed from `0` at the front through `deq_size(deq) - 1` at the back. Each slot is exactly `elesz` bytes. You can push and pop at both ends, read by index with `deq_at`, resize and shrink the logical length, and insert or remove in the middle like a vector. Initialization and destructor rules match the same pattern as `vec_init` and related APIs.
+A deque stores elements in a linear order indexed from `0` at the front through `deq_size(deq) - 1` at the back. Each slot is exactly `elesz` bytes. You can push and pop at both ends, read by index with `deq_at`, resize and shrink the logical length, and insert or remove in the middle like a vector. Initialization and destructor rules match the same pattern as `vec_init` and related APIs. Elements in that logical order can be traversed with `struct deque_iter`, `deq_iter_init`, `deq_iter_inc`, `deq_iter_dec`, and `deq_iter_get`.
 
 ## Header
 
@@ -25,6 +25,15 @@ struct deque {
 ```
 
 `buf` is the element storage, `elesz` is the byte size of one element, `sz` is the current element count, `cap` is the number of allocated slots, `head` is layout metadata used with `buf` for logical ordering, `destroy` is the optional destructor from `deq_init`, or NULL if not set.
+
+```c
+struct deque_iter {
+  struct deque *deq;
+  size_t idx;
+};
+```
+
+`deq` is the deque being traversed, `idx` is the current zero-based logical index used by `deq_iter_get` and updated by `deq_iter_inc` and `deq_iter_dec`.
 
 ## Macros
 
@@ -277,6 +286,63 @@ Removes all elements and resets size to zero, calling `destroy` on each when set
 **Parameters**
 
 - `deq` — pointer to the deque
+
+---
+
+### deq_iter_init
+
+```c
+int deq_iter_init(struct deque_iter *iter, struct deque *deq);
+```
+
+Prepares `iter` for traversing `deq` in logical index order. Returns 0 on success, -1 if `iter` or `deq` is NULL.
+
+**Parameters**
+
+- `iter` — pointer to the iterator struct
+- `deq` — pointer to an initialized deque
+
+---
+
+### deq_iter_inc
+
+```c
+void deq_iter_inc(struct deque_iter *iter);
+```
+
+Moves the iterator forward by one logical index. No-op if `iter` is NULL.
+
+**Parameters**
+
+- `iter` — pointer to the iterator
+
+---
+
+### deq_iter_dec
+
+```c
+void deq_iter_dec(struct deque_iter *iter);
+```
+
+Moves the iterator backward by one logical index. No-op if `iter` is NULL.
+
+**Parameters**
+
+- `iter` — pointer to the iterator
+
+---
+
+### deq_iter_get
+
+```c
+void *deq_iter_get(struct deque_iter *iter);
+```
+
+Returns a pointer to the element at the current logical index, or NULL if `iter` is NULL or the index is not valid for `iter->deq`.
+
+**Parameters**
+
+- `iter` — pointer to the iterator
 
 ---
 

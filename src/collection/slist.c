@@ -148,3 +148,26 @@ int slist_removen(struct slist *slist, struct slist_node *node, void **dest)
   slist->len--;
   return 0;
 }
+
+int slist_iter_init(struct slist_iter *iter, struct slist *slist)
+{
+  if (!iter || !slist)
+    return -1;
+  iter->slist = slist;
+  iter->node = slist->head;
+  return 0;
+}
+
+void slist_iter_inc(struct slist_iter *iter)
+{
+  if (!iter || !iter->node)
+    return;
+  iter->node = iter->node->next;
+}
+
+void *slist_iter_get(struct slist_iter *iter)
+{
+  if (!iter)
+    return NULL;
+  return slist_data(iter->node);
+}

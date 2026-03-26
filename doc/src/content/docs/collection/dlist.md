@@ -3,7 +3,7 @@ title: Dlist
 description: Pointer based doubly linked list with node level insertion and removal
 ---
 
-A dlist stores `void *` data pointers in doubly linked nodes, it supports push and pop from both ends, and it supports insertion or removal with node based APIs. Use `dlist_init` before other operations, use `dlist_fini` when done.
+A dlist stores `void *` data pointers in doubly linked nodes, it supports push and pop from both ends, and it supports insertion or removal with node based APIs. Use `dlist_init` before other operations, use `dlist_fini` when done. Forward traversal starts at the head with `dlist_iter_init`, reverse traversal starts at the tail with `dlist_iter_initrev`, use `dlist_iter_inc` and `dlist_iter_dec` to move along `next` and `prev`, and `dlist_iter_get` for the current node data.
 
 ## Header
 
@@ -29,6 +29,15 @@ struct dlist_node {
 ```
 
 `head` points to the first node, `tail` points to the last node, `len` is the node count, `destroy` is the optional callback used when removed data is not returned.
+
+```c
+struct dlist_iter {
+  struct dlist *dlist;
+  struct dlist_node *node;
+};
+```
+
+`dlist` is the list being traversed, `node` is the current node whose data `dlist_iter_get` exposes, or NULL when the iterator is not on a node.
 
 ## Macros
 
@@ -264,6 +273,78 @@ Removes all nodes, calls destroy callback for each node data when callback exist
 **Parameters**
 
 - `dlist` - pointer to list struct
+
+---
+
+### dlist_iter_init
+
+```c
+int dlist_iter_init(struct dlist_iter *iter, struct dlist *dlist);
+```
+
+Prepares `iter` starting at the head node. Returns 0 on success, -1 if `iter` or `dlist` is NULL.
+
+**Parameters**
+
+- `iter` - pointer to the iterator struct
+- `dlist` - pointer to an initialized list
+
+---
+
+### dlist_iter_initrev
+
+```c
+int dlist_iter_initrev(struct dlist_iter *iter, struct dlist *dlist);
+```
+
+Prepares `iter` starting at the tail node. Returns 0 on success, -1 if `iter` or `dlist` is NULL.
+
+**Parameters**
+
+- `iter` - pointer to the iterator struct
+- `dlist` - pointer to an initialized list
+
+---
+
+### dlist_iter_inc
+
+```c
+void dlist_iter_inc(struct dlist_iter *iter);
+```
+
+Moves `iter` to the `next` node. No-op if `iter` is NULL or the iterator is not on a node.
+
+**Parameters**
+
+- `iter` - pointer to the iterator
+
+---
+
+### dlist_iter_dec
+
+```c
+void dlist_iter_dec(struct dlist_iter *iter);
+```
+
+Moves `iter` to the `prev` node. No-op if `iter` is NULL or the iterator is not on a node.
+
+**Parameters**
+
+- `iter` - pointer to the iterator
+
+---
+
+### dlist_iter_get
+
+```c
+void *dlist_iter_get(struct dlist_iter *iter);
+```
+
+Returns the data pointer for the current node, or NULL if `iter` is NULL or the iterator is not on a node.
+
+**Parameters**
+
+- `iter` - pointer to the iterator
 
 ---
 

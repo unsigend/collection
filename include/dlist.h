@@ -20,8 +20,18 @@
 
 #include <stddef.h>
 
-struct dlist;
-struct dlist_node;
+struct dlist {
+  struct dlist_node *head;
+  struct dlist_node *tail;
+  size_t len;
+  void (*destroy)(void *);
+};
+
+struct dlist_node {
+  void *data;
+  struct dlist_node *next;
+  struct dlist_node *prev;
+};
 
 #define dlist_empty(dlist)                                                     \
   ((dlist)->len == 0)                    /* Check if the dlist is empty        \
@@ -55,17 +65,16 @@ int dlist_remove(struct dlist *dlist, struct dlist_node *node, void **dest);
 
 void dlist_clear(struct dlist *dlist);
 
-struct dlist {
-  struct dlist_node *head;
-  struct dlist_node *tail;
-  size_t len;
-  void (*destroy)(void *);
+struct dlist_iter {
+  struct dlist *dlist;
+  struct dlist_node *node;
 };
 
-struct dlist_node {
-  void *data;
-  struct dlist_node *next;
-  struct dlist_node *prev;
-};
+int dlist_iter_init(struct dlist_iter *iter, struct dlist *dlist);
+int dlist_iter_initrev(struct dlist_iter *iter,
+                       struct dlist *dlist); /* reverse iterator */
+void dlist_iter_inc(struct dlist_iter *iter);
+void dlist_iter_dec(struct dlist_iter *iter);
+void *dlist_iter_get(struct dlist_iter *iter);
 
 #endif

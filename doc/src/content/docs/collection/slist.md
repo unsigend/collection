@@ -3,7 +3,7 @@ title: Slist
 description: Pointer based singly linked list with node level operations
 ---
 
-An slist stores `void *` data pointers in forward linked nodes, it supports push and pop at list ends visible through front and back accessors, and node level insert or remove after a given node. Use `slist_init` before other operations, use `slist_fini` when done.
+An slist stores `void *` data pointers in forward linked nodes, it supports push and pop at list ends visible through front and back accessors, and node level insert or remove after a given node. Use `slist_init` before other operations, use `slist_fini` when done. Traversal from head toward tail is available only forward through `struct slist_iter`, `slist_iter_init`, `slist_iter_inc`, and `slist_iter_get`, there is no reverse step.
 
 ## Header
 
@@ -28,6 +28,15 @@ struct slist_node {
 ```
 
 `head` points to the first node, `tail` points to the last node, `len` is the node count, `destroy` is the optional callback used when removed data is not returned to the caller.
+
+```c
+struct slist_iter {
+  struct slist *slist;
+  struct slist_node *node;
+};
+```
+
+`slist` is the list being traversed, `node` is the current node whose data `slist_iter_get` exposes, or NULL when the iterator is past the last node.
 
 ## Macros
 
@@ -234,6 +243,49 @@ Removes all nodes, calls destroy callback for each node data when callback exist
 **Parameters**
 
 - `slist` - pointer to list struct
+
+---
+
+### slist_iter_init
+
+```c
+int slist_iter_init(struct slist_iter *iter, struct slist *slist);
+```
+
+Prepares `iter` to visit `slist` starting at the head node. Returns 0 on success, -1 if `iter` or `slist` is NULL.
+
+**Parameters**
+
+- `iter` - pointer to the iterator struct
+- `slist` - pointer to an initialized list
+
+---
+
+### slist_iter_inc
+
+```c
+void slist_iter_inc(struct slist_iter *iter);
+```
+
+Advances `iter` to the next node in forward order. No-op if `iter` is NULL or the iterator is already past the last node.
+
+**Parameters**
+
+- `iter` - pointer to the iterator
+
+---
+
+### slist_iter_get
+
+```c
+void *slist_iter_get(struct slist_iter *iter);
+```
+
+Returns the data pointer for the current node, or NULL if `iter` is NULL or the iterator is not positioned on a node.
+
+**Parameters**
+
+- `iter` - pointer to the iterator
 
 ---
 

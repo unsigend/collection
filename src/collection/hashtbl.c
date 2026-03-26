@@ -229,3 +229,31 @@ static int rehash(struct hashtbl *ht)
   ht->bucketsz = newbucketsz;
   return 0;
 }
+
+int hashtbl_iter_init(struct hashtbl_iter *iter, struct hashtbl *ht)
+{
+  if (!iter || !ht)
+    return -1;
+  iter->ht = ht;
+  iter->bucket = 0;
+  iter->node = ht->buckets ? ht->buckets[0] : NULL;
+  return 0;
+}
+
+void hashtbl_iter_inc(struct hashtbl_iter *iter)
+{
+  if (!iter || !iter->node)
+    return;
+  iter->node = iter->node->next;
+  while (!iter->node && iter->bucket < iter->ht->bucketsz - 1) {
+    iter->bucket++;
+    iter->node = iter->ht->buckets[iter->bucket];
+  }
+}
+
+struct hashtbl_node *hashtbl_iter_get(struct hashtbl_iter *iter)
+{
+  if (!iter)
+    return NULL;
+  return iter->node;
+}

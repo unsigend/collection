@@ -367,3 +367,34 @@ static inline void shiftright(struct deque *deq, size_t dest, size_t n)
     memcpy(GET(deq->buf, PINDEX(deq, dest - i), deq->elesz),
            GET(deq->buf, PINDEX(deq, dest - i - 1), deq->elesz), deq->elesz);
 }
+
+int deq_iter_init(struct deque_iter *iter, struct deque *deq)
+{
+  if (!iter || !deq)
+    return -1;
+  iter->deq = deq;
+  iter->idx = 0;
+  return 0;
+}
+
+void deq_iter_inc(struct deque_iter *iter)
+{
+  if (!iter)
+    return;
+  if (iter->idx < iter->deq->sz)
+    iter->idx++;
+}
+
+void deq_iter_dec(struct deque_iter *iter)
+{
+  if (!iter)
+    return;
+  iter->idx--;
+}
+
+void *deq_iter_get(struct deque_iter *iter)
+{
+  if (!iter)
+    return NULL;
+  return deq_at(iter->deq, iter->idx);
+}

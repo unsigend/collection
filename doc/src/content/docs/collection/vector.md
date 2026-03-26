@@ -25,6 +25,15 @@ struct vector {
 
 `buf` is the element buffer, `elesz` is the byte size of one element, `sz` is the current element count, `cap` is the number of allocated slots, `destroy` is the optional destructor passed to `vec_init`, or NULL if not set.
 
+```c
+struct vector_iter {
+  struct vector *vec;
+  size_t idx;
+};
+```
+
+`vec` is the vector being traversed, `idx` is the current zero-based index used by `vec_iter_get` and updated by `vec_iter_inc` and `vec_iter_dec`.
+
 ## Macros
 
 ### vec_empty
@@ -263,6 +272,63 @@ Removes all elements and resets size to zero, calling `destroy` on each when set
 
 ---
 
+### vec_iter_init
+
+```c
+int vec_iter_init(struct vector_iter *iter, struct vector *vec);
+```
+
+Prepares `iter` for traversing `vec`. Returns 0 on success, -1 if `iter` or `vec` is NULL.
+
+**Parameters**
+
+- `iter` — pointer to the iterator struct
+- `vec` — pointer to an initialized vector
+
+---
+
+### vec_iter_inc
+
+```c
+void vec_iter_inc(struct vector_iter *iter);
+```
+
+Moves the iterator forward by one index. No-op if `iter` is NULL.
+
+**Parameters**
+
+- `iter` — pointer to the iterator
+
+---
+
+### vec_iter_dec
+
+```c
+void vec_iter_dec(struct vector_iter *iter);
+```
+
+Moves the iterator backward by one index. No-op if `iter` is NULL.
+
+**Parameters**
+
+- `iter` — pointer to the iterator
+
+---
+
+### vec_iter_get
+
+```c
+void *vec_iter_get(struct vector_iter *iter);
+```
+
+Returns a pointer to the element at the current index, or NULL if `iter` is NULL or the index is not valid for `iter->vec`.
+
+**Parameters**
+
+- `iter` — pointer to the iterator
+
+---
+
 ## Example
 
 ```c
@@ -271,7 +337,9 @@ Removes all elements and resets size to zero, calling `destroy` on each when set
 int main(void)
 {
   struct vector v;
+  struct vector_iter it;
   int x;
+  void *p;
 
   /* initialize a vector of int with no destructor */
   if (vec_init(&v, sizeof(int), NULL) != 0)
@@ -286,6 +354,16 @@ int main(void)
   /* read front element */
   if (!vec_empty(&v))
     x = *(int *)vec_front(&v); /* x == 1 */
+
+  /* walk forward with an iterator */
+  if (vec_iter_init(&it, &v) != 0) {
+    vec_fini(&v);
+    return 1;
+  }
+  while ((p = vec_iter_get(&it)) != NULL) {
+    x = *(int *)p;
+    vec_iter_inc(&it);
+  }
 
   vec_clear(&v);
   vec_fini(&v);

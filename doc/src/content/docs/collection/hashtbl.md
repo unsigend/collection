@@ -3,7 +3,7 @@ title: Hash table
 description: Generic hash table with chaining and callback-driven key and value lifetime
 ---
 
-A hash table maps caller-supplied keys to values using a `struct hashtbl_fns` bundle, hash and comparison functions are required, optional destructors can release owned key or value memory when entries are removed or replaced. Keys and values are opaque pointers, the table stores those pointers rather than copying pointed-to data.
+A hash table maps caller-supplied keys to values using a `struct hashtbl_fns` bundle, hash and comparison functions are required, optional destructors can release owned key or value memory when entries are removed or replaced. Keys and values are opaque pointers, the table stores those pointers rather than copying pointed-to data. Iteration with `struct hashtbl_iter` visits every entry once, but bucket order and chaining mean visit order is not insertion order and is not sorted by key.
 
 ## Header
 
@@ -45,6 +45,16 @@ struct hashtbl {
 ```
 
 `buckets` is the bucket array, `bucketsz` is its length, `sz` is the number of entries, `threshold` is the configured maximum load factor, `fns` points to the callback bundle passed to `hashtbl_init`.
+
+```c
+struct hashtbl_iter {
+  struct hashtbl *ht;
+  size_t bucket;
+  struct hashtbl_node *node;
+};
+```
+
+`ht` is the table being traversed, `bucket` and `node` locate the current chain link for `hashtbl_iter_get` and `hashtbl_iter_inc`.
 
 ## Macros
 
@@ -283,6 +293,49 @@ Removes every entry. No-op if `ht` is NULL or the table is already empty.
 **Parameters**
 
 - `ht` — pointer to the hash table
+
+---
+
+### hashtbl_iter_init
+
+```c
+int hashtbl_iter_init(struct hashtbl_iter *iter, struct hashtbl *ht);
+```
+
+Points `iter` at the head of bucket `0`, or NULL when that bucket has no nodes or `ht` has no bucket array yet. After inserts or clears, call again so `iter` matches the current table. Returns 0 on success, -1 if `iter` or `ht` is NULL.
+
+**Parameters**
+
+- `iter` — pointer to the iterator struct
+- `ht` — pointer to an initialized table
+
+---
+
+### hashtbl_iter_inc
+
+```c
+void hashtbl_iter_inc(struct hashtbl_iter *iter);
+```
+
+Advances `iter` along the current bucket chain, then continues at the next bucket when the chain ends. No-op if `iter` is NULL or the iterator is not on a node.
+
+**Parameters**
+
+- `iter` — pointer to the iterator
+
+---
+
+### hashtbl_iter_get
+
+```c
+struct hashtbl_node *hashtbl_iter_get(struct hashtbl_iter *iter);
+```
+
+Returns the current `struct hashtbl_node`, or NULL if `iter` is NULL or the iterator is not on an entry.
+
+**Parameters**
+
+- `iter` — pointer to the iterator
 
 ---
 

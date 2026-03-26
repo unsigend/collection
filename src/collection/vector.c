@@ -199,3 +199,34 @@ static void destroy(struct vector *vec, size_t start, size_t end)
       vec->destroy(GET(vec, vec->buf, i));
   }
 }
+
+int vec_iter_init(struct vector_iter *iter, struct vector *vec)
+{
+  if (!iter || !vec)
+    return -1;
+  iter->vec = vec;
+  iter->idx = 0;
+  return 0;
+}
+
+void vec_iter_inc(struct vector_iter *iter)
+{
+  if (!iter)
+    return;
+  if (iter->idx < iter->vec->sz)
+    iter->idx++;
+}
+
+void vec_iter_dec(struct vector_iter *iter)
+{
+  if (!iter)
+    return;
+  iter->idx--;
+}
+
+void *vec_iter_get(struct vector_iter *iter)
+{
+  if (!iter)
+    return NULL;
+  return vec_at(iter->vec, iter->idx);
+}
