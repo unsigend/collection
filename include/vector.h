@@ -1,4 +1,4 @@
-/* collection - A generic data structure and algorithms library for modern C
+/* collection - A generic data structure and algorithms library
  * Copyright (C) 2025 Yixiang Qiu
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,13 @@
    locality. */
 #include <stddef.h>
 
-struct vector;
+struct vector {
+  char *buf;
+  size_t elesz;
+  size_t sz;
+  size_t cap;
+  void (*destroy)(void *);
+};
 
 #define vec_empty(vec) ((vec)->sz == 0) /* Check if the vector is empty */
 #define vec_raw(vec) ((vec)->buf)       /* Get the raw buffer of the vector */
@@ -35,21 +41,15 @@ struct vector;
 
 int vec_init(struct vector *vec, size_t elesz, void (*destroy)(void *));
 void vec_fini(struct vector *vec);
+
 void *vec_at(const struct vector *vec, size_t idx);
 int vec_resize(struct vector *vec, size_t newsz);
 int vec_shrink(struct vector *vec);
+
 int vec_pushback(struct vector *vec, void *ele);
 int vec_popback(struct vector *vec, void *dest);
 int vec_insert(struct vector *vec, size_t idx, void *ele);
 int vec_remove(struct vector *vec, size_t idx, void *dest);
 void vec_clear(struct vector *vec);
-
-struct vector {
-  char *buf;
-  size_t elesz;
-  size_t sz;
-  size_t cap;
-  void (*destroy)(void *);
-};
 
 #endif
