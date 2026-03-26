@@ -20,8 +20,17 @@
 
 #include <stddef.h>
 
-struct slist;
-struct slist_node;
+struct slist {
+  struct slist_node *head;
+  struct slist_node *tail;
+  size_t len;
+  void (*destroy)(void *);
+};
+
+struct slist_node {
+  void *data;
+  struct slist_node *next;
+};
 
 #define slist_empty(slist)                                                     \
   ((slist)->len == 0)                    /* Check if the slist is empty        \
@@ -52,16 +61,13 @@ int slist_removen(struct slist *slist, struct slist_node *node, void **dest);
 
 void slist_clear(struct slist *slist);
 
-struct slist {
-  struct slist_node *head;
-  struct slist_node *tail;
-  size_t len;
-  void (*destroy)(void *);
+struct slist_iter {
+  struct slist *slist;
+  struct slist_node *node;
 };
 
-struct slist_node {
-  void *data;
-  struct slist_node *next;
-};
+int slist_iter_init(struct slist_iter *iter, struct slist *slist);
+void slist_iter_inc(struct slist_iter *iter);
+void *slist_iter_get(struct slist_iter *iter);
 
 #endif

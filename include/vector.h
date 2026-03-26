@@ -52,4 +52,14 @@ int vec_insert(struct vector *vec, size_t idx, void *ele);
 int vec_remove(struct vector *vec, size_t idx, void *dest);
 void vec_clear(struct vector *vec);
 
+struct vector_iter {
+  struct vector *vec;
+  size_t idx;
+};
+
+int vec_iter_init(struct vector_iter *iter, struct vector *vec);
+void vec_iter_inc(struct vector_iter *iter);
+void vec_iter_dec(struct vector_iter *iter);
+void *vec_iter_get(struct vector_iter *iter);
+
 #endif

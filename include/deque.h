@@ -22,7 +22,14 @@
 
 #include <stddef.h>
 
-struct deque;
+struct deque {
+  char *buf;
+  size_t elesz;
+  size_t sz;
+  size_t cap;
+  size_t head;
+  void (*destroy)(void *);
+};
 
 #define deq_empty(deq) ((deq)->sz == 0) /* Check if the deque is empty */
 #define deq_size(deq) ((deq)->sz)       /* Get the size of the deque */
@@ -50,13 +57,14 @@ int deq_popfront(struct deque *deq, void *dest);
 
 void deq_clear(struct deque *deq);
 
-struct deque {
-  char *buf;
-  size_t elesz;
-  size_t sz;
-  size_t cap;
-  size_t head;
-  void (*destroy)(void *);
+struct deque_iter {
+  struct deque *deq;
+  size_t idx;
 };
+
+int deq_iter_init(struct deque_iter *iter, struct deque *deq);
+void deq_iter_inc(struct deque_iter *iter);
+void deq_iter_dec(struct deque_iter *iter);
+void *deq_iter_get(struct deque_iter *iter);
 
 #endif

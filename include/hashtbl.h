@@ -21,9 +21,26 @@
 #include <stddef.h>
 #include <stdint.h>
 
-struct hashtbl;
-struct hashtbl_node;
-struct hashtbl_fns;
+struct hashtbl_node {
+  void *key;
+  void *val;
+  struct hashtbl_node *next;
+};
+
+struct hashtbl_fns {
+  uint32_t (*hash)(void *);
+  int (*cmp)(void *, void *);
+  void (*destroy_key)(void *);
+  void (*destroy_val)(void *);
+};
+
+struct hashtbl {
+  struct hashtbl_node **buckets;
+  size_t bucketsz;
+  size_t sz;
+  float threshold; /* max load factor */
+  struct hashtbl_fns *fns;
+};
 
 #define hashtbl_empty(ht) ((ht)->sz == 0) /* Check if the hashtbl is empty */
 #define hashtbl_size(ht) ((ht)->sz)       /* Size of the hashtbl */
@@ -53,25 +70,14 @@ struct hashtbl_node *hashtbl_findnode(struct hashtbl *ht, void *key);
 
 void hashtbl_clear(struct hashtbl *ht);
 
-struct hashtbl_node {
-  void *key;
-  void *val;
-  struct hashtbl_node *next;
+struct hashtbl_iter {
+  struct hashtbl *ht;
+  size_t bucket;
+  struct hashtbl_node *node;
 };
 
-struct hashtbl_fns {
-  uint32_t (*hash)(void *);
-  int (*cmp)(void *, void *);
-  void (*destroy_key)(void *);
-  void (*destroy_val)(void *);
-};
-
-struct hashtbl {
-  struct hashtbl_node **buckets;
-  size_t bucketsz;
-  size_t sz;
-  float threshold; /* max load factor */
-  struct hashtbl_fns *fns;
-};
+int hashtbl_iter_init(struct hashtbl_iter *iter, struct hashtbl *ht);
+void hashtbl_iter_inc(struct hashtbl_iter *iter);
+struct hashtbl_node *hashtbl_iter_get(struct hashtbl_iter *iter);
 
 #endif

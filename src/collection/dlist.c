@@ -177,3 +177,42 @@ int dlist_remove(struct dlist *dlist, struct dlist_node *node, void **dest)
   dlist->len--;
   return 0;
 }
+
+int dlist_iter_init(struct dlist_iter *iter, struct dlist *dlist)
+{
+  if (!iter || !dlist)
+    return -1;
+  iter->dlist = dlist;
+  iter->node = dlist->head;
+  return 0;
+}
+
+int dlist_iter_initrev(struct dlist_iter *iter, struct dlist *dlist)
+{
+  if (!iter || !dlist)
+    return -1;
+  iter->dlist = dlist;
+  iter->node = dlist->tail;
+  return 0;
+}
+
+void dlist_iter_inc(struct dlist_iter *iter)
+{
+  if (!iter || !iter->node)
+    return;
+  iter->node = iter->node->next;
+}
+
+void dlist_iter_dec(struct dlist_iter *iter)
+{
+  if (!iter || !iter->node)
+    return;
+  iter->node = iter->node->prev;
+}
+
+void *dlist_iter_get(struct dlist_iter *iter)
+{
+  if (!iter)
+    return NULL;
+  return dlist_data(iter->node);
+}
