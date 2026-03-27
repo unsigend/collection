@@ -35,6 +35,8 @@ int sortins(void *base, size_t n, size_t sz,
 int sortqs(void *base, size_t n, size_t sz,
            int (*cmp)(void *, void *)); /* Quicksort */
 
+int sortheap(void *base, size_t n, size_t sz,
+             int (*cmp)(void *, void *)); /* Heap sort */
 #endif
 
 #endif
