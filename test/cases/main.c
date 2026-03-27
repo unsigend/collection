@@ -20,6 +20,7 @@ extern UTEST_SUITE(hashtbl);
 
 extern UTEST_SUITE(util);
 extern UTEST_SUITE(hash);
+extern UTEST_SUITE(sort);
 
 int main(int argc, char *argv[])
 {
@@ -40,6 +41,7 @@ int main(int argc, char *argv[])
 
   UTEST_ADDSUITE(util);
   UTEST_ADDSUITE(hash);
+  UTEST_ADDSUITE(sort);
 
   for (int i = 1; i < argc; i++) {
     if (strncmp(argv[i], "-j", 2) == 0) {
