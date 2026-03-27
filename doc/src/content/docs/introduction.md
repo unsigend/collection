@@ -39,12 +39,24 @@ make lib
 
 This creates a static library at `lib/libcollection.a`.
 
-### 3. Build Tests
+### 3. Run Tests
 
-Compile and run all tests:
+Build the library, then compile and run the full test suite:
 
 ```bash
 make test
+```
+
+Or build the library and run all tests in one step:
+
+```bash
+make all
+```
+
+Module-scoped tests use the `test-%` pattern (replace `NAME` with the module name), for example:
+
+```bash
+make test-vector
 ```
 
 ### 4. Use the Library
@@ -105,17 +117,20 @@ make test
 
 ## Available Make Targets
 
-| Target               | Description                                       |
-| -------------------- | ------------------------------------------------- |
-| `make help`          | Show available commands                           |
-| `make lib`           | Build the library                                 |
-| `make all`           | Build library                                     |
-| `make test`          | Build and run all tests                           |
-| `make test-[module]` | Run tests for specific module                     |
-| `make test-bench`    | Build and run benchmarks                          |
-| `make docker`        | Run Docker container with development environment |
-| `make clean`         | Remove all build artifacts                        |
-| `make flags`         | Show the compile and link flags                   |
+Running `make` with no target defaults to `help` and prints the same usage as `make help`.
+
+| Target               | Description                                                |
+| -------------------- | ---------------------------------------------------------- |
+| `make help`          | Show available commands                                    |
+| `make all`           | Build the library and run all tests                        |
+| `make lib`           | Build the library                                          |
+| `make test`          | Build and run all tests                                    |
+| `make test-NAME`     | Build and run tests for a specific module                  |
+| `make clean`         | Clean the build artifacts                                  |
+| `make flags`         | Show the compile and link flags                            |
+| `make clang`         | Run clang to generate compile commands                     |
+| `make format`        | Format the code                                            |
+| `make docker`        | Run Docker container with development environment          |
 
 ## Contributing
 
