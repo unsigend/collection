@@ -2,8 +2,8 @@
 #include "unit/edge.h"
 #include "unit/large.h"
 
-/* Options: sortins, sortqs */
-sortfunc sort_under_test = sortins;
+/* Options: sortins, sortqs, sortheap */
+sortfunc sort_under_test = sortheap;
 
 UTEST_SUITE(sort)
 {

@@ -15,28 +15,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef COL_SORT_H
-#define COL_SORT_H
-
+#include <heap.h>
 #include <stddef.h>
 
-/* Default sort implementation in collection, based on introsort */
-int sort(void *base, size_t n, size_t sz, int (*cmp)(void *, void *));
+#define GET(base, idx, sz) ((void *)((char *)(base) + (idx) * (sz)))
 
-#ifdef COL_ALL_SORTS
+int sortheap(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))
+{
+  if (!base || !sz || !cmp)
+    return -1;
 
-/* Explicitly enable all sorts, these are internal raw sorts without specific
-   optimizations, so they are not recommended for general use, use the default
-   generic sort instead */
+  struct heap h;
+  if (heap_init(&h, sz, cmp, NULL) == -1)
+    return -1;
 
-int sortins(void *base, size_t n, size_t sz,
-            int (*cmp)(void *, void *)); /* Insertion sort */
+  for (size_t i = 0; i < n; i++) {
+    if (heap_push(&h, GET(base, i, sz)) == -1)
+      return -1;
+  }
 
-int sortqs(void *base, size_t n, size_t sz,
-           int (*cmp)(void *, void *)); /* Quicksort */
+  for (size_t i = 0; i < n; i++) {
+    if (heap_pop(&h, GET(base, i, sz)) == -1)
+      return -1;
+  }
 
-int sortheap(void *base, size_t n, size_t sz,
-             int (*cmp)(void *, void *)); /* Heap sort */
-#endif
-
-#endif
+  heap_fini(&h);
+  return 0;
+}
