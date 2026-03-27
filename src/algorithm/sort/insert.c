@@ -16,11 +16,9 @@
  */
 
 #include <errno.h>
-#include <sort.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <util.h>
 
 #define GET(base, idx, sz) ((void *)((char *)(base) + (idx) * (sz)))
 #define THRESHOLD 256

@@ -2,6 +2,22 @@
 #include <limits.h>
 
 typedef struct {
+  int id;
+  char tag;
+} sort_massrec;
+
+static int sort_cmp_massrec(void *a, void *b)
+{
+  const sort_massrec *x = (const sort_massrec *)a;
+  const sort_massrec *y = (const sort_massrec *)b;
+  if (x->id < y->id)
+    return -1;
+  if (x->id > y->id)
+    return 1;
+  return (int)x->tag - (int)y->tag;
+}
+
+typedef struct {
   int k;
   unsigned char tail[300 - sizeof(int)];
 } sort_big300;
@@ -56,6 +72,24 @@ UTEST_CASE(edge)
   }
 
   {
+    double v = 2.5;
+    EXPECT_EQ_INT(sort_under_test(&v, 1, sizeof v, sort_cmp_double), 0);
+    EXPECT_EQ_DOUBLE(v, 2.5);
+  }
+
+  {
+    unsigned v = 1u;
+    EXPECT_EQ_INT(sort_under_test(&v, 1, sizeof v, sort_cmp_uint), 0);
+    EXPECT_EQ_UINT(v, 1u);
+  }
+
+  {
+    int buf[] = {INT_MAX, INT_MAX, INT_MIN};
+    EXPECT_EQ_INT(sort_under_test(buf, 3, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 3, sizeof *buf, sort_cmp_int));
+  }
+
+  {
     int v = INT_MIN;
     EXPECT_EQ_INT(sort_under_test(&v, 1, sizeof v, sort_cmp_int), 0);
     EXPECT_EQ_INT(v, INT_MIN);
@@ -79,6 +113,11 @@ UTEST_CASE(edge)
 
   {
     EXPECT_EQ_INT(sort_under_test(NULL, 3, sizeof(int), sort_cmp_int), -1);
+  }
+
+  {
+    int buf[] = {1, 2, 3};
+    EXPECT_EQ_INT(sort_under_test(buf, 3, sizeof *buf, NULL), -1);
   }
 
   {
@@ -112,6 +151,101 @@ UTEST_CASE(edge)
     int buf[] = {1, 0, 1, 0, 1, 0, 1, 0, 1};
     EXPECT_EQ_INT(sort_under_test(buf, 9, sizeof *buf, sort_cmp_int), 0);
     EXPECT_TRUE(sort_sorted(buf, 9, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[32];
+    size_t i;
+
+    for (i = 0; i < 32; i++)
+      buf[i] = 12345;
+    EXPECT_EQ_INT(sort_under_test(buf, 32, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 32, sizeof *buf, sort_cmp_int));
+    for (i = 0; i < 32; i++)
+      EXPECT_EQ_INT(buf[i], 12345);
+  }
+
+  {
+    int buf[20];
+    size_t i;
+
+    for (i = 0; i < 20; i++)
+      buf[i] = 0;
+    EXPECT_EQ_INT(sort_under_test(buf, 20, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 20, sizeof *buf, sort_cmp_int));
+    for (i = 0; i < 20; i++)
+      EXPECT_EQ_INT(buf[i], 0);
+  }
+
+  {
+    double buf[18];
+    size_t i;
+
+    for (i = 0; i < 18; i++)
+      buf[i] = -0.25;
+    EXPECT_EQ_INT(sort_under_test(buf, 18, sizeof *buf, sort_cmp_double), 0);
+    EXPECT_TRUE(sort_sorted(buf, 18, sizeof *buf, sort_cmp_double));
+    for (i = 0; i < 18; i++)
+      EXPECT_EQ_DOUBLE(buf[i], -0.25);
+  }
+
+  {
+    int buf[] = {7, 7, 7, 7, 7, 1, 7, 7, 7, 7, 7, 7, 7};
+    EXPECT_EQ_INT(sort_under_test(buf, 13, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 13, sizeof *buf, sort_cmp_int));
+    EXPECT_EQ_INT(buf[0], 1);
+    EXPECT_EQ_INT(buf[12], 7);
+  }
+
+  {
+    int buf[] = {2, 2, 2, 2, 9, 2, 2, 2, 2, 9, 2};
+    EXPECT_EQ_INT(sort_under_test(buf, 11, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 11, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {
+        5, 5, 5, 0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    };
+    EXPECT_EQ_INT(sort_under_test(buf, 18, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 18, sizeof *buf, sort_cmp_int));
+    EXPECT_EQ_INT(buf[0], 0);
+  }
+
+  {
+    int buf[] = {
+        4, 4, 4, 8, 4, 4, 4, 4, 1, 4, 4, 4, 4, 4, 4, 4,
+    };
+    EXPECT_EQ_INT(sort_under_test(buf, 16, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 16, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {
+        3, 3, 100, 3, 3, 3, -50, 3, 3, 3, 3, 3, 3, 3,
+    };
+    EXPECT_EQ_INT(sort_under_test(buf, 14, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 14, sizeof *buf, sort_cmp_int));
+    EXPECT_EQ_INT(buf[0], -50);
+    EXPECT_EQ_INT(buf[13], 100);
+  }
+
+  {
+    int buf[] = {1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1};
+    EXPECT_EQ_INT(sort_under_test(buf, 12, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 12, sizeof *buf, sort_cmp_int));
+    EXPECT_EQ_INT(buf[0], 1);
+    EXPECT_EQ_INT(buf[11], 2);
+  }
+
+  {
+    sort_massrec buf[] = {
+        {10, 'z'}, {10, 'z'}, {10, 'z'}, {2, 'a'},
+        {10, 'z'}, {10, 'z'}, {10, 'z'}, {10, 'z'},
+        {2, 'b'},  {10, 'z'}, {10, 'z'},
+    };
+    EXPECT_EQ_INT(sort_under_test(buf, 11, sizeof *buf, sort_cmp_massrec), 0);
+    EXPECT_TRUE(sort_sorted(buf, 11, sizeof *buf, sort_cmp_massrec));
   }
 
   {
