@@ -97,6 +97,8 @@ endif
 .PHONY: all lib test test-% clean help docker flags clang format
 
 all: lib
+	@$(MAKE) -C $(TEST_PATH) test
+	
 lib: $(LIB_TARGET)
 
 test: lib
