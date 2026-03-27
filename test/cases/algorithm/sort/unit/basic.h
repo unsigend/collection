@@ -32,6 +32,11 @@ static int sort_cmp_elem512(void *a, void *b)
 UTEST_CASE(basic)
 {
   {
+    int buf[] = {1, 2, 3, 4, 5};
+    EXPECT_EQ_INT(sort_under_test(buf, 5, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 5, sizeof *buf, sort_cmp_int));
+  }
+  {
     int buf[] = {1, 2, 3, 4};
     EXPECT_EQ_INT(sort_under_test(buf, 4, sizeof *buf, sort_cmp_int), 0);
     EXPECT_TRUE(sort_sorted(buf, 4, sizeof *buf, sort_cmp_int));
@@ -87,8 +92,8 @@ UTEST_CASE(basic)
   }
 
   {
-    int64_t buf[] = {
-        ((int64_t)1) << 40, -(((int64_t)1) << 41), 0, ((int64_t)1) << 40};
+    int64_t buf[] = {((int64_t)1) << 40, -(((int64_t)1) << 41), 0,
+                     ((int64_t)1) << 40};
     EXPECT_EQ_INT(sort_under_test(buf, 4, sizeof *buf, sort_cmp_i64), 0);
     EXPECT_TRUE(sort_sorted(buf, 4, sizeof *buf, sort_cmp_i64));
   }
@@ -97,6 +102,18 @@ UTEST_CASE(basic)
     int buf[] = {8, 7, 6, 5, 4, 3, 2, 1};
     EXPECT_EQ_INT(sort_under_test(buf, 8, sizeof *buf, sort_cmp_int), 0);
     EXPECT_TRUE(sort_sorted(buf, 8, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {3, 1, 2, 4, 5};
+    EXPECT_EQ_INT(sort_under_test(buf, 5, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 5, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {2, 5, 1, 4, 3};
+    EXPECT_EQ_INT(sort_under_test(buf, 5, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 5, sizeof *buf, sort_cmp_int));
   }
 
   {
@@ -118,8 +135,7 @@ UTEST_CASE(basic)
   }
 
   {
-    sort_rec buf[] = {
-        {100, 'z'}, {100, 'a'}, {50, 'm'}, {50, 'n'}, {200, 'a'}};
+    sort_rec buf[] = {{100, 'z'}, {100, 'a'}, {50, 'm'}, {50, 'n'}, {200, 'a'}};
     EXPECT_EQ_INT(sort_under_test(buf, 5, sizeof *buf, sort_cmp_rec), 0);
     EXPECT_TRUE(sort_sorted(buf, 5, sizeof *buf, sort_cmp_rec));
   }
@@ -147,8 +163,7 @@ UTEST_CASE(basic)
       size_t j;
       k = buf[i].key;
       for (j = 0; j < sizeof buf[i].body; j++)
-        EXPECT_EQ_UCHAR(buf[i].body[j],
-                        (unsigned char)((k + (int)j) & 0xFF));
+        EXPECT_EQ_UCHAR(buf[i].body[j], (unsigned char)((k + (int)j) & 0xFF));
     }
   }
 
@@ -169,8 +184,73 @@ UTEST_CASE(basic)
       size_t j;
       int kk = buf[i].key;
       for (j = 0; j < sizeof buf[i].body; j++)
-        EXPECT_EQ_UCHAR(buf[i].body[j],
-                        (unsigned char)((kk + (int)j) & 0xFF));
+        EXPECT_EQ_UCHAR(buf[i].body[j], (unsigned char)((kk + (int)j) & 0xFF));
     }
+  }
+
+  {
+    int buf[] = {0, 1, 2, 9, 3, 4};
+    EXPECT_EQ_INT(sort_under_test(buf, 6, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 6, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {5, 4, 3, 10, 11, 12};
+    EXPECT_EQ_INT(sort_under_test(buf, 6, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 6, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {0, 1, 2, 3, 4, 100, 6, 5, 7, 8, 9};
+    EXPECT_EQ_INT(sort_under_test(buf, 11, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 11, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {9, 8, 7, 6, 5, 0, 1, 2, 3, 4};
+    EXPECT_EQ_INT(sort_under_test(buf, 10, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 10, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {20, 21, 22, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    EXPECT_EQ_INT(sort_under_test(buf, 13, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 13, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {0, 1, 2, 3, 4, 5, 6, 7, 9, 8};
+    EXPECT_EQ_INT(sort_under_test(buf, 10, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 10, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {0, 2, 1, 3, 4, 5, 7, 6, 8};
+    EXPECT_EQ_INT(sort_under_test(buf, 9, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 9, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {3, 3, 1, 2, 4, 4, 5, 5};
+    EXPECT_EQ_INT(sort_under_test(buf, 8, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 8, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {4, 2, 6, 1, 5, 3, 0};
+    EXPECT_EQ_INT(sort_under_test(buf, 7, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 7, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {1, 3, 2, 5, 4, 7, 6, 9, 8, 10, 11};
+    EXPECT_EQ_INT(sort_under_test(buf, 11, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 11, sizeof *buf, sort_cmp_int));
+  }
+
+  {
+    int buf[] = {0, 10, 20, 30, 40, 5, 15, 25, 35, 45, 50, 55};
+    EXPECT_EQ_INT(sort_under_test(buf, 12, sizeof *buf, sort_cmp_int), 0);
+    EXPECT_TRUE(sort_sorted(buf, 12, sizeof *buf, sort_cmp_int));
   }
 }

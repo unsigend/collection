@@ -23,10 +23,17 @@
 /* Default sort implementation in collection, based on introsort */
 int sort(void *base, size_t n, size_t sz, int (*cmp)(void *, void *));
 
-/* Explicitly enable all sorts */
 #ifdef COL_ALL_SORTS
 
-int sortins(void *base, size_t n, size_t sz, int (*cmp)(void *, void *));
+/* Explicitly enable all sorts, these are internal raw sorts without specific
+   optimizations, so they are not recommended for general use, use the default
+   generic sort instead */
+
+int sortins(void *base, size_t n, size_t sz,
+            int (*cmp)(void *, void *)); /* Insertion sort */
+
+int sortqs(void *base, size_t n, size_t sz,
+           int (*cmp)(void *, void *)); /* Quicksort */
 
 #endif
 
