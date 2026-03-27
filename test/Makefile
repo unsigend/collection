@@ -75,6 +75,7 @@ endif
 
 CC_DEPS_FLAGS := -MMD -MP -MF
 LD_FLAGS := -L$(LIB_PATH) -l$(LIB_NAME)
+LD_FLAGS += -lm
 ifneq ($(DEBUG_FLAG),)
 LD_FLAGS += -fsanitize=address,undefined,bounds
 endif
