@@ -50,7 +50,7 @@ static inline void shiftright(struct deque *deq, size_t dest, size_t n);
 static void flatten(struct deque *deq, void *buf);
 
 /* Destroy the elements in the range [start, end) */
-static void destroy(struct deque *deq, size_t start, size_t end);
+static void destroy_r(struct deque *deq, size_t start, size_t end);
 
 static int expand(struct deque *deq);
 
@@ -106,7 +106,7 @@ int deq_resize(struct deque *deq, size_t newsize)
       return 0;
     }
   } else {
-    destroy(deq, newsize, deq->sz);
+    destroy_r(deq, newsize, deq->sz);
     deq->sz = newsize;
     return 0;
   }
@@ -299,7 +299,7 @@ void deq_clear(struct deque *deq)
 {
   if (!deq)
     return;
-  destroy(deq, 0, deq->sz);
+  destroy_r(deq, 0, deq->sz);
   deq->sz = 0;
   deq->head = 0;
 }
@@ -319,7 +319,7 @@ static int expand(struct deque *deq)
   return 0;
 }
 
-static void destroy(struct deque *deq, size_t start, size_t end)
+static void destroy_r(struct deque *deq, size_t start, size_t end)
 {
   if (!deq || start >= end || start >= deq->sz)
     return;
