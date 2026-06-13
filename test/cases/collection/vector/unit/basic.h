@@ -1,5 +1,5 @@
-#include <utest.h>
 #include <string.h>
+#include <utest.h>
 #include <vector.h>
 
 static int dtor_n;

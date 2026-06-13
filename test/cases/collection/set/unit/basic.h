@@ -4,10 +4,7 @@
 #include <string.h>
 #include <utest.h>
 
-static uint32_t hash_int(void *k)
-{
-  return (uint32_t)(*(int *)k);
-}
+static uint32_t hash_int(void *k) { return (uint32_t)(*(int *)k); }
 
 static int cmp_int(void *a, void *b)
 {
@@ -43,10 +40,7 @@ static void dtor_inc(void *p)
   dtor_n++;
 }
 
-static void free_ele(void *p)
-{
-  free(p);
-}
+static void free_ele(void *p) { free(p); }
 
 UTEST_CASE(basic)
 {

@@ -1,6 +1,6 @@
+#include <stack.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stack.h>
 #include <utest.h>
 
 struct intg_pair {
@@ -367,7 +367,8 @@ UTEST_CASE(integration)
     size_t idx;
 
     intg_heap_dtor_n = 0;
-    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor), 0);
+    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor),
+                  0);
     for (idx = 0; idx < 3; idx++) {
       h.p = (int *)malloc(sizeof(int));
       EXPECT_NOTNULL(h.p);
@@ -386,7 +387,8 @@ UTEST_CASE(integration)
     struct intg_heap_box h, out;
 
     intg_heap_dtor_n = 0;
-    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor), 0);
+    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor),
+                  0);
     h.p = (int *)malloc(sizeof(int));
     EXPECT_NOTNULL(h.p);
     *h.p = 77;
@@ -408,7 +410,8 @@ UTEST_CASE(integration)
     struct intg_heap_box h0, h1, out;
 
     intg_heap_dtor_n = 0;
-    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor), 0);
+    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor),
+                  0);
     h0.p = (int *)malloc(sizeof(int));
     h1.p = (int *)malloc(sizeof(int));
     EXPECT_NOTNULL(h0.p);
@@ -433,7 +436,8 @@ UTEST_CASE(integration)
     size_t idx;
 
     intg_heap_dtor_n = 0;
-    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor), 0);
+    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor),
+                  0);
     for (idx = 0; idx < 4; idx++) {
       h.p = (int *)malloc(sizeof(int));
       EXPECT_NOTNULL(h.p);
@@ -476,7 +480,8 @@ UTEST_CASE(integration)
     struct intg_heap_box h0, h1, h2, out;
 
     intg_heap_dtor_n = 0;
-    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor), 0);
+    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor),
+                  0);
     h0.p = (int *)malloc(sizeof(int));
     h1.p = (int *)malloc(sizeof(int));
     EXPECT_NOTNULL(h0.p);
@@ -505,7 +510,8 @@ UTEST_CASE(integration)
     struct intg_heap_box h;
 
     intg_heap_dtor_n = 0;
-    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor), 0);
+    EXPECT_EQ_INT(stack_init(&s, sizeof(struct intg_heap_box), intg_heap_dtor),
+                  0);
     h.p = (int *)malloc(sizeof(int));
     *h.p = 5;
     stack_push(&s, &h);

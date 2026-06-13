@@ -30,10 +30,7 @@ static inline int sort_sorted(void *base, size_t n, size_t sz,
 }
 
 static uint64_t sort_rng_u64;
-static inline void sort_rng_seed(uint64_t s)
-{
-  sort_rng_u64 = s ? s : 1;
-}
+static inline void sort_rng_seed(uint64_t s) { sort_rng_u64 = s ? s : 1; }
 
 static inline uint32_t sort_rng_u32(void)
 {

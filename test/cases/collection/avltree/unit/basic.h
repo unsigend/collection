@@ -34,15 +34,9 @@ static void dtor_val_inc(void *p)
   dtor_val_n++;
 }
 
-static void free_key(void *p)
-{
-  free(p);
-}
+static void free_key(void *p) { free(p); }
 
-static void free_val(void *p)
-{
-  free(p);
-}
+static void free_val(void *p) { free(p); }
 
 UTEST_CASE(basic)
 {

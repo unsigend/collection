@@ -1,7 +1,7 @@
-#include <utest.h>
 #include <errno.h>
 #include <stdint.h>
 #include <string.h>
+#include <utest.h>
 #include <vector.h>
 
 static int edg_dtor_n;

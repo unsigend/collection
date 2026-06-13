@@ -4,10 +4,7 @@
 #include <string.h>
 #include <utest.h>
 
-static uint32_t edg_hash_int(void *k)
-{
-  return (uint32_t)(*(int *)k);
-}
+static uint32_t edg_hash_int(void *k) { return (uint32_t)(*(int *)k); }
 
 static int edg_cmp_int(void *a, void *b)
 {
@@ -41,10 +38,7 @@ static void edg_val_dtor_inc(void *p)
   edg_val_dtor_n++;
 }
 
-static void edg_free_key(void *p)
-{
-  free(p);
-}
+static void edg_free_key(void *p) { free(p); }
 
 UTEST_CASE(edge)
 {
@@ -117,7 +111,8 @@ UTEST_CASE(edge)
 
   {
     struct hashtbl ht;
-    struct hashtbl_fns fns = {edg_hash_int, edg_cmp_int, NULL, edg_val_dtor_inc};
+    struct hashtbl_fns fns = {edg_hash_int, edg_cmp_int, NULL,
+                              edg_val_dtor_inc};
     int k, v0, v1;
     void *oldv;
 
@@ -181,7 +176,8 @@ UTEST_CASE(edge)
       keys[idx] = idx;
       vals[idx] = idx * 100;
       EXPECT_EQ_INT(hashtbl_insert(&ht, &keys[idx], &vals[idx]), 0);
-      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                       (double)hashtbl_threshold(&ht));
     }
     EXPECT_EQ_UINT(hashtbl_size(&ht), 12);
     for (idx = 0; idx < 12; idx++) {
@@ -270,13 +266,15 @@ UTEST_CASE(edge)
     EXPECT_EQ_INT(hashtbl_setthreshold(&ht, 0.9f, &old_b), 0);
     EXPECT_GE_DOUBLE((double)old_b, 0.24);
     EXPECT_LE_DOUBLE((double)old_b, 0.26);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                     (double)hashtbl_threshold(&ht));
     hashtbl_fini(&ht);
   }
 
   {
     struct hashtbl ht;
-    struct hashtbl_fns fns = {edg_hash_int, edg_cmp_int, edg_key_dtor_inc, edg_val_dtor_inc};
+    struct hashtbl_fns fns = {edg_hash_int, edg_cmp_int, edg_key_dtor_inc,
+                              edg_val_dtor_inc};
     int k, v;
 
     edg_key_dtor_n = 0;
@@ -293,7 +291,8 @@ UTEST_CASE(edge)
 
   {
     struct hashtbl ht;
-    struct hashtbl_fns fns = {edg_hash_int, edg_cmp_int, edg_key_dtor_inc, NULL};
+    struct hashtbl_fns fns = {edg_hash_int, edg_cmp_int, edg_key_dtor_inc,
+                              NULL};
     int k, v;
     void *outv;
 
@@ -311,7 +310,8 @@ UTEST_CASE(edge)
 
   {
     struct hashtbl ht;
-    struct hashtbl_fns fns = {edg_hash_int, edg_cmp_int, NULL, edg_val_dtor_inc};
+    struct hashtbl_fns fns = {edg_hash_int, edg_cmp_int, NULL,
+                              edg_val_dtor_inc};
     int k, v;
     void *outv;
 
@@ -339,7 +339,8 @@ UTEST_CASE(edge)
       k = step + 1000;
       v = step;
       EXPECT_EQ_INT(hashtbl_insert(&ht, &k, &v), 0);
-      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                       (double)hashtbl_threshold(&ht));
     }
     hashtbl_fini(&ht);
   }

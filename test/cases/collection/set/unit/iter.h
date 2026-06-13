@@ -2,10 +2,7 @@
 #include <stdint.h>
 #include <utest.h>
 
-static uint32_t iter_hash_int(void *k)
-{
-  return (uint32_t)(*(int *)k);
-}
+static uint32_t iter_hash_int(void *k) { return (uint32_t)(*(int *)k); }
 
 static int iter_cmp_int(void *a, void *b)
 {

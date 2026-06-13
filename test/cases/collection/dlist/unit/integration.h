@@ -267,7 +267,8 @@ UTEST_CASE(integration)
     EXPECT_EQ_INT(dlist_pushback(&d, &n2), 0);
     EXPECT_EQ_UINT(dlist_size(&d), 3);
     EXPECT_EQ_INT((int)((struct intg_nested *)dlist_front(&d))->tag, 7);
-    EXPECT_EQ_INT(((struct intg_nested *)dlist_data(dlist_next(d.head)))->id, 800);
+    EXPECT_EQ_INT(((struct intg_nested *)dlist_data(dlist_next(d.head)))->id,
+                  800);
     EXPECT_EQ_INT(((struct intg_nested *)dlist_back(&d))->id, 900);
     out = NULL;
     EXPECT_EQ_INT(dlist_popback(&d, &out), 0);

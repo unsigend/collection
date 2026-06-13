@@ -4,10 +4,7 @@
 #include <string.h>
 #include <utest.h>
 
-static uint32_t hash_int_key(void *k)
-{
-  return (uint32_t)(*(int *)k);
-}
+static uint32_t hash_int_key(void *k) { return (uint32_t)(*(int *)k); }
 
 static int cmp_int_key(void *a, void *b)
 {
@@ -50,15 +47,9 @@ static void dtor_val_inc(void *p)
   dtor_val_n++;
 }
 
-static void free_key(void *p)
-{
-  free(p);
-}
+static void free_key(void *p) { free(p); }
 
-static void free_val(void *p)
-{
-  free(p);
-}
+static void free_val(void *p) { free(p); }
 
 UTEST_CASE(basic)
 {
@@ -84,7 +75,8 @@ UTEST_CASE(basic)
     EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
     EXPECT_TRUE(hashtbl_empty(&ht));
     EXPECT_EQ_UINT(hashtbl_size(&ht), 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                     (double)hashtbl_threshold(&ht));
     EXPECT_NULL(hashtbl_find(&ht, (void *)1));
     EXPECT_NULL(hashtbl_findnode(&ht, (void *)1));
     EXPECT_EQ_INT(hashtbl_remove(&ht, (void *)1, NULL), -1);
@@ -96,7 +88,8 @@ UTEST_CASE(basic)
     EXPECT_EQ_INT(hashtbl_setthreshold(&ht, 0.0f, NULL), -1);
     EXPECT_EQ_INT(hashtbl_setthreshold(&ht, -1.0f, NULL), -1);
     EXPECT_EQ_INT(hashtbl_setthreshold(&ht, 0.5f, &old_th), 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                     (double)hashtbl_threshold(&ht));
     hashtbl_fini(NULL);
     hashtbl_clear(&ht);
     hashtbl_fini(&ht);
@@ -114,7 +107,8 @@ UTEST_CASE(basic)
     EXPECT_EQ_INT(hashtbl_insert(&ht, &k, &v), 0);
     EXPECT_FALSE(hashtbl_empty(&ht));
     EXPECT_EQ_UINT(hashtbl_size(&ht), 1);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                     (double)hashtbl_threshold(&ht));
     fv = hashtbl_find(&ht, &k);
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_INT(*(int *)fv, v);
@@ -137,7 +131,8 @@ UTEST_CASE(basic)
     EXPECT_EQ_INT(hashtbl_insert(&ht, &k1, &v1), 0);
     EXPECT_EQ_INT(hashtbl_insert(&ht, &k2, &v2), 0);
     EXPECT_EQ_UINT(hashtbl_size(&ht), 2);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                     (double)hashtbl_threshold(&ht));
     n = hashtbl_findnode(&ht, &k2);
     EXPECT_NOTNULL(n);
     EXPECT_EQ_PTR(n->key, &k2);
@@ -172,7 +167,8 @@ UTEST_CASE(basic)
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_PTR(fv, &v0);
     EXPECT_EQ_INT(hashtbl_update(&ht, &k, &v1, NULL), 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                     (double)hashtbl_threshold(&ht));
     hashtbl_fini(&ht);
   }
 
@@ -215,7 +211,8 @@ UTEST_CASE(basic)
     hashtbl_clear(&ht);
     EXPECT_TRUE(hashtbl_empty(&ht));
     EXPECT_EQ_UINT(hashtbl_size(&ht), 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                     (double)hashtbl_threshold(&ht));
     hashtbl_fini(&ht);
   }
 
@@ -238,7 +235,8 @@ UTEST_CASE(basic)
     vb = 2;
     EXPECT_EQ_INT(hashtbl_insert(&ht, ka, &va), 0);
     EXPECT_EQ_INT(hashtbl_insert(&ht, kb, &vb), 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                     (double)hashtbl_threshold(&ht));
     fv = hashtbl_find(&ht, ka);
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_INT(*(int *)fv, va);
@@ -274,7 +272,8 @@ UTEST_CASE(basic)
         free(pv);
       }
       EXPECT_EQ_INT(ins, 0);
-      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                       (double)hashtbl_threshold(&ht));
     }
     EXPECT_EQ_UINT(hashtbl_size(&ht), 8);
     for (idx = 0; idx < 8; idx++) {
@@ -335,7 +334,8 @@ UTEST_CASE(basic)
 
   {
     struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, dtor_key_inc, dtor_val_inc};
+    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, dtor_key_inc,
+                              dtor_val_inc};
     int k, v;
 
     dtor_key_n = 0;
@@ -347,7 +347,8 @@ UTEST_CASE(basic)
     hashtbl_clear(&ht);
     EXPECT_EQ_INT(dtor_key_n, 1);
     EXPECT_EQ_INT(dtor_val_n, 1);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                     (double)hashtbl_threshold(&ht));
     hashtbl_fini(&ht);
   }
 
@@ -398,12 +399,14 @@ UTEST_CASE(basic)
     EXPECT_EQ_INT(hashtbl_insert(&ht, &kbuf[0], &vbuf[0]), 0);
     bsz0 = hashtbl_bucketsz(&ht);
     EXPECT_GT_UINT(bsz0, 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                     (double)hashtbl_threshold(&ht));
     for (idx = 1; idx < 256; idx++) {
       kbuf[idx] = idx;
       vbuf[idx] = idx;
       EXPECT_EQ_INT(hashtbl_insert(&ht, &kbuf[idx], &vbuf[idx]), 0);
-      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht), (double)hashtbl_threshold(&ht));
+      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
+                       (double)hashtbl_threshold(&ht));
     }
     bsz1 = hashtbl_bucketsz(&ht);
     EXPECT_GT_UINT(bsz1, bsz0);
