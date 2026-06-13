@@ -18,6 +18,7 @@ extern UTEST_SUITE(dlist);
 extern UTEST_SUITE(heap);
 extern UTEST_SUITE(hashtbl);
 extern UTEST_SUITE(avltree);
+extern UTEST_SUITE(set);
 
 extern UTEST_SUITE(util);
 extern UTEST_SUITE(hash);
@@ -40,6 +41,7 @@ int main(int argc, char *argv[])
   UTEST_ADDSUITE(heap);
   UTEST_ADDSUITE(hashtbl);
   UTEST_ADDSUITE(avltree);
+  UTEST_ADDSUITE(set);
 
   UTEST_ADDSUITE(util);
   UTEST_ADDSUITE(hash);
