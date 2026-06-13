@@ -4,7 +4,7 @@
 
 # collection
 
-**v1.0.0**
+**v1.1.0**
 
 Generic data structures and algorithms for C, STL-inspired: void-pointer generics, optional custom destructors, static or shared builds via `config/config.mk`.
 
