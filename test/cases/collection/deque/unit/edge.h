@@ -1,7 +1,7 @@
+#include <deque.h>
 #include <errno.h>
 #include <stdint.h>
 #include <string.h>
-#include <deque.h>
 #include <utest.h>
 
 static int edg_dtor_n;

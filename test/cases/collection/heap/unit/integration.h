@@ -209,8 +209,8 @@ UTEST_CASE(integration)
     struct heap h;
     struct intg_pair a, b, c, d0, out;
 
-    EXPECT_EQ_INT(heap_init(&h, sizeof(struct intg_pair), intg_cmp_pair_x, NULL),
-                  0);
+    EXPECT_EQ_INT(
+        heap_init(&h, sizeof(struct intg_pair), intg_cmp_pair_x, NULL), 0);
     a.x = 40;
     a.y = 1;
     b.x = 10;
@@ -263,8 +263,8 @@ UTEST_CASE(integration)
     struct heap h;
     struct intg_strkv s0, s1, s2, out;
 
-    EXPECT_EQ_INT(heap_init(&h, sizeof(struct intg_strkv), intg_cmp_strkv, NULL),
-                  0);
+    EXPECT_EQ_INT(
+        heap_init(&h, sizeof(struct intg_strkv), intg_cmp_strkv, NULL), 0);
     strcpy(s0.k, "z");
     s0.ord = 1;
     strcpy(s1.k, "a");
@@ -316,9 +316,9 @@ UTEST_CASE(integration)
     int buf[40];
     int out;
     int i;
-    static const int exp_seq[20] = {
-        50,  51,  52,  53,  54,  55,  56,  57,  58,  59,
-        105, 106, 107, 108, 109, 110, 111, 112, 113, 114};
+    static const int exp_seq[20] = {50,  51,  52,  53,  54,  55,  56,
+                                    57,  58,  59,  105, 106, 107, 108,
+                                    109, 110, 111, 112, 113, 114};
 
     EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, NULL), 0);
     for (i = 0; i < 15; i++) {
@@ -350,7 +350,8 @@ UTEST_CASE(integration)
     int i;
 
     intg_dtor_n = 0;
-    EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, intg_dtor_inc), 0);
+    EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, intg_dtor_inc),
+                  0);
     for (i = 0; i < 50; i++) {
       buf[i] = i;
       EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);

@@ -3,10 +3,7 @@
 #include <stdlib.h>
 #include <utest.h>
 
-static uint32_t edg_hash_int(void *k)
-{
-  return (uint32_t)(*(int *)k);
-}
+static uint32_t edg_hash_int(void *k) { return (uint32_t)(*(int *)k); }
 
 static int edg_cmp_int(void *a, void *b)
 {
@@ -33,10 +30,7 @@ static void edg_dtor_inc(void *p)
   edg_dtor_n++;
 }
 
-static void edg_free_ele(void *p)
-{
-  free(p);
-}
+static void edg_free_ele(void *p) { free(p); }
 
 UTEST_CASE(edge)
 {

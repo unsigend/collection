@@ -393,7 +393,8 @@ UTEST_CASE(integration)
     EXPECT_EQ_INT(slist_pushback(&s, &n2), 0);
     EXPECT_EQ_UINT(slist_size(&s), 3);
     EXPECT_EQ_INT((int)((struct intg_nested *)slist_front(&s))->tag, 7);
-    EXPECT_EQ_INT(((struct intg_nested *)slist_data(slist_next(s.head)))->id, 800);
+    EXPECT_EQ_INT(((struct intg_nested *)slist_data(slist_next(s.head)))->id,
+                  800);
     EXPECT_EQ_INT(((struct intg_nested *)slist_back(&s))->id, 900);
     out = NULL;
     EXPECT_EQ_INT(slist_popfront(&s, &out), 0);
@@ -483,7 +484,8 @@ UTEST_CASE(integration)
     n0 = s.head;
     EXPECT_NOTNULL(n0);
     EXPECT_EQ_INT(slist_insertn(&s, n0, w1), 0);
-    EXPECT_EQ_INT(*((struct intg_wrap *)slist_data(slist_next(n0)))->box->p, 202);
+    EXPECT_EQ_INT(*((struct intg_wrap *)slist_data(slist_next(n0)))->box->p,
+                  202);
     out = NULL;
     EXPECT_EQ_INT(slist_removen(&s, n0, &out), 0);
     EXPECT_EQ_INT(intg_wrap_dtor_n, 0);

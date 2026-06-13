@@ -17,15 +17,9 @@ static void intg_dtor_inc(void *p)
   intg_dtor_n++;
 }
 
-static void intg_free_ele(void *p)
-{
-  free(p);
-}
+static void intg_free_ele(void *p) { free(p); }
 
-static uint32_t intg_hash_int(void *k)
-{
-  return (uint32_t)(*(int *)k);
-}
+static uint32_t intg_hash_int(void *k) { return (uint32_t)(*(int *)k); }
 
 static int intg_cmp_int(void *a, void *b)
 {

@@ -28,10 +28,7 @@ static void edg_val_dtor_inc(void *p)
   edg_val_dtor_n++;
 }
 
-static void edg_free_key(void *p)
-{
-  free(p);
-}
+static void edg_free_key(void *p) { free(p); }
 
 UTEST_CASE(edge)
 {

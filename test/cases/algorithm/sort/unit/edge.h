@@ -240,9 +240,8 @@ UTEST_CASE(edge)
 
   {
     sort_massrec buf[] = {
-        {10, 'z'}, {10, 'z'}, {10, 'z'}, {2, 'a'},
-        {10, 'z'}, {10, 'z'}, {10, 'z'}, {10, 'z'},
-        {2, 'b'},  {10, 'z'}, {10, 'z'},
+        {10, 'z'}, {10, 'z'}, {10, 'z'}, {2, 'a'},  {10, 'z'}, {10, 'z'},
+        {10, 'z'}, {10, 'z'}, {2, 'b'},  {10, 'z'}, {10, 'z'},
     };
     EXPECT_EQ_INT(sort_under_test(buf, 11, sizeof *buf, sort_cmp_massrec), 0);
     EXPECT_TRUE(sort_sorted(buf, 11, sizeof *buf, sort_cmp_massrec));
