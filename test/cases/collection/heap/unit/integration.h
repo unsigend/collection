@@ -25,6 +25,15 @@ static void intg_dtor_inc(void *p)
   intg_dtor_n++;
 }
 
+static int intg_iptr_dtor_n;
+static void intg_iptr_dtor_free(void *slot)
+{
+  int *p = *(int **)slot;
+
+  intg_iptr_dtor_n++;
+  free(p);
+}
+
 static int intg_cmp_min_int(void *a, void *b)
 {
   int x = *(int *)a;
@@ -395,6 +404,276 @@ UTEST_CASE(integration)
     EXPECT_NOTNULL(outp);
     EXPECT_EQ_INT(*outp, 30);
     free(outp);
+    heap_fini(&h);
+  }
+
+  {
+    struct heap h;
+    int *owned[3];
+    int *out;
+    int idx;
+    int expect[3] = {1, 2, 3};
+
+    EXPECT_EQ_INT(heap_init(&h, sizeof(int *), intg_cmp_iptr_val, NULL), 0);
+    for (idx = 0; idx < 3; idx++) {
+      owned[idx] = (int *)malloc(sizeof(int));
+      EXPECT_NOTNULL(owned[idx]);
+      *owned[idx] = idx + 1;
+      EXPECT_EQ_INT(heap_push(&h, &owned[idx]), 0);
+    }
+    for (idx = 0; idx < 3; idx++) {
+      out = (int *)1;
+      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_NOTNULL(out);
+      EXPECT_EQ_INT(*out, expect[idx]);
+      free(out);
+    }
+    EXPECT_TRUE(heap_empty(&h));
+    heap_fini(&h);
+  }
+
+  {
+    struct heap h;
+    int x, y, out;
+
+    intg_dtor_n = 0;
+    EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, intg_dtor_inc),
+                  0);
+    x = 10;
+    EXPECT_EQ_INT(heap_push(&h, &x), 0);
+    out = -1;
+    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(out, 10);
+    EXPECT_TRUE(heap_empty(&h));
+    y = 20;
+    EXPECT_EQ_INT(heap_push(&h, &y), 0);
+    out = -1;
+    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(out, 20);
+    EXPECT_TRUE(heap_empty(&h));
+    EXPECT_EQ_INT(intg_dtor_n, 0);
+    heap_fini(&h);
+  }
+
+  {
+    struct heap h;
+    int vals[4];
+    int out;
+    int idx;
+
+    intg_dtor_n = 0;
+    EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, intg_dtor_inc),
+                  0);
+    for (idx = 0; idx < 4; idx++) {
+      vals[idx] = idx + 10;
+      EXPECT_EQ_INT(heap_push(&h, &vals[idx]), 0);
+    }
+    for (idx = 0; idx < 4; idx++) {
+      out = -1;
+      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(out, idx + 10);
+    }
+    EXPECT_EQ_INT(intg_dtor_n, 0);
+    EXPECT_TRUE(heap_empty(&h));
+    heap_fini(&h);
+    EXPECT_EQ_INT(intg_dtor_n, 0);
+  }
+
+  {
+    struct heap h;
+    int *owned[3];
+    int *out;
+    int idx;
+    int expect[3] = {1, 2, 3};
+
+    intg_iptr_dtor_n = 0;
+    EXPECT_EQ_INT(
+        heap_init(&h, sizeof(int *), intg_cmp_iptr_val, intg_iptr_dtor_free),
+        0);
+    for (idx = 0; idx < 3; idx++) {
+      owned[idx] = (int *)malloc(sizeof(int));
+      EXPECT_NOTNULL(owned[idx]);
+      *owned[idx] = idx + 1;
+      EXPECT_EQ_INT(heap_push(&h, &owned[idx]), 0);
+    }
+    for (idx = 0; idx < 3; idx++) {
+      out = (int *)1;
+      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_NOTNULL(out);
+      EXPECT_EQ_INT(*out, expect[idx]);
+      EXPECT_EQ_INT(intg_iptr_dtor_n, 0);
+      free(out);
+    }
+    EXPECT_TRUE(heap_empty(&h));
+    heap_fini(&h);
+    EXPECT_EQ_INT(intg_iptr_dtor_n, 0);
+  }
+
+  {
+    struct heap h;
+    int *p;
+    int *out;
+
+    intg_iptr_dtor_n = 0;
+    EXPECT_EQ_INT(
+        heap_init(&h, sizeof(int *), intg_cmp_iptr_val, intg_iptr_dtor_free),
+        0);
+    p = (int *)malloc(sizeof(int));
+    EXPECT_NOTNULL(p);
+    *p = 99;
+    EXPECT_EQ_INT(heap_push(&h, &p), 0);
+    out = NULL;
+    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_NOTNULL(out);
+    EXPECT_EQ_INT(*out, 99);
+    EXPECT_EQ_INT(intg_iptr_dtor_n, 0);
+    free(out);
+    EXPECT_TRUE(heap_empty(&h));
+    heap_fini(&h);
+    EXPECT_EQ_INT(intg_iptr_dtor_n, 0);
+  }
+
+  {
+    struct heap h;
+    int vals[8];
+    int out;
+    int i;
+
+    intg_dtor_n = 0;
+    EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, intg_dtor_inc),
+                  0);
+    for (i = 0; i < 8; i++) {
+      vals[i] = (i + 1) * 2;
+      EXPECT_EQ_INT(heap_push(&h, &vals[i]), 0);
+    }
+    for (i = 0; i < 4; i++) {
+      out = -1;
+      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(out, (i + 1) * 2);
+    }
+    EXPECT_EQ_INT(intg_dtor_n, 0);
+    EXPECT_EQ_UINT(heap_size(&h), 4);
+    heap_clear(&h);
+    EXPECT_EQ_INT(intg_dtor_n, 4);
+    EXPECT_TRUE(heap_empty(&h));
+    heap_fini(&h);
+  }
+
+  {
+    struct heap h;
+    int vals[6];
+    int out;
+    int i;
+
+    intg_dtor_n = 0;
+    EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, intg_dtor_inc),
+                  0);
+    for (i = 0; i < 6; i++) {
+      vals[i] = i + 100;
+      EXPECT_EQ_INT(heap_push(&h, &vals[i]), 0);
+    }
+    for (i = 0; i < 3; i++) {
+      out = -1;
+      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(out, i + 100);
+    }
+    EXPECT_EQ_INT(intg_dtor_n, 0);
+    heap_fini(&h);
+    EXPECT_EQ_INT(intg_dtor_n, 3);
+  }
+
+  {
+    struct heap h;
+    int buf[12];
+    int i;
+
+    intg_dtor_n = 0;
+    EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, intg_dtor_inc),
+                  0);
+    for (i = 0; i < 12; i++) {
+      buf[i] = 12 - i;
+      EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+    }
+    for (i = 0; i < 12; i++)
+      EXPECT_EQ_INT(heap_pop(&h, NULL), 0);
+    EXPECT_EQ_INT(intg_dtor_n, 12);
+    EXPECT_TRUE(heap_empty(&h));
+    heap_fini(&h);
+  }
+
+  {
+    struct heap h;
+    int buf[10];
+    int out;
+    int expect;
+    int i;
+
+    intg_dtor_n = 0;
+    EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, intg_dtor_inc),
+                  0);
+    for (i = 0; i < 10; i++) {
+      buf[i] = i * 2;
+      EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+    }
+    expect = 0;
+    for (i = 0; i < 10; i++) {
+      if (i % 2 == 0) {
+        out = -1;
+        EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+        EXPECT_EQ_INT(out, expect);
+      } else {
+        EXPECT_EQ_INT(heap_pop(&h, NULL), 0);
+      }
+      expect += 2;
+    }
+    EXPECT_EQ_INT(intg_dtor_n, 5);
+    EXPECT_TRUE(heap_empty(&h));
+    heap_fini(&h);
+  }
+
+  {
+    struct heap h;
+    int buf[20];
+    int out;
+    int cycle;
+    int i;
+
+    EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, NULL), 0);
+    for (cycle = 0; cycle < 3; cycle++) {
+      for (i = 0; i < 20; i++) {
+        buf[i] = cycle * 100 + i;
+        EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+      }
+      EXPECT_EQ_UINT(heap_size(&h), 20);
+      for (i = 0; i < 20; i++) {
+        out = -1;
+        EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+        EXPECT_EQ_INT(out, cycle * 100 + i);
+      }
+      EXPECT_TRUE(heap_empty(&h));
+    }
+    heap_fini(&h);
+  }
+
+  {
+    struct heap h;
+    int *owned[4];
+    int idx;
+
+    intg_iptr_dtor_n = 0;
+    EXPECT_EQ_INT(
+        heap_init(&h, sizeof(int *), intg_cmp_iptr_val, intg_iptr_dtor_free),
+        0);
+    for (idx = 0; idx < 4; idx++) {
+      owned[idx] = (int *)malloc(sizeof(int));
+      EXPECT_NOTNULL(owned[idx]);
+      *owned[idx] = (idx + 1) * 10;
+      EXPECT_EQ_INT(heap_push(&h, &owned[idx]), 0);
+    }
+    for (idx = 0; idx < 4; idx++)
+      EXPECT_EQ_INT(heap_pop(&h, NULL), 0);
+    EXPECT_EQ_INT(intg_iptr_dtor_n, 4);
+    EXPECT_TRUE(heap_empty(&h));
     heap_fini(&h);
   }
 }
