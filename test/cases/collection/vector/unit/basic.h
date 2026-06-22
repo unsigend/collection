@@ -9,6 +9,13 @@ static void dtor_inc(void *p)
   dtor_n++;
 }
 
+static int cmp_int(const void *a, const void *b)
+{
+  int x = *(const int *)a;
+  int y = *(const int *)b;
+  return (x > y) - (x < y);
+}
+
 UTEST_CASE(basic)
 {
   {
@@ -390,5 +397,37 @@ UTEST_CASE(basic)
   {
     vec_fini(NULL);
     vec_clear(NULL);
+  }
+
+  {
+    struct vector v;
+    int a, b, c, d;
+
+    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+    a = 3;
+    b = 1;
+    c = 4;
+    d = 2;
+    vec_pushback(&v, &a);
+    vec_pushback(&v, &b);
+    vec_pushback(&v, &c);
+    vec_pushback(&v, &d);
+    vec_sort(&v, cmp_int);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 1);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 1), 2);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 2), 3);
+    EXPECT_EQ_INT(*(int *)vec_at(&v, 3), 4);
+    vec_fini(&v);
+  }
+
+  {
+    struct vector v;
+
+    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+    vec_sort(&v, cmp_int);
+    EXPECT_TRUE(vec_empty(&v));
+    vec_sort(&v, NULL);
+    vec_sort(NULL, cmp_int);
+    vec_fini(&v);
   }
 }
