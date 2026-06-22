@@ -258,6 +258,21 @@ Removes the element at `idx`, shifting subsequent elements left. If `dest` is no
 
 ---
 
+### vec_sort
+
+```c
+void vec_sort(struct vector *vec, int (*cmp)(const void *, const void *));
+```
+
+Sorts elements in place with `qsort`. The comparator receives pointers to two elements and returns a negative value, zero, or positive value if the first is less than, equal to, or greater than the second. Does not change the element count or call `destroy`. No-op if `vec` or `cmp` is NULL.
+
+**Parameters**
+
+- `vec` — pointer to the vector
+- `cmp` — element comparator, same convention as `qsort`
+
+---
+
 ### vec_clear
 
 ```c
