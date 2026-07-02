@@ -17,26 +17,9 @@
 
 #include <deque.h>
 #include <errno.h>
-#include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define MINCAP 16
-#define GROWFACTOR 2
-
-#define PINDEX(deq, idx)                                                       \
-    (((deq)->head + (idx)) % (deq)->cap) /* Get the physical index */
-#define GET(buf, idx, elesz)                                                   \
-    ((void *)((char *)(buf) + (idx) * (elesz))) /* Get the element  */
-
-#define overflowcheck(sz, n)                                                   \
-    do {                                                                       \
-        if ((n) > SIZE_MAX / (sz)) {                                           \
-            errno = ERANGE;                                                    \
-            return -1;                                                         \
-        }                                                                      \
-    } while (0) /* Check if the size is overflow */
 
 /* Ring-buffer deque. Logical index 0 is the front element, head maps logical
    indices to physical slots in buf. */
@@ -54,6 +37,22 @@ struct deque_iter {
     size_t idx;
 };
 
+#define MINCAP 16
+#define GROWFACTOR 2
+
+#define PINDEX(deq, idx)                                                       \
+    (((deq)->head + (idx)) % (deq)->cap) /* Get the physical index */
+#define GET(buf, idx, elesz)                                                   \
+    ((void *)((char *)(buf) + (idx) * (elesz))) /* Get the element  */
+
+#define overflowcheck(sz, n)                                                   \
+    do {                                                                       \
+        if ((n) > SIZE_MAX / (sz)) {                                           \
+            errno = ERANGE;                                                    \
+            return -1;                                                         \
+        }                                                                      \
+    } while (0) /* Check if the size is overflow */
+
 /* Shift left n elements from [dest+1, dest+n] to [dest, dest+n-1], dest is the
    logical index */
 static inline void shiftleft(struct deque *deq, size_t dest, size_t n);
@@ -69,6 +68,30 @@ static void flatten(struct deque *deq, void *buf);
 static void destroy_range(struct deque *deq, size_t start, size_t end);
 
 static int expand(struct deque *deq);
+
+int deq_init(struct deque **deq, size_t elesz, void (*destroy)(void *))
+{
+    if (!deq || !elesz)
+        return -1;
+
+    struct deque *d = calloc(1, sizeof(struct deque));
+    if (!d)
+        return -1;
+    d->elesz = elesz;
+    d->destroy = destroy;
+    *deq = d;
+    return 0;
+}
+
+void deq_free(struct deque *deq)
+{
+    if (!deq)
+        return;
+    deq_clear(deq);
+    if (deq->buf)
+        free(deq->buf);
+    free(deq);
+}
 
 int deq_empty(const struct deque *deq)
 {
@@ -100,30 +123,6 @@ void *deq_back(const struct deque *deq)
     if (deq_empty(deq))
         return NULL;
     return deq_at(deq, deq->sz - 1);
-}
-
-int deq_init(struct deque **deq, size_t elesz, void (*destroy)(void *))
-{
-    if (!deq || !elesz)
-        return -1;
-
-    struct deque *d = calloc(1, sizeof(struct deque));
-    if (!d)
-        return -1;
-    d->elesz = elesz;
-    d->destroy = destroy;
-    *deq = d;
-    return 0;
-}
-
-void deq_free(struct deque *deq)
-{
-    if (!deq)
-        return;
-    deq_clear(deq);
-    if (deq->buf)
-        free(deq->buf);
-    free(deq);
 }
 
 void *deq_at(const struct deque *deq, size_t idx)

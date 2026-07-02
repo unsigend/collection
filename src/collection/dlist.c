@@ -37,15 +37,7 @@ struct dlist_iter {
     struct dlist_node *node;
 };
 
-static struct dlist_node *create_node(void *data)
-{
-    struct dlist_node *node = malloc(sizeof(struct dlist_node));
-    if (!node)
-        return NULL;
-    memset(node, 0, sizeof(struct dlist_node));
-    node->data = data;
-    return node;
-}
+static struct dlist_node *create_node(void *data);
 
 int dlist_init(struct dlist **dlist, void (*destroy)(void *))
 {
@@ -67,18 +59,18 @@ void dlist_free(struct dlist *dlist)
     free(dlist);
 }
 
-size_t dlist_size(const struct dlist *dlist)
-{
-    if (!dlist)
-        return 0;
-    return dlist->len;
-}
-
 int dlist_empty(const struct dlist *dlist)
 {
     if (!dlist)
         return 1;
     return dlist->len == 0;
+}
+
+size_t dlist_size(const struct dlist *dlist)
+{
+    if (!dlist)
+        return 0;
+    return dlist->len;
 }
 
 void *dlist_front(const struct dlist *dlist)
@@ -128,23 +120,6 @@ void *dlist_data(const struct dlist_node *node)
     if (!node)
         return NULL;
     return node->data;
-}
-
-void dlist_clear(struct dlist *dlist)
-{
-    if (!dlist)
-        return;
-    struct dlist_node *node = dlist->head;
-    while (node) {
-        struct dlist_node *next = dlist_next(node);
-        if (dlist->destroy)
-            dlist->destroy(node->data);
-        free(node);
-        node = next;
-    }
-    dlist->head = NULL;
-    dlist->tail = NULL;
-    dlist->len = 0;
 }
 
 int dlist_pushfront(struct dlist *dlist, void *data)
@@ -263,6 +238,23 @@ int dlist_remove(struct dlist *dlist, struct dlist_node *node, void **dest)
     return 0;
 }
 
+void dlist_clear(struct dlist *dlist)
+{
+    if (!dlist)
+        return;
+    struct dlist_node *node = dlist->head;
+    while (node) {
+        struct dlist_node *next = dlist_next(node);
+        if (dlist->destroy)
+            dlist->destroy(node->data);
+        free(node);
+        node = next;
+    }
+    dlist->head = NULL;
+    dlist->tail = NULL;
+    dlist->len = 0;
+}
+
 int dlist_iter_init(struct dlist_iter **iter, struct dlist *dlist)
 {
     if (!iter || !dlist)
@@ -315,4 +307,14 @@ void dlist_iter_free(struct dlist_iter *iter)
     if (!iter)
         return;
     free(iter);
+}
+
+static struct dlist_node *create_node(void *data)
+{
+    struct dlist_node *node = malloc(sizeof(struct dlist_node));
+    if (!node)
+        return NULL;
+    memset(node, 0, sizeof(struct dlist_node));
+    node->data = data;
+    return node;
 }

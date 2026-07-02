@@ -15,21 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <hash.h>
 #include <stddef.h>
 #include <stdint.h>
 
-static uint32_t fnv1a(const void *data, size_t size)
-{
-  uint32_t hash = 2166136261u;
-  const uint8_t *bytes = (const uint8_t *)data;
-
-  while (size--) {
-    hash ^= *bytes++;
-    hash = hash * 0x01000193u;
-  }
-
-  return hash;
-}
+static uint32_t fnv1a(const void *data, size_t size);
 
 uint32_t hash_u32(uint32_t key) { return fnv1a(&key, sizeof(uint32_t)); }
+
 uint32_t hash_u64(uint64_t key) { return fnv1a(&key, sizeof(uint64_t)); }
+
+static uint32_t fnv1a(const void *data, size_t size)
+{
+    uint32_t hash = 2166136261u;
+    const uint8_t *bytes = (const uint8_t *)data;
+
+    while (size--) {
+        hash ^= *bytes++;
+        hash = hash * 0x01000193u;
+    }
+
+    return hash;
+}

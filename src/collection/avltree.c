@@ -16,9 +16,7 @@
  */
 
 #include <avltree.h>
-#include <stddef.h>
 #include <stdlib.h>
-#include <string.h>
 
 struct avltree_node {
     void *key;
@@ -74,15 +72,8 @@ static struct avltree_node *remove_node(struct avltree_node *node, void *key,
                                         const struct avltree_fns *fns,
                                         int *remf, int unlink);
 
-static inline int height(struct avltree_node *node)
-{
-    return node ? node->height : -1;
-}
-
-static inline int balancefactor(struct avltree_node *node)
-{
-    return height(node->left) - height(node->right);
-}
+static inline int height(struct avltree_node *node);
+static inline int balancefactor(struct avltree_node *node);
 
 int avltree_init(struct avltree **tree, avltree_fns_cmp cmp,
                  avltree_fns_destroy_key destroy_key,
@@ -101,16 +92,6 @@ int avltree_init(struct avltree **tree, avltree_fns_cmp cmp,
     return 0;
 }
 
-void avltree_clear(struct avltree *tree)
-{
-    if (!tree)
-        return;
-    struct avltree_node *node = tree->root;
-    clear(node, &tree->fns);
-    tree->root = NULL;
-    tree->size = 0;
-}
-
 void avltree_free(struct avltree *tree)
 {
     if (!tree)
@@ -119,34 +100,19 @@ void avltree_free(struct avltree *tree)
     free(tree);
 }
 
-size_t avltree_size(const struct avltree *tree)
-{
-    return tree ? tree->size : 0;
-}
-
 int avltree_empty(const struct avltree *tree)
 {
     return tree ? tree->size == 0 : 1;
 }
 
+size_t avltree_size(const struct avltree *tree)
+{
+    return tree ? tree->size : 0;
+}
+
 struct avltree_node *avltree_root(const struct avltree *tree)
 {
     return tree ? tree->root : NULL;
-}
-
-int avltree_update(struct avltree *tree, void *key, void *newval, void **dest)
-{
-    if (!tree || !key || !newval)
-        return -1;
-    struct avltree_node *node = avltree_findnode(tree, key);
-    if (!node)
-        return -1;
-    if (dest)
-        *dest = node->val;
-    else if (tree->fns.destroy_val)
-        tree->fns.destroy_val(node->val);
-    node->val = newval;
-    return 0;
 }
 
 void *avltree_find(const struct avltree *tree, void *key)
@@ -174,6 +140,32 @@ struct avltree_node *avltree_findnode(const struct avltree *tree, void *key)
     return NULL;
 }
 
+int avltree_insert(struct avltree *tree, void *key, void *val)
+{
+    if (!tree || !key)
+        return -1;
+    int insf = 0;
+    tree->root = insert_node(tree->root, key, val, &tree->fns, &insf);
+    if (insf)
+        tree->size++;
+    return insf ? 0 : -1;
+}
+
+int avltree_update(struct avltree *tree, void *key, void *newval, void **dest)
+{
+    if (!tree || !key || !newval)
+        return -1;
+    struct avltree_node *node = avltree_findnode(tree, key);
+    if (!node)
+        return -1;
+    if (dest)
+        *dest = node->val;
+    else if (tree->fns.destroy_val)
+        tree->fns.destroy_val(node->val);
+    node->val = newval;
+    return 0;
+}
+
 int avltree_remove(struct avltree *tree, void *key, void **dest)
 {
     if (!tree || !key)
@@ -185,15 +177,14 @@ int avltree_remove(struct avltree *tree, void *key, void **dest)
     return remf ? 0 : -1;
 }
 
-int avltree_insert(struct avltree *tree, void *key, void *val)
+void avltree_clear(struct avltree *tree)
 {
-    if (!tree || !key)
-        return -1;
-    int insf = 0;
-    tree->root = insert_node(tree->root, key, val, &tree->fns, &insf);
-    if (insf)
-        tree->size++;
-    return insf ? 0 : -1;
+    if (!tree)
+        return;
+    struct avltree_node *node = tree->root;
+    clear(node, &tree->fns);
+    tree->root = NULL;
+    tree->size = 0;
 }
 
 static struct avltree_node *create_node(void *key, void *val)
@@ -344,4 +335,14 @@ static struct avltree_node *remove_node(struct avltree_node *node, void *key,
         }
     }
     return rebalance(node);
+}
+
+static inline int height(struct avltree_node *node)
+{
+    return node ? node->height : -1;
+}
+
+static inline int balancefactor(struct avltree_node *node)
+{
+    return height(node->left) - height(node->right);
 }

@@ -19,12 +19,12 @@
 #include <set.h>
 #include <stdlib.h>
 
-struct set_iter {
-    struct hashtbl_iter *iter;
-};
-
 struct set {
     struct hashtbl *tbl;
+};
+
+struct set_iter {
+    struct hashtbl_iter *iter;
 };
 
 int set_init(struct set **set, set_fns_hash hash, set_fns_cmp cmp,
@@ -63,6 +63,13 @@ size_t set_size(const struct set *set)
     return set ? hashtbl_size(set->tbl) : 0;
 }
 
+int set_contains(const struct set *set, void *ele)
+{
+    if (!set || !ele)
+        return 0;
+    return hashtbl_findnode(set->tbl, ele) != NULL;
+}
+
 int set_insert(struct set *set, void *ele)
 {
     if (!set || !ele)
@@ -83,13 +90,6 @@ int set_remove(struct set *set, void *ele)
         return 0;
 
     return hashtbl_remove(set->tbl, ele, NULL);
-}
-
-int set_contains(const struct set *set, void *ele)
-{
-    if (!set || !ele)
-        return 0;
-    return hashtbl_findnode(set->tbl, ele) != NULL;
 }
 
 void set_clear(struct set *set)

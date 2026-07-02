@@ -23,6 +23,19 @@
 #define THRESHOLD 16
 
 static int sort_rec(void *base, size_t n, size_t sz, int (*cmp)(void *, void *),
+                    int depth);
+
+int sort(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))
+{
+    if (!base || !sz || !cmp)
+        return -1;
+    if (n <= 1)
+        return 0;
+    int depth = 2 * (int)log2(n);
+    return sort_rec(base, n, sz, cmp, depth);
+}
+
+static int sort_rec(void *base, size_t n, size_t sz, int (*cmp)(void *, void *),
                     int depth)
 {
     if (n <= THRESHOLD)
@@ -62,14 +75,4 @@ static int sort_rec(void *base, size_t n, size_t sz, int (*cmp)(void *, void *),
 
     return sort_rec(base, pos, sz, cmp, depth - 1) ||
            sort_rec(GET(base, pos + 1, sz), n - pos - 1, sz, cmp, depth - 1);
-}
-
-int sort(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))
-{
-    if (!base || !sz || !cmp)
-        return -1;
-    if (n <= 1)
-        return 0;
-    int depth = 2 * (int)log2(n);
-    return sort_rec(base, n, sz, cmp, depth);
 }

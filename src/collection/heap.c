@@ -18,7 +18,6 @@
 #include "vector_struct.h"
 
 #include <heap.h>
-#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <util.h>
@@ -28,13 +27,13 @@
 #define LEFT(idx) (2 * (idx) + 1)
 #define RIGHT(idx) (2 * (idx) + 2)
 
-static int shiftup(struct heap *heap, size_t idx);
-static int shiftdown(struct heap *heap, size_t idx);
-
 struct heap {
     struct vector *vec;
     int (*cmp)(void *, void *);
 };
+
+static int shiftup(struct heap *heap, size_t idx);
+static int shiftdown(struct heap *heap, size_t idx);
 
 int heap_init(struct heap **heap, size_t elesz, int (*cmp)(void *, void *),
               void (*destroy)(void *))
@@ -62,6 +61,27 @@ void heap_free(struct heap *heap)
         return;
     vec_free(heap->vec);
     free(heap);
+}
+
+int heap_empty(const struct heap *heap)
+{
+    if (!heap)
+        return 1;
+    return vec_empty(heap->vec);
+}
+
+size_t heap_size(const struct heap *heap)
+{
+    if (!heap)
+        return 0;
+    return vec_size(heap->vec);
+}
+
+void *heap_peek(const struct heap *heap)
+{
+    if (!heap)
+        return NULL;
+    return vec_front(heap->vec);
 }
 
 int heap_push(struct heap *heap, void *ele)
@@ -96,13 +116,6 @@ int heap_pop(struct heap *heap, void *dest)
     if (vec_empty(heap->vec))
         return 0;
     return shiftdown(heap, 0);
-}
-
-void *heap_peek(const struct heap *heap)
-{
-    if (!heap)
-        return NULL;
-    return vec_front(heap->vec);
 }
 
 void heap_clear(struct heap *heap)
@@ -148,18 +161,4 @@ static int shiftdown(struct heap *heap, size_t idx)
         idx = i;
     }
     return 0;
-}
-
-int heap_empty(const struct heap *heap)
-{
-    if (!heap)
-        return 1;
-    return vec_empty(heap->vec);
-}
-
-size_t heap_size(const struct heap *heap)
-{
-    if (!heap)
-        return 0;
-    return vec_size(heap->vec);
 }

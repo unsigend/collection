@@ -5,8 +5,8 @@
 
 UTEST_SUITE(set)
 {
-  UTEST_RUNCASE(basic);
-  UTEST_RUNCASE(edge);
-  UTEST_RUNCASE(integration);
-  UTEST_RUNCASE(iter);
+    UTEST_RUNCASE(basic);
+    UTEST_RUNCASE(edge);
+    UTEST_RUNCASE(integration);
+    UTEST_RUNCASE(iter);
 }

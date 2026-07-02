@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef COL_AVLTREE_H
-#define COL_AVLTREE_H
+#ifndef COLLECTION_AVLTREE_H
+#define COLLECTION_AVLTREE_H
 
 #include <stddef.h>
 
@@ -34,9 +34,9 @@ typedef void (*avltree_fns_destroy_val)(void *);
 /**
  * Allocate and initialize an empty tree ordered by cmp.
  *
- * Keys and values are stored as opaque pointers; the tree does not copy
- * pointed-to data. destroy_key and destroy_val are invoked when a stored
- * pointer is discarded, or NULL for no-op.
+ * Keys and values are stored as opaque pointers. The tree does not copy
+ * pointed to data. destroy_key and destroy_val are invoked when a stored
+ * pointer is discarded, or NULL for no op.
  *
  * @param tree        output pointer to receive the new tree, must not be NULL
  * @param cmp         key comparator, must not be NULL
@@ -44,32 +44,32 @@ typedef void (*avltree_fns_destroy_val)(void *);
  * @param destroy_val optional callback invoked on each discarded value, or NULL
  * @return            0 on success, -1 on failure
  */
-int avltree_init(struct avltree **tree, avltree_fns_cmp cmp,
-                 avltree_fns_destroy_key destroy_key,
-                 avltree_fns_destroy_val destroy_val);
+extern int avltree_init(struct avltree **tree, avltree_fns_cmp cmp,
+                        avltree_fns_destroy_key destroy_key,
+                        avltree_fns_destroy_val destroy_val);
 
 /**
  * Destroy all entries and free the tree.
  *
  * @param tree the tree to free, or NULL
  */
-void avltree_free(struct avltree *tree);
+extern void avltree_free(struct avltree *tree);
 
 /**
  * Test whether the tree contains no entries.
  *
  * @param tree the tree to inspect, or NULL
- * @return     non-zero if empty, zero otherwise
+ * @return     non zero if empty, zero otherwise
  */
-int avltree_empty(const struct avltree *tree);
+extern int avltree_empty(const struct avltree *tree);
 
 /**
- * Return the current number of key-value entries in the tree.
+ * Return the current number of key value entries in the tree.
  *
  * @param tree the tree to inspect, or NULL
  * @return     entry count, or 0 if tree is NULL
  */
-size_t avltree_size(const struct avltree *tree);
+extern size_t avltree_size(const struct avltree *tree);
 
 /**
  * Return the root node of the tree.
@@ -77,7 +77,7 @@ size_t avltree_size(const struct avltree *tree);
  * @param tree the tree to inspect, or NULL
  * @return     root node, or NULL if tree is NULL or empty
  */
-struct avltree_node *avltree_root(const struct avltree *tree);
+extern struct avltree_node *avltree_root(const struct avltree *tree);
 
 /**
  * Look up the value associated with key.
@@ -87,7 +87,7 @@ struct avltree_node *avltree_root(const struct avltree *tree);
  * @return     stored value pointer, or NULL if tree is NULL, key is NULL, or
  *             the key is not present
  */
-void *avltree_find(const struct avltree *tree, void *key);
+extern void *avltree_find(const struct avltree *tree, void *key);
 
 /**
  * Look up the node associated with key.
@@ -97,21 +97,22 @@ void *avltree_find(const struct avltree *tree, void *key);
  * @return     matching node, or NULL if tree is NULL, key is NULL, or the key
  *             is not present
  */
-struct avltree_node *avltree_findnode(const struct avltree *tree, void *key);
+extern struct avltree_node *avltree_findnode(const struct avltree *tree,
+                                             void *key);
 
 /**
- * Insert a key-value pair. Fails when key is already present.
+ * Insert a key value pair. Fails when key is already present.
  *
  * @param tree the tree to modify
  * @param key  key pointer to store, must not be NULL
  * @param val  value pointer to store, may be NULL
  * @return     0 on success, -1 on error or if key already exists
  */
-int avltree_insert(struct avltree *tree, void *key, void *val);
+extern int avltree_insert(struct avltree *tree, void *key, void *val);
 
 /**
- * Replace the value for an existing key. When dest is non-NULL, store the
- * previous value pointer in *dest and skip destroy_val; otherwise invoke
+ * Replace the value for an existing key. When dest is non NULL, store the
+ * previous value pointer in *dest and skip destroy_val, otherwise invoke
  * destroy_val when set.
  *
  * @param tree   the tree to modify
@@ -122,11 +123,12 @@ int avltree_insert(struct avltree *tree, void *key, void *val);
  * @return       0 on success, -1 if tree is NULL, arguments are invalid, or
  *               key is not present
  */
-int avltree_update(struct avltree *tree, void *key, void *newval, void **dest);
+extern int avltree_update(struct avltree *tree, void *key, void *newval,
+                          void **dest);
 
 /**
- * Remove the entry for key. When dest is non-NULL, store the removed value
- * pointer in *dest and skip destroy_val; otherwise invoke destroy_val when
+ * Remove the entry for key. When dest is non NULL, store the removed value
+ * pointer in *dest and skip destroy_val, otherwise invoke destroy_val when
  * set. destroy_key is always invoked on the removed key when set.
  *
  * @param tree the tree to modify
@@ -136,16 +138,16 @@ int avltree_update(struct avltree *tree, void *key, void *newval, void **dest);
  * @return     0 on success, -1 if tree is NULL, key is NULL, or key is not
  *             present
  */
-int avltree_remove(struct avltree *tree, void *key, void **dest);
+extern int avltree_remove(struct avltree *tree, void *key, void **dest);
 
 /**
  * Remove all entries and reset size to zero, invoking destroy_key and
  * destroy_val on each stored pointer when set. Does not free the tree itself.
- * No-op if tree is NULL.
+ * No op if tree is NULL.
  *
  * @param tree the tree to clear, or NULL
  */
-void avltree_clear(struct avltree *tree);
+extern void avltree_clear(struct avltree *tree);
 
 #ifdef __cplusplus
 }

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef COL_UTIL_H
-#define COL_UTIL_H
+#ifndef COLLECTION_UTIL_H
+#define COLLECTION_UTIL_H
 
 #include <stddef.h>
 
@@ -34,7 +34,7 @@ extern "C" {
  * @param r  pointer to the second object
  * @param sz number of bytes to exchange, usually sizeof the value type
  */
-void swap(void *l, void *r, size_t sz);
+extern void swap(void *l, void *r, size_t sz);
 
 #ifdef __cplusplus
 }

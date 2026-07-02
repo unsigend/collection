@@ -47,6 +47,27 @@ void stack_free(struct stack *stack)
     free(stack);
 }
 
+int stack_empty(const struct stack *stack)
+{
+    if (!stack)
+        return 1;
+    return vec_empty(stack->vec);
+}
+
+size_t stack_size(const struct stack *stack)
+{
+    if (!stack)
+        return 0;
+    return vec_size(stack->vec);
+}
+
+void *stack_peek(const struct stack *stack)
+{
+    if (!stack)
+        return NULL;
+    return vec_back(stack->vec);
+}
+
 int stack_push(struct stack *stack, void *ele)
 {
     if (!stack || !ele)
@@ -61,30 +82,9 @@ int stack_pop(struct stack *stack, void *dest)
     return vec_popback(stack->vec, dest);
 }
 
-void *stack_peek(const struct stack *stack)
-{
-    if (!stack)
-        return NULL;
-    return vec_back(stack->vec);
-}
-
 void stack_clear(struct stack *stack)
 {
     if (!stack)
         return;
     vec_clear(stack->vec);
-}
-
-int stack_empty(const struct stack *stack)
-{
-    if (!stack)
-        return 1;
-    return vec_empty(stack->vec);
-}
-
-size_t stack_size(const struct stack *stack)
-{
-    if (!stack)
-        return 0;
-    return vec_size(stack->vec);
 }

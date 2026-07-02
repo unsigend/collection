@@ -16,7 +16,6 @@
  */
 
 #include <hashtbl.h>
-#include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,13 +51,13 @@ struct hashtbl_iter {
 #define NBUCKETS 16
 #define GROWFACTOR 2
 
-static inline struct hashtbl_node *node_create(void *key, void *val);
-static inline struct hashtbl_node **buckets_create(size_t bucketsz);
-
-static int rehash(struct hashtbl *table);
-static inline size_t hashidx(uint32_t hash, size_t bucketsz);
 #define need_rehash(table)                                                     \
     (hashtbl_loadfactor(table) >= hashtbl_threshold(table))
+
+static inline struct hashtbl_node *node_create(void *key, void *val);
+static inline struct hashtbl_node **buckets_create(size_t bucketsz);
+static int rehash(struct hashtbl *table);
+static inline size_t hashidx(uint32_t hash, size_t bucketsz);
 
 int hashtbl_init(struct hashtbl **table, hashtbl_fns_hash hash,
                  hashtbl_fns_cmp cmp, hashtbl_fns_destroy_key destroy_key,
@@ -79,6 +78,15 @@ int hashtbl_init(struct hashtbl **table, hashtbl_fns_hash hash,
     return 0;
 }
 
+void hashtbl_free(struct hashtbl *table)
+{
+    if (!table)
+        return;
+    hashtbl_clear(table);
+    free(table->buckets);
+    free(table);
+}
+
 int hashtbl_empty(const struct hashtbl *table)
 {
     return table ? table->sz == 0 : 1;
@@ -89,14 +97,51 @@ size_t hashtbl_size(const struct hashtbl *table)
     return table ? table->sz : 0;
 }
 
+float hashtbl_threshold(const struct hashtbl *table)
+{
+    return table ? table->threshold : 0.0f;
+}
+
 size_t hashtbl_bucketsz(const struct hashtbl *table)
 {
     return table ? table->bucketsz : 0;
 }
 
-float hashtbl_threshold(const struct hashtbl *table)
+float hashtbl_loadfactor(const struct hashtbl *table)
 {
-    return table ? table->threshold : 0.0f;
+    if (!table || !table->bucketsz)
+        return 0.0f;
+    return (float)table->sz / (float)table->bucketsz;
+}
+
+void *hashtbl_find(const struct hashtbl *table, void *key)
+{
+    return hashtbl_node_val(hashtbl_findnode(table, key));
+}
+
+struct hashtbl_node *hashtbl_findnode(const struct hashtbl *table, void *key)
+{
+    if (!table || !key || hashtbl_empty(table))
+        return NULL;
+    uint32_t hash = table->fns.hash(key);
+    size_t idx = hashidx(hash, table->bucketsz);
+    struct hashtbl_node *node = table->buckets[idx];
+    while (node) {
+        if (table->fns.cmp(node->key, key) == 0)
+            return node;
+        node = node->next;
+    }
+    return NULL;
+}
+
+void *hashtbl_node_key(const struct hashtbl_node *node)
+{
+    return node ? node->key : NULL;
+}
+
+void *hashtbl_node_val(const struct hashtbl_node *node)
+{
+    return node ? node->val : NULL;
 }
 
 int hashtbl_setthreshold(struct hashtbl *table, float threshold, float *old)
@@ -107,42 +152,6 @@ int hashtbl_setthreshold(struct hashtbl *table, float threshold, float *old)
         *old = table->threshold;
     table->threshold = threshold;
     return 0;
-}
-
-float hashtbl_loadfactor(const struct hashtbl *table)
-{
-    if (!table || !table->bucketsz)
-        return 0.0f;
-    return (float)table->sz / (float)table->bucketsz;
-}
-
-void hashtbl_free(struct hashtbl *table)
-{
-    if (!table)
-        return;
-    hashtbl_clear(table);
-    free(table->buckets);
-    free(table);
-}
-
-void hashtbl_clear(struct hashtbl *table)
-{
-    if (!table || hashtbl_empty(table))
-        return;
-    for (size_t i = 0; i < table->bucketsz; i++) {
-        struct hashtbl_node *node = table->buckets[i];
-        while (node) {
-            struct hashtbl_node *next = node->next;
-            if (table->fns.destroy_key)
-                table->fns.destroy_key(node->key);
-            if (table->fns.destroy_val)
-                table->fns.destroy_val(node->val);
-            free(node);
-            node = next;
-        }
-    }
-    table->sz = 0;
-    memset(table->buckets, 0, table->bucketsz * sizeof(struct hashtbl_node *));
 }
 
 int hashtbl_insert(struct hashtbl *table, void *key, void *val)
@@ -221,34 +230,64 @@ int hashtbl_remove(struct hashtbl *table, void *key, void **dest)
     return -1;
 }
 
-void *hashtbl_find(const struct hashtbl *table, void *key)
+void hashtbl_clear(struct hashtbl *table)
 {
-    return hashtbl_node_val(hashtbl_findnode(table, key));
-}
-
-struct hashtbl_node *hashtbl_findnode(const struct hashtbl *table, void *key)
-{
-    if (!table || !key || hashtbl_empty(table))
-        return NULL;
-    uint32_t hash = table->fns.hash(key);
-    size_t idx = hashidx(hash, table->bucketsz);
-    struct hashtbl_node *node = table->buckets[idx];
-    while (node) {
-        if (table->fns.cmp(node->key, key) == 0)
-            return node;
-        node = node->next;
+    if (!table || hashtbl_empty(table))
+        return;
+    for (size_t i = 0; i < table->bucketsz; i++) {
+        struct hashtbl_node *node = table->buckets[i];
+        while (node) {
+            struct hashtbl_node *next = node->next;
+            if (table->fns.destroy_key)
+                table->fns.destroy_key(node->key);
+            if (table->fns.destroy_val)
+                table->fns.destroy_val(node->val);
+            free(node);
+            node = next;
+        }
     }
-    return NULL;
+    table->sz = 0;
+    memset(table->buckets, 0, table->bucketsz * sizeof(struct hashtbl_node *));
 }
 
-void *hashtbl_node_key(const struct hashtbl_node *node)
+int hashtbl_iter_init(struct hashtbl_iter **iter, struct hashtbl *table)
 {
-    return node ? node->key : NULL;
+    if (!iter || !table)
+        return -1;
+    *iter = NULL;
+    struct hashtbl_iter *i = calloc(1, sizeof(struct hashtbl_iter));
+    if (!i)
+        return -1;
+    i->ht = table;
+    i->bucket = 0;
+    i->node = table->buckets ? table->buckets[0] : NULL;
+    *iter = i;
+    return 0;
 }
 
-void *hashtbl_node_val(const struct hashtbl_node *node)
+void hashtbl_iter_inc(struct hashtbl_iter *iter)
 {
-    return node ? node->val : NULL;
+    if (!iter || !iter->node)
+        return;
+    iter->node = iter->node->next;
+    while (!iter->node && iter->bucket < iter->ht->bucketsz - 1) {
+        iter->bucket++;
+        iter->node = iter->ht->buckets[iter->bucket];
+    }
+}
+
+struct hashtbl_node *hashtbl_iter_get(const struct hashtbl_iter *iter)
+{
+    if (!iter)
+        return NULL;
+    return iter->node;
+}
+
+void hashtbl_iter_free(struct hashtbl_iter *iter)
+{
+    if (!iter)
+        return;
+    free(iter);
 }
 
 static struct hashtbl_node *node_create(void *key, void *val)
@@ -295,44 +334,4 @@ static int rehash(struct hashtbl *table)
     table->buckets = newbuckets;
     table->bucketsz = newbucketsz;
     return 0;
-}
-
-int hashtbl_iter_init(struct hashtbl_iter **iter, struct hashtbl *table)
-{
-    if (!iter || !table)
-        return -1;
-    *iter = NULL;
-    struct hashtbl_iter *i = calloc(1, sizeof(struct hashtbl_iter));
-    if (!i)
-        return -1;
-    i->ht = table;
-    i->bucket = 0;
-    i->node = table->buckets ? table->buckets[0] : NULL;
-    *iter = i;
-    return 0;
-}
-
-void hashtbl_iter_inc(struct hashtbl_iter *iter)
-{
-    if (!iter || !iter->node)
-        return;
-    iter->node = iter->node->next;
-    while (!iter->node && iter->bucket < iter->ht->bucketsz - 1) {
-        iter->bucket++;
-        iter->node = iter->ht->buckets[iter->bucket];
-    }
-}
-
-struct hashtbl_node *hashtbl_iter_get(const struct hashtbl_iter *iter)
-{
-    if (!iter)
-        return NULL;
-    return iter->node;
-}
-
-void hashtbl_iter_free(struct hashtbl_iter *iter)
-{
-    if (!iter)
-        return;
-    free(iter);
 }

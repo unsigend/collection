@@ -15,12 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "sort.h"
+
 #include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define GET(BASE, IDX, SZ) ((void *)((char *)(BASE) + (IDX) * (SZ)))
 #define THRESHOLD 256
 
 int sort_insertion(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))

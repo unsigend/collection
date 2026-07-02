@@ -15,10 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef COL_DEQUE_H
-#define COL_DEQUE_H
+#ifndef COLLECTION_DEQUE_H
+#define COLLECTION_DEQUE_H
 
-/* Double-ended queue based on ring buffer implementation. */
 #include <stddef.h>
 
 struct deque;
@@ -34,27 +33,27 @@ extern "C" {
  * insert or push operations.
  *
  * @param deq     output pointer to receive the new deque, must not be NULL
- * @param elesz   byte size of each element, must be non-zero
+ * @param elesz   byte size of each element, must be non zero
  * @param destroy optional callback invoked on each element when it is
- *                discarded, or NULL for no-op
+ *                discarded, or NULL for no op
  * @return        0 on success, -1 on failure
  */
-int deq_init(struct deque **deq, size_t elesz, void (*destroy)(void *));
+extern int deq_init(struct deque **deq, size_t elesz, void (*destroy)(void *));
 
 /**
  * Destroy all elements, release the internal buffer, and free the deque.
  *
  * @param deq the deque to free, or NULL
  */
-void deq_free(struct deque *deq);
+extern void deq_free(struct deque *deq);
 
 /**
  * Test whether the deque contains no elements.
  *
  * @param deq the deque to inspect, or NULL
- * @return    non-zero if empty, zero otherwise
+ * @return    non zero if empty, zero otherwise
  */
-int deq_empty(const struct deque *deq);
+extern int deq_empty(const struct deque *deq);
 
 /**
  * Return the current number of elements in the deque.
@@ -62,15 +61,15 @@ int deq_empty(const struct deque *deq);
  * @param deq the deque to inspect, or NULL
  * @return    element count, or 0 if deq is NULL
  */
-size_t deq_size(const struct deque *deq);
+extern size_t deq_size(const struct deque *deq);
 
 /**
- * Return the number of allocated element slots in the ring buffer.
+ * Return the number of allocated element slots.
  *
  * @param deq the deque to inspect, or NULL
  * @return    capacity in elements, or 0 if deq is NULL
  */
-size_t deq_capacity(const struct deque *deq);
+extern size_t deq_capacity(const struct deque *deq);
 
 /**
  * Return a pointer to the front element, equivalent to deq_at(deq, 0).
@@ -78,7 +77,7 @@ size_t deq_capacity(const struct deque *deq);
  * @param deq the deque to inspect, or NULL
  * @return    pointer to the front element, or NULL if deq is NULL or empty
  */
-void *deq_front(const struct deque *deq);
+extern void *deq_front(const struct deque *deq);
 
 /**
  * Return a pointer to the back element.
@@ -86,63 +85,63 @@ void *deq_front(const struct deque *deq);
  * @param deq the deque to inspect, or NULL
  * @return    pointer to the back element, or NULL if deq is NULL or empty
  */
-void *deq_back(const struct deque *deq);
+extern void *deq_back(const struct deque *deq);
 
 /**
  * Return a pointer to the element at the given logical index.
  *
  * @param deq the deque to inspect, or NULL
- * @param idx zero-based logical index
+ * @param idx zero based logical index
  * @return    pointer to the element, or NULL if deq is NULL or idx is out of
  *            range
  */
-void *deq_at(const struct deque *deq, size_t idx);
+extern void *deq_at(const struct deque *deq, size_t idx);
 
 /**
- * Set the logical length of the deque. Growing may reallocate and flatten the
- * ring buffer; new slots are zero-filled when capacity grows. Shrinking invokes
- * destroy on each removed element when set.
+ * Set the logical length of the deque. Growing may reallocate. New slots are
+ * zero-filled when capacity grows. Shrinking invokes destroy on each removed
+ * element when set.
  *
  * @param deq     the deque to resize
  * @param newsize new element count
  * @return        0 on success, -1 on failure
  */
-int deq_resize(struct deque *deq, size_t newsize);
+extern int deq_resize(struct deque *deq, size_t newsize);
 
 /**
- * Reallocate the buffer so capacity matches the current size, flattening the
- * ring buffer and releasing unused slots.
+ * Reallocate the buffer so capacity matches the current size, releasing unused
+ * slots.
  *
  * @param deq the deque to shrink
  * @return    0 on success, -1 on failure
  */
-int deq_shrink(struct deque *deq);
+extern int deq_shrink(struct deque *deq);
 
 /**
  * Insert a copy of ele before idx, shifting subsequent elements right. When idx
- * is at or beyond the current size, behaves like deq_pushback; when idx is 0,
+ * is at or beyond the current size, behaves like deq_pushback. When idx is 0,
  * behaves like deq_pushfront.
  *
  * @param deq the deque to modify
- * @param idx zero-based insertion position
+ * @param idx zero based insertion position
  * @param ele pointer to the value to copy, must not be NULL
  * @return    0 on success, -1 on failure
  */
-int deq_insert(struct deque *deq, size_t idx, void *ele);
+extern int deq_insert(struct deque *deq, size_t idx, void *ele);
 
 /**
  * Remove the element at idx, shifting subsequent elements left. When idx is 0
  * or the last index, behaves like deq_popfront or deq_popback respectively.
- * When dest is non-NULL, copy the element there and skip destroy; otherwise
+ * When dest is non NULL, copy the element there and skip destroy, otherwise
  * invoke destroy when set.
  *
  * @param deq  the deque to modify
- * @param idx  zero-based index of the element to remove
+ * @param idx  zero based index of the element to remove
  * @param dest buffer of at least elesz bytes to receive the element, or NULL to
  *             invoke destroy
  * @return     0 on success, -1 if deq is NULL or idx is out of range
  */
-int deq_remove(struct deque *deq, size_t idx, void *dest);
+extern int deq_remove(struct deque *deq, size_t idx, void *dest);
 
 /**
  * Append a copy of ele to the back of the deque, growing the buffer if needed.
@@ -151,7 +150,7 @@ int deq_remove(struct deque *deq, size_t idx, void *dest);
  * @param ele pointer to the value to copy, must not be NULL
  * @return    0 on success, -1 on failure
  */
-int deq_pushback(struct deque *deq, void *ele);
+extern int deq_pushback(struct deque *deq, void *ele);
 
 /**
  * Prepend a copy of ele to the front of the deque, growing the buffer if
@@ -161,37 +160,37 @@ int deq_pushback(struct deque *deq, void *ele);
  * @param ele pointer to the value to copy, must not be NULL
  * @return    0 on success, -1 on failure
  */
-int deq_pushfront(struct deque *deq, void *ele);
+extern int deq_pushfront(struct deque *deq, void *ele);
 
 /**
- * Remove the back element. When dest is non-NULL, copy the element there and
- * skip destroy; otherwise invoke destroy when set.
+ * Remove the back element. When dest is non NULL, copy the element there and
+ * skip destroy, otherwise invoke destroy when set.
  *
  * @param deq  the deque to modify
  * @param dest buffer of at least elesz bytes to receive the element, or NULL to
  *             invoke destroy
  * @return     0 on success, -1 if deq is NULL or the deque is empty
  */
-int deq_popback(struct deque *deq, void *dest);
+extern int deq_popback(struct deque *deq, void *dest);
 
 /**
- * Remove the front element. When dest is non-NULL, copy the element there and
- * skip destroy; otherwise invoke destroy when set.
+ * Remove the front element. When dest is non NULL, copy the element there and
+ * skip destroy, otherwise invoke destroy when set.
  *
  * @param deq  the deque to modify
  * @param dest buffer of at least elesz bytes to receive the element, or NULL to
  *             invoke destroy
  * @return     0 on success, -1 if deq is NULL or the deque is empty
  */
-int deq_popfront(struct deque *deq, void *dest);
+extern int deq_popfront(struct deque *deq, void *dest);
 
 /**
  * Remove all elements and reset size to zero, invoking destroy on each when
- * set. Does not release the buffer or free the struct deque itself.
+ * set. Does not release the buffer or free the deque itself.
  *
  * @param deq the deque to clear, or NULL
  */
-void deq_clear(struct deque *deq);
+extern void deq_clear(struct deque *deq);
 
 /**
  * Allocate and initialize an iterator positioned at the first logical element
@@ -201,21 +200,21 @@ void deq_clear(struct deque *deq);
  * @param deq  the deque to traverse, must not be NULL
  * @return     0 on success, -1 on failure
  */
-int deq_iter_init(struct deque_iter **iter, struct deque *deq);
+extern int deq_iter_init(struct deque_iter **iter, struct deque *deq);
 
 /**
  * Advance the iterator forward by one logical index.
  *
  * @param iter the iterator to advance, or NULL
  */
-void deq_iter_inc(struct deque_iter *iter);
+extern void deq_iter_inc(struct deque_iter *iter);
 
 /**
  * Move the iterator backward by one logical index.
  *
  * @param iter the iterator to move, or NULL
  */
-void deq_iter_dec(struct deque_iter *iter);
+extern void deq_iter_dec(struct deque_iter *iter);
 
 /**
  * Return a pointer to the element at the current iterator position.
@@ -224,14 +223,14 @@ void deq_iter_dec(struct deque_iter *iter);
  * @return     pointer to the current element, or NULL if iter is NULL or the
  *             index is out of range
  */
-void *deq_iter_get(struct deque_iter *iter);
+extern void *deq_iter_get(struct deque_iter *iter);
 
 /**
  * Free the iterator.
  *
  * @param iter the iterator to free, or NULL
  */
-void deq_iter_free(struct deque_iter *iter);
+extern void deq_iter_free(struct deque_iter *iter);
 
 #ifdef __cplusplus
 }

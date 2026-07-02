@@ -18,7 +18,6 @@
 #include "vector_struct.h"
 
 #include <errno.h>
-#include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,54 +42,7 @@ struct vector_iter {
     size_t idx;
 };
 
-/* destroy the elements in the range [start, end) */
 static void destroy_range(struct vector *vec, size_t start, size_t end);
-
-size_t vec_size(const struct vector *vec)
-{
-    if (!vec)
-        return 0;
-    return vec->sz;
-}
-
-size_t vec_capacity(const struct vector *vec)
-{
-    if (!vec)
-        return 0;
-    return vec->cap;
-}
-
-void *vec_back(const struct vector *vec)
-{
-    if (!vec)
-        return NULL;
-    if (vec_empty(vec))
-        return NULL;
-    return GET(vec, vec->buf, vec->sz - 1);
-}
-
-void *vec_front(const struct vector *vec)
-{
-    if (!vec)
-        return NULL;
-    if (vec_empty(vec))
-        return NULL;
-    return GET(vec, vec->buf, 0);
-}
-
-void *vec_raw(const struct vector *vec)
-{
-    if (!vec)
-        return NULL;
-    return vec->buf;
-}
-
-int vec_empty(const struct vector *vec)
-{
-    if (!vec)
-        return 1;
-    return vec->sz == 0;
-}
 
 int vec_init(struct vector **vec, size_t elesz, void (*destroy)(void *))
 {
@@ -130,28 +82,57 @@ size_t vec_elesz(const struct vector *vec)
     return vec->elesz;
 }
 
+int vec_empty(const struct vector *vec)
+{
+    if (!vec)
+        return 1;
+    return vec->sz == 0;
+}
+
+void *vec_raw(const struct vector *vec)
+{
+    if (!vec)
+        return NULL;
+    return vec->buf;
+}
+
+size_t vec_size(const struct vector *vec)
+{
+    if (!vec)
+        return 0;
+    return vec->sz;
+}
+
+size_t vec_capacity(const struct vector *vec)
+{
+    if (!vec)
+        return 0;
+    return vec->cap;
+}
+
+void *vec_back(const struct vector *vec)
+{
+    if (!vec)
+        return NULL;
+    if (vec_empty(vec))
+        return NULL;
+    return GET(vec, vec->buf, vec->sz - 1);
+}
+
+void *vec_front(const struct vector *vec)
+{
+    if (!vec)
+        return NULL;
+    if (vec_empty(vec))
+        return NULL;
+    return GET(vec, vec->buf, 0);
+}
+
 void *vec_at(const struct vector *vec, size_t idx)
 {
     if (!vec || idx >= vec->sz)
         return NULL;
     return GET(vec, vec->buf, idx);
-}
-
-void vec_sort(struct vector *vec, int (*cmp)(const void *, const void *))
-{
-    if (!vec || !cmp)
-        return;
-    if (!vec->buf)
-        return;
-    qsort(vec->buf, vec->sz, vec->elesz, cmp);
-}
-
-void vec_clear(struct vector *vec)
-{
-    if (!vec)
-        return;
-    destroy_range(vec, 0, vec->sz);
-    vec->sz = 0;
 }
 
 int vec_resize(struct vector *vec, size_t newsz)
@@ -270,6 +251,23 @@ int vec_remove(struct vector *vec, size_t idx, void *dest)
             vec->elesz * (vec->sz - idx - 1));
     vec->sz--;
     return 0;
+}
+
+void vec_sort(struct vector *vec, int (*cmp)(const void *, const void *))
+{
+    if (!vec || !cmp)
+        return;
+    if (!vec->buf)
+        return;
+    qsort(vec->buf, vec->sz, vec->elesz, cmp);
+}
+
+void vec_clear(struct vector *vec)
+{
+    if (!vec)
+        return;
+    destroy_range(vec, 0, vec->sz);
+    vec->sz = 0;
 }
 
 int vec_iter_init(struct vector_iter **iter, struct vector *vec)

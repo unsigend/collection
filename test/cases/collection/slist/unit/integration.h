@@ -315,9 +315,10 @@ UTEST_CASE(integration)
         EXPECT_EQ_PTR(slist_data(slist_head(s)), &a);
         EXPECT_EQ_PTR(slist_data(slist_next(slist_head(s))), &b);
         EXPECT_EQ_PTR(slist_data(slist_next(slist_next(slist_head(s)))), &c);
-        EXPECT_EQ_PTR(slist_data(slist_next(slist_next(slist_next(slist_head(s))))),
-                      &d);
-        EXPECT_NULL(slist_next(slist_next(slist_next(slist_next(slist_head(s))))));
+        EXPECT_EQ_PTR(
+            slist_data(slist_next(slist_next(slist_next(slist_head(s))))), &d);
+        EXPECT_NULL(
+            slist_next(slist_next(slist_next(slist_next(slist_head(s))))));
         slist_free(s);
     }
 
@@ -364,8 +365,8 @@ UTEST_CASE(integration)
         EXPECT_EQ_INT(slist_insert_next(s, slist_head(s), &b), 0);
         EXPECT_EQ_UINT(slist_size(s), 3);
         EXPECT_EQ_INT(((struct intg_pair *)slist_front(s))->x, 1);
-        EXPECT_EQ_INT(((struct intg_pair *)slist_data(slist_next(slist_head(s))))->x,
-                      2);
+        EXPECT_EQ_INT(
+            ((struct intg_pair *)slist_data(slist_next(slist_head(s))))->x, 2);
         EXPECT_EQ_INT(((struct intg_pair *)slist_back(s))->x, 3);
         out = NULL;
         EXPECT_EQ_INT(slist_remove_next(s, slist_head(s), &out), 0);
@@ -396,7 +397,8 @@ UTEST_CASE(integration)
         EXPECT_EQ_UINT(slist_size(s), 3);
         EXPECT_EQ_INT((int)((struct intg_nested *)slist_front(s))->tag, 7);
         EXPECT_EQ_INT(
-            ((struct intg_nested *)slist_data(slist_next(slist_head(s))))->id, 800);
+            ((struct intg_nested *)slist_data(slist_next(slist_head(s))))->id,
+            800);
         EXPECT_EQ_INT(((struct intg_nested *)slist_back(s))->id, 900);
         out = NULL;
         EXPECT_EQ_INT(slist_popfront(s, &out), 0);

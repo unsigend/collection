@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef COL_STACK_H
-#define COL_STACK_H
+#ifndef COLLECTION_STACK_H
+#define COLLECTION_STACK_H
 
 #include <stddef.h>
 
@@ -31,27 +31,28 @@ extern "C" {
  * value passed to push operations.
  *
  * @param stack   output pointer to receive the new stack, must not be NULL
- * @param elesz   byte size of each element, must be non-zero
+ * @param elesz   byte size of each element, must be non zero
  * @param destroy optional callback invoked on each element when it is
- *                discarded, or NULL for no-op
+ *                discarded, or NULL for no op
  * @return        0 on success, -1 on failure
  */
-int stack_init(struct stack **stack, size_t elesz, void (*destroy)(void *));
+extern int stack_init(struct stack **stack, size_t elesz,
+                      void (*destroy)(void *));
 
 /**
  * Destroy all elements, release the internal buffer, and free the stack.
  *
  * @param stack the stack to free, or NULL
  */
-void stack_free(struct stack *stack);
+extern void stack_free(struct stack *stack);
 
 /**
  * Test whether the stack contains no elements.
  *
  * @param stack the stack to inspect, or NULL
- * @return      non-zero if empty, zero otherwise
+ * @return      non zero if empty, zero otherwise
  */
-int stack_empty(const struct stack *stack);
+extern int stack_empty(const struct stack *stack);
 
 /**
  * Return the current number of elements in the stack.
@@ -59,7 +60,15 @@ int stack_empty(const struct stack *stack);
  * @param stack the stack to inspect, or NULL
  * @return      element count, or 0 if stack is NULL
  */
-size_t stack_size(const struct stack *stack);
+extern size_t stack_size(const struct stack *stack);
+
+/**
+ * Return a pointer to the top element without removing it.
+ *
+ * @param stack the stack to inspect, or NULL
+ * @return      pointer to the top element, or NULL if stack is NULL or empty
+ */
+extern void *stack_peek(const struct stack *stack);
 
 /**
  * Push a copy of ele onto the top of the stack.
@@ -68,26 +77,18 @@ size_t stack_size(const struct stack *stack);
  * @param ele   pointer to the value to copy, must not be NULL
  * @return      0 on success, -1 on failure
  */
-int stack_push(struct stack *stack, void *ele);
+extern int stack_push(struct stack *stack, void *ele);
 
 /**
- * Remove the top element. When dest is non-NULL, copy the element there and
- * skip destroy; otherwise invoke destroy when set.
+ * Remove the top element. When dest is non NULL, copy the element there and
+ * skip destroy, otherwise invoke destroy when set.
  *
  * @param stack the stack to modify
  * @param dest  buffer of at least elesz bytes to receive the element, or NULL
  *              to invoke destroy
  * @return      0 on success, -1 if stack is NULL or the stack is empty
  */
-int stack_pop(struct stack *stack, void *dest);
-
-/**
- * Return a pointer to the top element without removing it.
- *
- * @param stack the stack to inspect, or NULL
- * @return      pointer to the top element, or NULL if stack is NULL or empty
- */
-void *stack_peek(const struct stack *stack);
+extern int stack_pop(struct stack *stack, void *dest);
 
 /**
  * Remove all elements and reset size to zero, invoking destroy on each when
@@ -95,7 +96,7 @@ void *stack_peek(const struct stack *stack);
  *
  * @param stack the stack to clear, or NULL
  */
-void stack_clear(struct stack *stack);
+extern void stack_clear(struct stack *stack);
 
 #ifdef __cplusplus
 }

@@ -15,16 +15,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <hash.h>
 #include <stdint.h>
 
-static inline uint32_t djb2(unsigned char *str)
-{
-  uint32_t hash = 5381;
-  unsigned char c;
-
-  while ((c = *str++))
-    hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-  return hash;
-}
+static uint32_t djb2(unsigned char *str);
 
 uint32_t hash_str(const char *str) { return djb2((unsigned char *)str); }
+
+static uint32_t djb2(unsigned char *str)
+{
+    uint32_t hash = 5381;
+    unsigned char c;
+
+    while ((c = *str++))
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+    return hash;
+}

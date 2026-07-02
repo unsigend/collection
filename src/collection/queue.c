@@ -60,6 +60,13 @@ size_t queue_size(const struct queue *queue)
     return deq_size(queue->deq);
 }
 
+void *queue_peek(const struct queue *queue)
+{
+    if (!queue)
+        return NULL;
+    return deq_front(queue->deq);
+}
+
 int queue_enq(struct queue *queue, void *ele)
 {
     if (!queue || !ele)
@@ -72,13 +79,6 @@ int queue_deq(struct queue *queue, void *dest)
     if (!queue)
         return -1;
     return deq_popfront(queue->deq, dest);
-}
-
-void *queue_peek(const struct queue *queue)
-{
-    if (!queue)
-        return NULL;
-    return deq_front(queue->deq);
 }
 
 void queue_clear(struct queue *queue)

@@ -16,9 +16,7 @@
  */
 
 #include <slist.h>
-#include <stddef.h>
 #include <stdlib.h>
-#include <string.h>
 
 struct slist {
     struct slist_node *head;
@@ -37,21 +35,26 @@ struct slist_iter {
     struct slist_node *node;
 };
 
-static struct slist_node *create_node(void *data)
-{
-    struct slist_node *node = malloc(sizeof(struct slist_node));
-    if (!node)
-        return NULL;
-    node->data = data;
-    node->next = NULL;
-    return node;
-}
+static struct slist_node *create_node(void *data);
 
-size_t slist_size(const struct slist *slist)
+int slist_init(struct slist **slist, void (*destroy)(void *))
 {
     if (!slist)
-        return 0;
-    return slist->len;
+        return -1;
+    struct slist *s = calloc(1, sizeof(struct slist));
+    if (!s)
+        return -1;
+    s->destroy = destroy;
+    *slist = s;
+    return 0;
+}
+
+void slist_free(struct slist *slist)
+{
+    if (!slist)
+        return;
+    slist_clear(slist);
+    free(slist);
 }
 
 int slist_empty(const struct slist *slist)
@@ -59,6 +62,13 @@ int slist_empty(const struct slist *slist)
     if (!slist)
         return 1;
     return slist->len == 0;
+}
+
+size_t slist_size(const struct slist *slist)
+{
+    if (!slist)
+        return 0;
+    return slist->len;
 }
 
 void *slist_front(const struct slist *slist)
@@ -94,43 +104,6 @@ void *slist_data(const struct slist_node *node)
     if (!node)
         return NULL;
     return node->data;
-}
-
-int slist_init(struct slist **slist, void (*destroy)(void *))
-{
-    if (!slist)
-        return -1;
-    struct slist *s = calloc(1, sizeof(struct slist));
-    if (!s)
-        return -1;
-    s->destroy = destroy;
-    *slist = s;
-    return 0;
-}
-
-void slist_free(struct slist *slist)
-{
-    if (!slist)
-        return;
-    slist_clear(slist);
-    free(slist);
-}
-
-void slist_clear(struct slist *slist)
-{
-    if (!slist)
-        return;
-    struct slist_node *node = slist->head;
-    while (node) {
-        struct slist_node *next = node->next;
-        if (slist->destroy)
-            slist->destroy(node->data);
-        free(node);
-        node = next;
-    }
-    slist->head = NULL;
-    slist->tail = NULL;
-    slist->len = 0;
 }
 
 int slist_pushfront(struct slist *slist, void *data)
@@ -220,6 +193,23 @@ int slist_remove_next(struct slist *slist, struct slist_node *node, void **dest)
     return 0;
 }
 
+void slist_clear(struct slist *slist)
+{
+    if (!slist)
+        return;
+    struct slist_node *node = slist->head;
+    while (node) {
+        struct slist_node *next = node->next;
+        if (slist->destroy)
+            slist->destroy(node->data);
+        free(node);
+        node = next;
+    }
+    slist->head = NULL;
+    slist->tail = NULL;
+    slist->len = 0;
+}
+
 int slist_iter_init(struct slist_iter **iter, struct slist *slist)
 {
     if (!iter || !slist)
@@ -252,4 +242,14 @@ void slist_iter_free(struct slist_iter *iter)
     if (!iter)
         return;
     free(iter);
+}
+
+static struct slist_node *create_node(void *data)
+{
+    struct slist_node *node = malloc(sizeof(struct slist_node));
+    if (!node)
+        return NULL;
+    node->data = data;
+    node->next = NULL;
+    return node;
 }
