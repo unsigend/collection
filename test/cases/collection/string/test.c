@@ -4,6 +4,7 @@
 #include "unit/compare.h"
 #include "unit/edit.h"
 #include "unit/init.h"
+#include "unit/iter.h"
 #include "unit/modify.h"
 #include "unit/replace.h"
 #include "unit/search.h"
@@ -70,4 +71,6 @@ UTEST_SUITE(string)
     UTEST_RUNCASE(string_split_free);
     UTEST_RUNCASE(string_join);
     UTEST_RUNCASE(string_join_str);
+
+    UTEST_RUNCASE(string_iter);
 }

@@ -21,6 +21,7 @@
 #include <stddef.h>
 
 struct string;
+struct string_iter;
 
 #ifdef __cplusplus
 extern "C" {
@@ -466,6 +467,45 @@ extern int string_join(struct string **out, const char *sep, size_t n, ...);
  */
 extern int string_join_str(struct string **out, const char *sep,
                            const struct string **parts, size_t n);
+
+/**
+ * Allocate and initialize an iterator positioned at the first character of
+ * str.
+ *
+ * @param iter output pointer to receive the new iterator, must not be NULL
+ * @param str  the string to traverse, must not be NULL
+ * @return     0 on success, -1 on failure
+ */
+extern int string_iter_init(struct string_iter **iter, struct string *str);
+
+/**
+ * Advance the iterator forward by one character.
+ *
+ * @param iter the iterator to advance, or NULL
+ */
+extern void string_iter_inc(struct string_iter *iter);
+
+/**
+ * Move the iterator backward by one character.
+ *
+ * @param iter the iterator to move, or NULL
+ */
+extern void string_iter_dec(struct string_iter *iter);
+
+/**
+ * Return the character at the current iterator position.
+ *
+ * @param iter the iterator to read from, or NULL
+ * @return     the current character, or '\0' if iter is NULL or out of range
+ */
+extern char string_iter_get(struct string_iter *iter);
+
+/**
+ * Free the iterator.
+ *
+ * @param iter the iterator to free, or NULL
+ */
+extern void string_iter_free(struct string_iter *iter);
 
 #ifdef __cplusplus
 }

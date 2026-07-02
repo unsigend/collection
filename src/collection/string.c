@@ -32,6 +32,11 @@ struct string {
     size_t cap;
 };
 
+struct string_iter {
+    const struct string *str;
+    size_t idx;
+};
+
 static char *strrstr(const char *haystack, const char *needle);
 
 int string_init(struct string **str) { return string_init_bufn(str, NULL, 0); }
@@ -686,4 +691,43 @@ static char *strrstr(const char *haystack, const char *needle)
     }
 
     return NULL;
+}
+
+int string_iter_init(struct string_iter **iter, struct string *str)
+{
+    if (!iter || !str)
+        return -1;
+    struct string_iter *it = malloc(sizeof(struct string_iter));
+    if (!it)
+        return -1;
+    it->str = str;
+    it->idx = 0;
+    *iter = it;
+    return 0;
+}
+
+void string_iter_inc(struct string_iter *iter)
+{
+    if (!iter || iter->idx >= iter->str->len)
+        return;
+    iter->idx++;
+}
+
+void string_iter_dec(struct string_iter *iter)
+{
+    if (!iter || iter->idx == 0)
+        return;
+    iter->idx--;
+}
+
+char string_iter_get(struct string_iter *iter)
+{
+    if (!iter || iter->idx >= iter->str->len)
+        return '\0';
+    return iter->str->buf[iter->idx];
+}
+
+void string_iter_free(struct string_iter *iter)
+{
+    free(iter);
 }
