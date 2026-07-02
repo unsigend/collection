@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <slist.h>
+#include <collection/slist.h>
 #include <stdlib.h>
 
 struct slist {

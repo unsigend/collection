@@ -1,4 +1,4 @@
-#include <heap.h>
+#include <collection/heap.h>
 #include <utest.h>
 
 static int edg_cmp_int(void *a, void *b)

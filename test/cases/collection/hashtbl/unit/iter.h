@@ -1,4 +1,4 @@
-#include <hashtbl.h>
+#include <collection/hashtbl.h>
 #include <stdint.h>
 #include <utest.h>
 

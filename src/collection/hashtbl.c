@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <hashtbl.h>
+#include <collection/hashtbl.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

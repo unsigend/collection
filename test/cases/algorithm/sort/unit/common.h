@@ -2,7 +2,7 @@
 #define TEST_SORT_COMMON_H
 
 #define COL_ALL_SORTS
-#include <sort.h>
+#include <collection/sort.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>

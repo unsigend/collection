@@ -1,5 +1,5 @@
 #include <errno.h>
-#include <queue.h>
+#include <collection/queue.h>
 #include <stdint.h>
 #include <string.h>
 #include <utest.h>

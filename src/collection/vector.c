@@ -17,11 +17,11 @@
 
 #include "vector_struct.h"
 
+#include <collection/vector.h>
 #include <errno.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <vector.h>
 
 #define MINCAP 16
 #define GROWFACTOR 2

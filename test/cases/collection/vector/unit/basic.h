@@ -1,6 +1,6 @@
 #include <string.h>
 #include <utest.h>
-#include <vector.h>
+#include <collection/vector.h>
 
 static int dtor_n;
 static void dtor_inc(void *p)

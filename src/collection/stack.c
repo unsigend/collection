@@ -15,9 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stack.h>
+#include <collection/stack.h>
+#include <collection/vector.h>
 #include <stdlib.h>
-#include <vector.h>
 
 struct stack {
     struct vector *vec;

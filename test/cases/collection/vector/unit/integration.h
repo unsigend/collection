@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <utest.h>
-#include <vector.h>
+#include <collection/vector.h>
 
 struct intg_pair {
     int x;

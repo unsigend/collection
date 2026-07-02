@@ -17,11 +17,11 @@
 
 #include "vector_struct.h"
 
-#include <heap.h>
+#include <collection/heap.h>
+#include <collection/util.h>
+#include <collection/vector.h>
 #include <stdlib.h>
 #include <string.h>
-#include <util.h>
-#include <vector.h>
 
 #define PARENT(idx) (((idx) - 1) / 2)
 #define LEFT(idx) (2 * (idx) + 1)

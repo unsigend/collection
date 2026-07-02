@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <hash.h>
+#include <collection/hash.h>
 #include <stdint.h>
 
 static uint32_t djb2(unsigned char *str);

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <dlist.h>
+#include <collection/dlist.h>
 #include <stdlib.h>
 #include <string.h>
 

@@ -1,4 +1,4 @@
-#include <dlist.h>
+#include <collection.h>
 #include <utest.h>
 
 static int edg_dtor_n;

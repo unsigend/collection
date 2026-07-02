@@ -17,8 +17,8 @@
 
 #include "sort.h"
 
+#include <collection/util.h>
 #include <math.h>
-#include <util.h>
 
 #define THRESHOLD 16
 

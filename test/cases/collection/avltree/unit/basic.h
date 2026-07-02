@@ -1,4 +1,4 @@
-#include <avltree.h>
+#include <collection/avltree.h>
 #include <stdlib.h>
 #include <string.h>
 #include <utest.h>

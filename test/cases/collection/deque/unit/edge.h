@@ -1,4 +1,4 @@
-#include <deque.h>
+#include <collection/deque.h>
 #include <errno.h>
 #include <stdint.h>
 #include <string.h>
