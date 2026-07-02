@@ -16,46 +16,75 @@
  */
 
 #include <stack.h>
+#include <stdlib.h>
 #include <vector.h>
 
-int stack_init(struct stack *stack, size_t elesz, void (*destroy)(void *))
+struct stack {
+    struct vector *vec;
+};
+
+int stack_init(struct stack **stack, size_t elesz, void (*destroy)(void *))
 {
-  if (!stack || !elesz)
-    return -1;
-  return vec_init(&stack->vec, elesz, destroy);
+    if (!stack || !elesz)
+        return -1;
+    struct stack *s = calloc(1, sizeof(struct stack));
+    if (!s)
+        return -1;
+    int ret = vec_init(&s->vec, elesz, destroy);
+    if (ret == -1) {
+        free(s);
+        return -1;
+    }
+    *stack = s;
+    return 0;
 }
 
-void stack_fini(struct stack *stack)
+void stack_free(struct stack *stack)
 {
-  if (!stack)
-    return;
-  vec_fini(&stack->vec);
+    if (!stack)
+        return;
+    vec_free(stack->vec);
+    free(stack);
 }
 
 int stack_push(struct stack *stack, void *ele)
 {
-  if (!stack || !ele)
-    return -1;
-  return vec_pushback(&stack->vec, ele);
+    if (!stack || !ele)
+        return -1;
+    return vec_pushback(stack->vec, ele);
 }
 
 int stack_pop(struct stack *stack, void *dest)
 {
-  if (!stack)
-    return -1;
-  return vec_popback(&stack->vec, dest);
+    if (!stack)
+        return -1;
+    return vec_popback(stack->vec, dest);
 }
 
-void *stack_peek(struct stack *stack)
+void *stack_peek(const struct stack *stack)
 {
-  if (!stack)
-    return NULL;
-  return vec_back(&stack->vec);
+    if (!stack)
+        return NULL;
+    return vec_back(stack->vec);
 }
 
 void stack_clear(struct stack *stack)
 {
-  if (!stack)
-    return;
-  vec_clear(&stack->vec);
+    if (!stack)
+        return;
+    vec_clear(stack->vec);
+}
+
+int stack_empty(const struct stack *stack)
+{
+    if (!stack)
+        return 1;
+    return vec_empty(stack->vec);
+}
+
+size_t stack_size(const struct stack *stack)
+{
+    if (!stack)
+        return 0;
+    return vec_size(stack->vec);
 }

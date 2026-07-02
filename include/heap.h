@@ -19,26 +19,88 @@
 #define COL_HEAP_H
 
 #include <stddef.h>
-#include <vector.h>
 
 struct heap;
 
-#define heap_empty(heap)                                                       \
-  vec_empty(&(heap)->vec)                      /* Check if the heap is empty */
-#define heap_size(heap) vec_size(&(heap)->vec) /* Get the size of the heap */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int heap_init(struct heap *heap, size_t elesz, int (*cmp)(void *, void *),
+/**
+ * Allocate and initialize an empty heap. Each stored element is a copy of the
+ * value passed to push operations.
+ *
+ * @param heap    output pointer to receive the new heap, must not be NULL
+ * @param elesz   byte size of each element, must be non-zero
+ * @param cmp     comparator used to order elements; must not be NULL
+ * @param destroy optional callback invoked on each element when it is
+ *                discarded, or NULL for no-op
+ * @return        0 on success, -1 on failure
+ */
+int heap_init(struct heap **heap, size_t elesz, int (*cmp)(void *, void *),
               void (*destroy)(void *));
-void heap_fini(struct heap *heap);
 
+/**
+ * Destroy all elements, release the internal buffer, and free the heap.
+ *
+ * @param heap the heap to free, or NULL
+ */
+void heap_free(struct heap *heap);
+
+/**
+ * Test whether the heap contains no elements.
+ *
+ * @param heap the heap to inspect, or NULL
+ * @return     non-zero if empty, zero otherwise
+ */
+int heap_empty(const struct heap *heap);
+
+/**
+ * Return the current number of elements in the heap.
+ *
+ * @param heap the heap to inspect, or NULL
+ * @return     element count, or 0 if heap is NULL
+ */
+size_t heap_size(const struct heap *heap);
+
+/**
+ * Push a copy of ele into the heap and restore the heap property.
+ *
+ * @param heap the heap to modify
+ * @param ele  pointer to the value to copy, must not be NULL
+ * @return     0 on success, -1 on failure
+ */
 int heap_push(struct heap *heap, void *ele);
+
+/**
+ * Remove the root element. When dest is non-NULL, copy the element there and
+ * skip destroy; otherwise invoke destroy when set.
+ *
+ * @param heap the heap to modify
+ * @param dest buffer of at least elesz bytes to receive the element, or NULL
+ *             to invoke destroy
+ * @return     0 on success, -1 if heap is NULL or the heap is empty
+ */
 int heap_pop(struct heap *heap, void *dest);
-void *heap_peek(struct heap *heap);
+
+/**
+ * Return a pointer to the root element without removing it.
+ *
+ * @param heap the heap to inspect, or NULL
+ * @return     pointer to the root element, or NULL if heap is NULL or empty
+ */
+void *heap_peek(const struct heap *heap);
+
+/**
+ * Remove all elements and reset size to zero, invoking destroy on each when
+ * set. Does not release the buffer or free the heap.
+ *
+ * @param heap the heap to clear, or NULL
+ */
 void heap_clear(struct heap *heap);
 
-struct heap {
-  struct vector vec;
-  int (*cmp)(void *, void *);
-};
+#ifdef __cplusplus
+}
+#endif
 
 #endif

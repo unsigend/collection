@@ -5,429 +5,446 @@
 static int dtor_n;
 static void dtor_inc(void *p)
 {
-  (void)p;
-  dtor_n++;
+    (void)p;
+    dtor_n++;
 }
 
 static int cmp_int(const void *a, const void *b)
 {
-  int x = *(const int *)a;
-  int y = *(const int *)b;
-  return (x > y) - (x < y);
+    int x = *(const int *)a;
+    int y = *(const int *)b;
+    return (x > y) - (x < y);
 }
 
 UTEST_CASE(basic)
 {
-  {
-    struct vector v;
+    {
+        struct vector *v;
 
-    EXPECT_EQ_INT(vec_init(NULL, sizeof(int), NULL), -1);
-    EXPECT_EQ_INT(vec_init(&v, 0, NULL), -1);
-  }
-
-  {
-    struct vector v;
-
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    EXPECT_TRUE(vec_empty(&v));
-    EXPECT_EQ_UINT(vec_size(&v), 0);
-    EXPECT_GE_UINT(vec_capacity(&v), vec_size(&v));
-    EXPECT_NULL(vec_at(&v, 0));
-    EXPECT_NULL(vec_at(&v, 1));
-    EXPECT_EQ_INT(vec_popback(&v, NULL), -1);
-    vec_fini(&v);
-  }
-
-  {
-    struct vector v;
-    int x;
-
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    x = 10;
-    EXPECT_EQ_INT(vec_pushback(&v, &x), 0);
-    EXPECT_FALSE(vec_empty(&v));
-    EXPECT_EQ_UINT(vec_size(&v), 1);
-    EXPECT_NOTNULL(vec_at(&v, 0));
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 10);
-    EXPECT_NOTNULL(vec_front(&v));
-    EXPECT_EQ_PTR(vec_front(&v), vec_at(&v, 0));
-    EXPECT_NOTNULL(vec_back(&v));
-    EXPECT_EQ_PTR(vec_back(&v), vec_at(&v, 0));
-    vec_fini(&v);
-  }
-
-  {
-    struct vector v;
-    int a, b, c, out;
-
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    a = 1;
-    b = 2;
-    c = 3;
-    EXPECT_EQ_INT(vec_pushback(&v, &a), 0);
-    EXPECT_EQ_INT(vec_pushback(&v, &b), 0);
-    EXPECT_EQ_INT(vec_pushback(&v, &c), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 3);
-    out = 0;
-    EXPECT_EQ_INT(vec_popback(&v, &out), 0);
-    EXPECT_EQ_INT(out, 3);
-    EXPECT_EQ_INT(vec_popback(&v, &out), 0);
-    EXPECT_EQ_INT(out, 2);
-    EXPECT_EQ_INT(vec_popback(&v, &out), 0);
-    EXPECT_EQ_INT(out, 1);
-    EXPECT_TRUE(vec_empty(&v));
-    EXPECT_EQ_INT(vec_popback(&v, NULL), -1);
-    vec_fini(&v);
-  }
-
-  {
-    struct vector v;
-    int a, b, c;
-
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    a = 5;
-    b = 6;
-    c = 7;
-    vec_pushback(&v, &a);
-    vec_pushback(&v, &b);
-    vec_pushback(&v, &c);
-    vec_clear(&v);
-    EXPECT_TRUE(vec_empty(&v));
-    EXPECT_EQ_UINT(vec_size(&v), 0);
-    EXPECT_EQ_INT(vec_pushback(&v, &a), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 1);
-    vec_fini(&v);
-  }
-
-  {
-    struct vector v;
-    int x;
-    void *p;
-
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    EXPECT_EQ_INT(vec_resize(&v, 1), 0);
-    p = vec_at(&v, 0);
-    EXPECT_NOTNULL(p);
-    *(int *)p = 42;
-    EXPECT_EQ_INT(vec_resize(&v, 3), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 3);
-    p = vec_at(&v, 1);
-    EXPECT_NOTNULL(p);
-    x = 1;
-    memcpy(p, &x, sizeof(int));
-    p = vec_at(&v, 2);
-    EXPECT_NOTNULL(p);
-    x = 2;
-    memcpy(p, &x, sizeof(int));
-    EXPECT_EQ_INT(vec_resize(&v, 1), 0);
-    EXPECT_NOTNULL(vec_at(&v, 0));
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 42);
-    vec_fini(&v);
-  }
-
-  {
-    struct vector v;
-    size_t idx;
-
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    EXPECT_EQ_INT(vec_resize(&v, 4), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 4);
-    EXPECT_GE_UINT(vec_capacity(&v), vec_size(&v));
-    for (idx = 0; idx < 4; idx++) {
-      void *p = vec_at(&v, idx);
-      EXPECT_NOTNULL(p);
-      *(int *)p = (int)(idx + 1);
+        EXPECT_EQ_INT(vec_init(NULL, sizeof(int), NULL), -1);
+        EXPECT_EQ_INT(vec_init(&v, 0, NULL), -1);
     }
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 3), 4);
-    EXPECT_EQ_INT(vec_resize(&v, 2), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 2);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 1);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 1), 2);
-    EXPECT_EQ_INT(vec_resize(&v, 2), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 2);
-    vec_fini(&v);
-  }
 
-  {
-    struct vector v;
-    size_t cap_a, cap_b;
+    {
+        struct vector *v;
 
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    EXPECT_EQ_INT(vec_resize(&v, 3), 0);
-    cap_a = vec_capacity(&v);
-    EXPECT_EQ_INT(vec_shrink(&v), 0);
-    cap_b = vec_capacity(&v);
-    EXPECT_EQ_UINT(vec_size(&v), 3);
-    EXPECT_GE_UINT(cap_b, vec_size(&v));
-    EXPECT_LE_UINT(cap_b, cap_a);
-    EXPECT_EQ_INT(vec_shrink(&v), 0);
-    EXPECT_EQ_UINT(vec_capacity(&v), cap_b);
-    vec_fini(&v);
-  }
-
-  {
-    struct vector v;
-    int x;
-
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    EXPECT_EQ_INT(vec_resize(&v, 2), 0);
-    vec_clear(&v);
-    EXPECT_EQ_INT(vec_shrink(&v), 0);
-    EXPECT_TRUE(vec_empty(&v));
-    x = 1;
-    EXPECT_EQ_INT(vec_pushback(&v, &x), 0);
-    vec_fini(&v);
-  }
-
-  {
-    struct vector v;
-    int i;
-    size_t idx;
-    size_t cap0;
-
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    i = 0;
-    EXPECT_EQ_INT(vec_pushback(&v, &i), 0);
-    cap0 = vec_capacity(&v);
-    for (idx = 1; idx < 17; idx++) {
-      i = (int)idx;
-      EXPECT_EQ_INT(vec_pushback(&v, &i), 0);
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        EXPECT_TRUE(vec_empty(v));
+        EXPECT_EQ_UINT(vec_size(v), 0);
+        EXPECT_GE_UINT(vec_capacity(v), vec_size(v));
+        EXPECT_NULL(vec_at(v, 0));
+        EXPECT_NULL(vec_at(v, 1));
+        EXPECT_EQ_INT(vec_popback(v, NULL), -1);
+        vec_free(v);
     }
-    EXPECT_EQ_UINT(vec_size(&v), 17);
-    EXPECT_GE_UINT(vec_capacity(&v), vec_size(&v));
-    EXPECT_GE_UINT(vec_capacity(&v), cap0);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 0);
-    EXPECT_EQ_INT(*(int *)vec_back(&v), 16);
-    vec_fini(&v);
-  }
 
-  {
-    struct vector v;
-    double a, b, out;
+    {
+        struct vector *v;
+        int x;
 
-    EXPECT_EQ_INT(vec_init(&v, sizeof(double), NULL), 0);
-    a = 3.14;
-    b = 2.71;
-    EXPECT_EQ_INT(vec_pushback(&v, &a), 0);
-    EXPECT_EQ_INT(vec_pushback(&v, &b), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 2);
-    EXPECT_NOTNULL(vec_at(&v, 0));
-    EXPECT_EQ_DOUBLE(*(double *)vec_at(&v, 0), 3.14);
-    EXPECT_EQ_DOUBLE(*(double *)vec_back(&v), 2.71);
-    out = 0.0;
-    EXPECT_EQ_INT(vec_popback(&v, &out), 0);
-    EXPECT_EQ_DOUBLE(out, 2.71);
-    vec_fini(&v);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        x = 10;
+        EXPECT_EQ_INT(vec_pushback(v, &x), 0);
+        EXPECT_FALSE(vec_empty(v));
+        EXPECT_EQ_UINT(vec_size(v), 1);
+        EXPECT_NOTNULL(vec_at(v, 0));
+        EXPECT_EQ_INT(*(int *)vec_at(v, 0), 10);
+        EXPECT_NOTNULL(vec_front(v));
+        EXPECT_EQ_PTR(vec_front(v), vec_at(v, 0));
+        EXPECT_NOTNULL(vec_back(v));
+        EXPECT_EQ_PTR(vec_back(v), vec_at(v, 0));
+        vec_free(v);
+    }
 
-  {
-    struct vector v;
-    int a, b, c, out;
+    {
+        struct vector *v;
+        int a, b, c, out;
 
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    a = 1;
-    b = 2;
-    vec_pushback(&v, &a);
-    vec_pushback(&v, &b);
-    c = 9;
-    EXPECT_EQ_INT(vec_insert(&v, 0, &c), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 3);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 9);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 2), 2);
-    c = 5;
-    EXPECT_EQ_INT(vec_insert(&v, 2, &c), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 4);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 2), 5);
-    c = 8;
-    EXPECT_EQ_INT(vec_insert(&v, 4, &c), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 5);
-    EXPECT_EQ_INT(*(int *)vec_back(&v), 8);
-    out = 0;
-    EXPECT_EQ_INT(vec_remove(&v, 2, &out), 0);
-    EXPECT_EQ_INT(out, 5);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 2), 2);
-    EXPECT_EQ_INT(vec_remove(&v, 3, NULL), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 3);
-    EXPECT_EQ_INT(vec_remove(&v, 0, NULL), 0);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 1);
-    vec_fini(&v);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        a = 1;
+        b = 2;
+        c = 3;
+        EXPECT_EQ_INT(vec_pushback(v, &a), 0);
+        EXPECT_EQ_INT(vec_pushback(v, &b), 0);
+        EXPECT_EQ_INT(vec_pushback(v, &c), 0);
+        EXPECT_EQ_UINT(vec_size(v), 3);
+        out = 0;
+        EXPECT_EQ_INT(vec_popback(v, &out), 0);
+        EXPECT_EQ_INT(out, 3);
+        EXPECT_EQ_INT(vec_popback(v, &out), 0);
+        EXPECT_EQ_INT(out, 2);
+        EXPECT_EQ_INT(vec_popback(v, &out), 0);
+        EXPECT_EQ_INT(out, 1);
+        EXPECT_TRUE(vec_empty(v));
+        EXPECT_EQ_INT(vec_popback(v, NULL), -1);
+        vec_free(v);
+    }
 
-  {
-    struct vector v;
-    int x;
+    {
+        struct vector *v;
+        int a, b, c;
 
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    x = 42;
-    EXPECT_EQ_INT(vec_insert(&v, 0, &x), 0);
-    EXPECT_EQ_UINT(vec_size(&v), 1);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 42);
-    vec_fini(&v);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        a = 5;
+        b = 6;
+        c = 7;
+        vec_pushback(v, &a);
+        vec_pushback(v, &b);
+        vec_pushback(v, &c);
+        vec_clear(v);
+        EXPECT_TRUE(vec_empty(v));
+        EXPECT_EQ_UINT(vec_size(v), 0);
+        EXPECT_EQ_INT(vec_pushback(v, &a), 0);
+        EXPECT_EQ_UINT(vec_size(v), 1);
+        vec_free(v);
+    }
 
-  {
-    struct vector v;
-    int a, b, out;
+    {
+        struct vector *v;
+        int x;
+        void *p;
 
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    a = 1;
-    b = 2;
-    vec_pushback(&v, &a);
-    vec_pushback(&v, &b);
-    out = 0;
-    EXPECT_EQ_INT(vec_remove(&v, 1, &out), 0);
-    EXPECT_EQ_INT(out, 2);
-    EXPECT_EQ_UINT(vec_size(&v), 1);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 1);
-    EXPECT_EQ_INT(vec_remove(&v, 0, &out), 0);
-    EXPECT_EQ_INT(out, 1);
-    EXPECT_TRUE(vec_empty(&v));
-    vec_fini(&v);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        EXPECT_EQ_INT(vec_resize(v, 1), 0);
+        p = vec_at(v, 0);
+        EXPECT_NOTNULL(p);
+        *(int *)p = 42;
+        EXPECT_EQ_INT(vec_resize(v, 3), 0);
+        EXPECT_EQ_UINT(vec_size(v), 3);
+        p = vec_at(v, 1);
+        EXPECT_NOTNULL(p);
+        x = 1;
+        memcpy(p, &x, sizeof(int));
+        p = vec_at(v, 2);
+        EXPECT_NOTNULL(p);
+        x = 2;
+        memcpy(p, &x, sizeof(int));
+        EXPECT_EQ_INT(vec_resize(v, 1), 0);
+        EXPECT_NOTNULL(vec_at(v, 0));
+        EXPECT_EQ_INT(*(int *)vec_at(v, 0), 42);
+        vec_free(v);
+    }
 
-  {
-    struct vector v;
+    {
+        struct vector *v;
+        size_t idx;
 
-    dtor_n = 0;
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
-    vec_fini(&v);
-    EXPECT_EQ_INT(dtor_n, 0);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        EXPECT_EQ_INT(vec_resize(v, 4), 0);
+        EXPECT_EQ_UINT(vec_size(v), 4);
+        EXPECT_GE_UINT(vec_capacity(v), vec_size(v));
+        for (idx = 0; idx < 4; idx++) {
+            void *p = vec_at(v, idx);
+            EXPECT_NOTNULL(p);
+            *(int *)p = (int)(idx + 1);
+        }
+        EXPECT_EQ_INT(*(int *)vec_at(v, 3), 4);
+        EXPECT_EQ_INT(vec_resize(v, 2), 0);
+        EXPECT_EQ_UINT(vec_size(v), 2);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 0), 1);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 1), 2);
+        EXPECT_EQ_INT(vec_resize(v, 2), 0);
+        EXPECT_EQ_UINT(vec_size(v), 2);
+        vec_free(v);
+    }
 
-  {
-    struct vector v;
-    int a, b, c;
+    {
+        struct vector *v;
+        size_t cap_a, cap_b;
 
-    dtor_n = 0;
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
-    a = 1;
-    b = 2;
-    c = 3;
-    vec_pushback(&v, &a);
-    vec_pushback(&v, &b);
-    vec_pushback(&v, &c);
-    vec_clear(&v);
-    EXPECT_EQ_INT(dtor_n, 3);
-    vec_fini(&v);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        EXPECT_EQ_INT(vec_resize(v, 3), 0);
+        cap_a = vec_capacity(v);
+        EXPECT_EQ_INT(vec_shrink(v), 0);
+        cap_b = vec_capacity(v);
+        EXPECT_EQ_UINT(vec_size(v), 3);
+        EXPECT_GE_UINT(cap_b, vec_size(v));
+        EXPECT_LE_UINT(cap_b, cap_a);
+        EXPECT_EQ_INT(vec_shrink(v), 0);
+        EXPECT_EQ_UINT(vec_capacity(v), cap_b);
+        vec_free(v);
+    }
 
-  {
-    struct vector v;
-    int x;
+    {
+        struct vector *v;
+        int x;
 
-    dtor_n = 0;
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
-    x = 7;
-    vec_pushback(&v, &x);
-    EXPECT_EQ_INT(vec_popback(&v, NULL), 0);
-    EXPECT_EQ_INT(dtor_n, 1);
-    vec_fini(&v);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        EXPECT_EQ_INT(vec_resize(v, 2), 0);
+        vec_clear(v);
+        EXPECT_EQ_INT(vec_shrink(v), 0);
+        EXPECT_TRUE(vec_empty(v));
+        x = 1;
+        EXPECT_EQ_INT(vec_pushback(v, &x), 0);
+        vec_free(v);
+    }
 
-  {
-    struct vector v;
-    int x, out;
+    {
+        struct vector *v;
+        int i;
+        size_t idx;
+        size_t cap0;
 
-    dtor_n = 0;
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
-    x = 7;
-    vec_pushback(&v, &x);
-    out = 0;
-    EXPECT_EQ_INT(vec_popback(&v, &out), 0);
-    EXPECT_EQ_INT(out, 7);
-    EXPECT_EQ_INT(dtor_n, 0);
-    vec_fini(&v);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        i = 0;
+        EXPECT_EQ_INT(vec_pushback(v, &i), 0);
+        cap0 = vec_capacity(v);
+        for (idx = 1; idx < 17; idx++) {
+            i = (int)idx;
+            EXPECT_EQ_INT(vec_pushback(v, &i), 0);
+        }
+        EXPECT_EQ_UINT(vec_size(v), 17);
+        EXPECT_GE_UINT(vec_capacity(v), vec_size(v));
+        EXPECT_GE_UINT(vec_capacity(v), cap0);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 0), 0);
+        EXPECT_EQ_INT(*(int *)vec_back(v), 16);
+        vec_free(v);
+    }
 
-  {
-    struct vector v;
-    int a, b;
+    {
+        struct vector *v;
+        double a, b, out;
 
-    dtor_n = 0;
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
-    a = 1;
-    b = 2;
-    vec_pushback(&v, &a);
-    vec_pushback(&v, &b);
-    EXPECT_EQ_INT(vec_remove(&v, 0, NULL), 0);
-    EXPECT_EQ_INT(dtor_n, 1);
-    vec_fini(&v);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(double), NULL), 0);
+        a = 3.14;
+        b = 2.71;
+        EXPECT_EQ_INT(vec_pushback(v, &a), 0);
+        EXPECT_EQ_INT(vec_pushback(v, &b), 0);
+        EXPECT_EQ_UINT(vec_size(v), 2);
+        EXPECT_NOTNULL(vec_at(v, 0));
+        EXPECT_EQ_DOUBLE(*(double *)vec_at(v, 0), 3.14);
+        EXPECT_EQ_DOUBLE(*(double *)vec_back(v), 2.71);
+        out = 0.0;
+        EXPECT_EQ_INT(vec_popback(v, &out), 0);
+        EXPECT_EQ_DOUBLE(out, 2.71);
+        vec_free(v);
+    }
 
-  {
-    struct vector v;
-    int a, b, out;
+    {
+        struct vector *v;
+        int a, b, c, out;
 
-    dtor_n = 0;
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
-    a = 1;
-    b = 2;
-    vec_pushback(&v, &a);
-    vec_pushback(&v, &b);
-    out = 0;
-    EXPECT_EQ_INT(vec_remove(&v, 0, &out), 0);
-    EXPECT_EQ_INT(out, 1);
-    EXPECT_EQ_INT(dtor_n, 0);
-    vec_fini(&v);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        a = 1;
+        b = 2;
+        vec_pushback(v, &a);
+        vec_pushback(v, &b);
+        c = 9;
+        EXPECT_EQ_INT(vec_insert(v, 0, &c), 0);
+        EXPECT_EQ_UINT(vec_size(v), 3);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 0), 9);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 2), 2);
+        c = 5;
+        EXPECT_EQ_INT(vec_insert(v, 2, &c), 0);
+        EXPECT_EQ_UINT(vec_size(v), 4);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 2), 5);
+        c = 8;
+        EXPECT_EQ_INT(vec_insert(v, 4, &c), 0);
+        EXPECT_EQ_UINT(vec_size(v), 5);
+        EXPECT_EQ_INT(*(int *)vec_back(v), 8);
+        out = 0;
+        EXPECT_EQ_INT(vec_remove(v, 2, &out), 0);
+        EXPECT_EQ_INT(out, 5);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 2), 2);
+        EXPECT_EQ_INT(vec_remove(v, 3, NULL), 0);
+        EXPECT_EQ_UINT(vec_size(v), 3);
+        EXPECT_EQ_INT(vec_remove(v, 0, NULL), 0);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 0), 1);
+        vec_free(v);
+    }
 
-  {
-    int x;
+    {
+        struct vector *v;
+        int x;
 
-    EXPECT_EQ_INT(vec_resize(NULL, 1), -1);
-    EXPECT_EQ_INT(vec_shrink(NULL), -1);
-    EXPECT_EQ_INT(vec_pushback(NULL, &x), -1);
-    EXPECT_EQ_INT(vec_insert(NULL, 0, &x), -1);
-    EXPECT_EQ_INT(vec_remove(NULL, 0, NULL), -1);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        x = 42;
+        EXPECT_EQ_INT(vec_insert(v, 0, &x), 0);
+        EXPECT_EQ_UINT(vec_size(v), 1);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 0), 42);
+        vec_free(v);
+    }
 
-  {
-    struct vector v;
-    int a;
+    {
+        struct vector *v;
+        int a, b, out;
 
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    a = 1;
-    EXPECT_EQ_INT(vec_pushback(&v, NULL), -1);
-    EXPECT_EQ_INT(vec_insert(&v, 0, NULL), -1);
-    vec_pushback(&v, &a);
-    EXPECT_EQ_INT(vec_remove(&v, 99, NULL), -1);
-    vec_fini(&v);
-  }
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        a = 1;
+        b = 2;
+        vec_pushback(v, &a);
+        vec_pushback(v, &b);
+        out = 0;
+        EXPECT_EQ_INT(vec_remove(v, 1, &out), 0);
+        EXPECT_EQ_INT(out, 2);
+        EXPECT_EQ_UINT(vec_size(v), 1);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 0), 1);
+        EXPECT_EQ_INT(vec_remove(v, 0, &out), 0);
+        EXPECT_EQ_INT(out, 1);
+        EXPECT_TRUE(vec_empty(v));
+        vec_free(v);
+    }
 
-  {
-    vec_fini(NULL);
-    vec_clear(NULL);
-  }
+    {
+        struct vector *v;
 
-  {
-    struct vector v;
-    int a, b, c, d;
+        dtor_n = 0;
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
+        vec_free(v);
+        EXPECT_EQ_INT(dtor_n, 0);
+    }
 
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    a = 3;
-    b = 1;
-    c = 4;
-    d = 2;
-    vec_pushback(&v, &a);
-    vec_pushback(&v, &b);
-    vec_pushback(&v, &c);
-    vec_pushback(&v, &d);
-    vec_sort(&v, cmp_int);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 0), 1);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 1), 2);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 2), 3);
-    EXPECT_EQ_INT(*(int *)vec_at(&v, 3), 4);
-    vec_fini(&v);
-  }
+    {
+        struct vector *v;
+        int a, b, c;
 
-  {
-    struct vector v;
+        dtor_n = 0;
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
+        a = 1;
+        b = 2;
+        c = 3;
+        vec_pushback(v, &a);
+        vec_pushback(v, &b);
+        vec_pushback(v, &c);
+        vec_clear(v);
+        EXPECT_EQ_INT(dtor_n, 3);
+        vec_free(v);
+    }
 
-    EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
-    vec_sort(&v, cmp_int);
-    EXPECT_TRUE(vec_empty(&v));
-    vec_sort(&v, NULL);
-    vec_sort(NULL, cmp_int);
-    vec_fini(&v);
-  }
+    {
+        struct vector *v;
+        int x;
+
+        dtor_n = 0;
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
+        x = 7;
+        vec_pushback(v, &x);
+        EXPECT_EQ_INT(vec_popback(v, NULL), 0);
+        EXPECT_EQ_INT(dtor_n, 1);
+        vec_free(v);
+    }
+
+    {
+        struct vector *v;
+        int x, out;
+
+        dtor_n = 0;
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
+        x = 7;
+        vec_pushback(v, &x);
+        out = 0;
+        EXPECT_EQ_INT(vec_popback(v, &out), 0);
+        EXPECT_EQ_INT(out, 7);
+        EXPECT_EQ_INT(dtor_n, 0);
+        vec_free(v);
+    }
+
+    {
+        struct vector *v;
+        int a, b;
+
+        dtor_n = 0;
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
+        a = 1;
+        b = 2;
+        vec_pushback(v, &a);
+        vec_pushback(v, &b);
+        EXPECT_EQ_INT(vec_remove(v, 0, NULL), 0);
+        EXPECT_EQ_INT(dtor_n, 1);
+        vec_free(v);
+    }
+
+    {
+        struct vector *v;
+        int a, b, out;
+
+        dtor_n = 0;
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), dtor_inc), 0);
+        a = 1;
+        b = 2;
+        vec_pushback(v, &a);
+        vec_pushback(v, &b);
+        out = 0;
+        EXPECT_EQ_INT(vec_remove(v, 0, &out), 0);
+        EXPECT_EQ_INT(out, 1);
+        EXPECT_EQ_INT(dtor_n, 0);
+        vec_free(v);
+    }
+
+    {
+        int x;
+
+        EXPECT_EQ_INT(vec_resize(NULL, 1), -1);
+        EXPECT_EQ_INT(vec_shrink(NULL), -1);
+        EXPECT_EQ_INT(vec_pushback(NULL, &x), -1);
+        EXPECT_EQ_INT(vec_insert(NULL, 0, &x), -1);
+        EXPECT_EQ_INT(vec_remove(NULL, 0, NULL), -1);
+    }
+
+    {
+        struct vector *v;
+        int a;
+
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        a = 1;
+        EXPECT_EQ_INT(vec_pushback(v, NULL), -1);
+        EXPECT_EQ_INT(vec_insert(v, 0, NULL), -1);
+        vec_pushback(v, &a);
+        EXPECT_EQ_INT(vec_remove(v, 99, NULL), -1);
+        vec_free(v);
+    }
+
+    {
+        vec_free(NULL);
+        vec_clear(NULL);
+    }
+
+    {
+        struct vector *v;
+        int a, b, c, d;
+
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        a = 3;
+        b = 1;
+        c = 4;
+        d = 2;
+        vec_pushback(v, &a);
+        vec_pushback(v, &b);
+        vec_pushback(v, &c);
+        vec_pushback(v, &d);
+        vec_sort(v, cmp_int);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 0), 1);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 1), 2);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 2), 3);
+        EXPECT_EQ_INT(*(int *)vec_at(v, 3), 4);
+        vec_free(v);
+    }
+
+    {
+        struct vector *v;
+
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        vec_sort(v, cmp_int);
+        EXPECT_TRUE(vec_empty(v));
+        vec_sort(v, NULL);
+        vec_sort(NULL, cmp_int);
+        vec_free(v);
+    }
+
+    {
+        struct vector *v;
+
+        EXPECT_EQ_UINT(vec_elesz(NULL), 0);
+        EXPECT_NULL(vec_free_func(NULL));
+
+        EXPECT_EQ_INT(vec_init(&v, sizeof(int), NULL), 0);
+        EXPECT_EQ_UINT(vec_elesz(v), sizeof(int));
+        EXPECT_NULL(vec_free_func(v));
+        vec_free(v);
+
+        EXPECT_EQ_INT(vec_init(&v, sizeof(double), dtor_inc), 0);
+        EXPECT_EQ_UINT(vec_elesz(v), sizeof(double));
+        EXPECT_EQ_PTR(vec_free_func(v), dtor_inc);
+        vec_free(v);
+    }
 }

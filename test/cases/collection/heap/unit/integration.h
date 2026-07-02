@@ -116,7 +116,7 @@ static int intg_cmp_iptr_val(void *a, void *b)
 UTEST_CASE(integration)
 {
   {
-    struct heap h;
+    struct heap *h;
     int buf[50];
     int out;
     int i, j;
@@ -125,19 +125,19 @@ UTEST_CASE(integration)
     for (i = 0; i < 50; i++)
       buf[i] = i;
     for (j = 49; j >= 0; j--)
-      EXPECT_EQ_INT(heap_push(&h, &buf[j]), 0);
-    EXPECT_EQ_UINT(heap_size(&h), 50);
+      EXPECT_EQ_INT(heap_push(h, &buf[j]), 0);
+    EXPECT_EQ_UINT(heap_size(h), 50);
     for (i = 0; i < 50; i++) {
       out = -1;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_EQ_INT(out, i);
     }
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int buf[50];
     int out;
     int i;
@@ -146,18 +146,18 @@ UTEST_CASE(integration)
     for (i = 0; i < 50; i++)
       buf[i] = i;
     for (i = 0; i < 50; i++)
-      EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+      EXPECT_EQ_INT(heap_push(h, &buf[i]), 0);
     for (i = 0; i < 50; i++) {
       out = -1;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_EQ_INT(out, 49 - i);
     }
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     unsigned buf[32];
     unsigned out;
     size_t i;
@@ -166,17 +166,17 @@ UTEST_CASE(integration)
     for (i = 0; i < 32; i++)
       buf[i] = (unsigned)(31 - i) * 3u;
     for (i = 0; i < 32; i++)
-      EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+      EXPECT_EQ_INT(heap_push(h, &buf[i]), 0);
     for (i = 0; i < 32; i++) {
       out = 0;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_EQ_UINT(out, i * 3u);
     }
-    heap_fini(&h);
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     long long buf[24];
     long long out;
     int i;
@@ -185,18 +185,18 @@ UTEST_CASE(integration)
     for (i = 0; i < 24; i++)
       buf[i] = (long long)i;
     for (i = 0; i < 24; i++)
-      EXPECT_EQ_INT(heap_push(&h, &buf[23 - i]), 0);
+      EXPECT_EQ_INT(heap_push(h, &buf[23 - i]), 0);
     for (i = 0; i < 24; i++) {
       out = -1;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_EQ_INT((int)out, i);
     }
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     double buf[28];
     double out;
     int i;
@@ -205,17 +205,17 @@ UTEST_CASE(integration)
     for (i = 0; i < 28; i++)
       buf[i] = (double)(27 - i) * 0.25 - 3.0;
     for (i = 0; i < 28; i++)
-      EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+      EXPECT_EQ_INT(heap_push(h, &buf[i]), 0);
     for (i = 0; i < 28; i++) {
       out = 0.0;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_EQ_DOUBLE(out, (double)i * 0.25 - 3.0);
     }
-    heap_fini(&h);
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     struct intg_pair a, b, c, d0, out;
 
     EXPECT_EQ_INT(
@@ -228,24 +228,24 @@ UTEST_CASE(integration)
     c.y = 3;
     d0.x = 20;
     d0.y = 4;
-    EXPECT_EQ_INT(heap_push(&h, &a), 0);
-    EXPECT_EQ_INT(heap_push(&h, &b), 0);
-    EXPECT_EQ_INT(heap_push(&h, &c), 0);
-    EXPECT_EQ_INT(heap_push(&h, &d0), 0);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_push(h, &a), 0);
+    EXPECT_EQ_INT(heap_push(h, &b), 0);
+    EXPECT_EQ_INT(heap_push(h, &c), 0);
+    EXPECT_EQ_INT(heap_push(h, &d0), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out.x, 10);
     EXPECT_EQ_INT(out.y, 2);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out.x, 20);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out.x, 30);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out.x, 40);
-    heap_fini(&h);
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     struct intg_nested n0, n1, n2, out;
 
     EXPECT_EQ_INT(
@@ -256,20 +256,20 @@ UTEST_CASE(integration)
     n1.id = 100;
     n2.tag = 3;
     n2.id = 200;
-    EXPECT_EQ_INT(heap_push(&h, &n0), 0);
-    EXPECT_EQ_INT(heap_push(&h, &n1), 0);
-    EXPECT_EQ_INT(heap_push(&h, &n2), 0);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_push(h, &n0), 0);
+    EXPECT_EQ_INT(heap_push(h, &n1), 0);
+    EXPECT_EQ_INT(heap_push(h, &n2), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out.id, 100);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out.id, 200);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out.id, 300);
-    heap_fini(&h);
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     struct intg_strkv s0, s1, s2, out;
 
     EXPECT_EQ_INT(
@@ -280,20 +280,20 @@ UTEST_CASE(integration)
     s1.ord = 2;
     strcpy(s2.k, "m");
     s2.ord = 3;
-    EXPECT_EQ_INT(heap_push(&h, &s0), 0);
-    EXPECT_EQ_INT(heap_push(&h, &s1), 0);
-    EXPECT_EQ_INT(heap_push(&h, &s2), 0);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_push(h, &s0), 0);
+    EXPECT_EQ_INT(heap_push(h, &s1), 0);
+    EXPECT_EQ_INT(heap_push(h, &s2), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_STR(out.k, "a");
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_STR(out.k, "m");
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_STR(out.k, "z");
-    heap_fini(&h);
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int a, b, c, d0, out;
     void *pk;
 
@@ -302,26 +302,26 @@ UTEST_CASE(integration)
     b = 2;
     c = -1;
     d0 = 3;
-    EXPECT_EQ_INT(heap_push(&h, &a), 0);
-    EXPECT_EQ_INT(heap_push(&h, &b), 0);
-    EXPECT_EQ_INT(heap_push(&h, &c), 0);
-    EXPECT_EQ_INT(heap_push(&h, &d0), 0);
-    pk = heap_peek(&h);
+    EXPECT_EQ_INT(heap_push(h, &a), 0);
+    EXPECT_EQ_INT(heap_push(h, &b), 0);
+    EXPECT_EQ_INT(heap_push(h, &c), 0);
+    EXPECT_EQ_INT(heap_push(h, &d0), 0);
+    pk = heap_peek(h);
     EXPECT_NOTNULL(pk);
     EXPECT_EQ_INT(*(int *)pk, -1);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out, -1);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out, 2);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out, 3);
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out, -5);
-    heap_fini(&h);
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int buf[40];
     int out;
     int i;
@@ -332,29 +332,29 @@ UTEST_CASE(integration)
     EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, NULL), 0);
     for (i = 0; i < 15; i++) {
       buf[i] = i + 100;
-      EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+      EXPECT_EQ_INT(heap_push(h, &buf[i]), 0);
     }
     for (i = 0; i < 5; i++) {
       out = 0;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_EQ_INT(out, 100 + i);
     }
     for (i = 0; i < 10; i++) {
       buf[i] = i + 50;
-      EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+      EXPECT_EQ_INT(heap_push(h, &buf[i]), 0);
     }
-    EXPECT_EQ_UINT(heap_size(&h), 20);
+    EXPECT_EQ_UINT(heap_size(h), 20);
     for (i = 0; i < 20; i++) {
       out = -999;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_EQ_INT(out, exp_seq[i]);
     }
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int buf[50];
     int i;
 
@@ -363,16 +363,16 @@ UTEST_CASE(integration)
                   0);
     for (i = 0; i < 50; i++) {
       buf[i] = i;
-      EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+      EXPECT_EQ_INT(heap_push(h, &buf[i]), 0);
     }
-    heap_clear(&h);
+    heap_clear(h);
     EXPECT_EQ_INT(intg_dtor_n, 50);
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int *p0, *p1, *p2;
     int *outp;
 
@@ -386,29 +386,29 @@ UTEST_CASE(integration)
     *p0 = 30;
     *p1 = 10;
     *p2 = 20;
-    EXPECT_EQ_INT(heap_push(&h, &p0), 0);
-    EXPECT_EQ_INT(heap_push(&h, &p1), 0);
-    EXPECT_EQ_INT(heap_push(&h, &p2), 0);
+    EXPECT_EQ_INT(heap_push(h, &p0), 0);
+    EXPECT_EQ_INT(heap_push(h, &p1), 0);
+    EXPECT_EQ_INT(heap_push(h, &p2), 0);
     outp = NULL;
-    EXPECT_EQ_INT(heap_pop(&h, &outp), 0);
+    EXPECT_EQ_INT(heap_pop(h, &outp), 0);
     EXPECT_NOTNULL(outp);
     EXPECT_EQ_INT(*outp, 10);
     free(outp);
     outp = NULL;
-    EXPECT_EQ_INT(heap_pop(&h, &outp), 0);
+    EXPECT_EQ_INT(heap_pop(h, &outp), 0);
     EXPECT_NOTNULL(outp);
     EXPECT_EQ_INT(*outp, 20);
     free(outp);
     outp = NULL;
-    EXPECT_EQ_INT(heap_pop(&h, &outp), 0);
+    EXPECT_EQ_INT(heap_pop(h, &outp), 0);
     EXPECT_NOTNULL(outp);
     EXPECT_EQ_INT(*outp, 30);
     free(outp);
-    heap_fini(&h);
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int *owned[3];
     int *out;
     int idx;
@@ -419,44 +419,44 @@ UTEST_CASE(integration)
       owned[idx] = (int *)malloc(sizeof(int));
       EXPECT_NOTNULL(owned[idx]);
       *owned[idx] = idx + 1;
-      EXPECT_EQ_INT(heap_push(&h, &owned[idx]), 0);
+      EXPECT_EQ_INT(heap_push(h, &owned[idx]), 0);
     }
     for (idx = 0; idx < 3; idx++) {
       out = (int *)1;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_NOTNULL(out);
       EXPECT_EQ_INT(*out, expect[idx]);
       free(out);
     }
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int x, y, out;
 
     intg_dtor_n = 0;
     EXPECT_EQ_INT(heap_init(&h, sizeof(int), intg_cmp_min_int, intg_dtor_inc),
                   0);
     x = 10;
-    EXPECT_EQ_INT(heap_push(&h, &x), 0);
+    EXPECT_EQ_INT(heap_push(h, &x), 0);
     out = -1;
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out, 10);
-    EXPECT_TRUE(heap_empty(&h));
+    EXPECT_TRUE(heap_empty(h));
     y = 20;
-    EXPECT_EQ_INT(heap_push(&h, &y), 0);
+    EXPECT_EQ_INT(heap_push(h, &y), 0);
     out = -1;
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_EQ_INT(out, 20);
-    EXPECT_TRUE(heap_empty(&h));
+    EXPECT_TRUE(heap_empty(h));
     EXPECT_EQ_INT(intg_dtor_n, 0);
-    heap_fini(&h);
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int vals[4];
     int out;
     int idx;
@@ -466,21 +466,21 @@ UTEST_CASE(integration)
                   0);
     for (idx = 0; idx < 4; idx++) {
       vals[idx] = idx + 10;
-      EXPECT_EQ_INT(heap_push(&h, &vals[idx]), 0);
+      EXPECT_EQ_INT(heap_push(h, &vals[idx]), 0);
     }
     for (idx = 0; idx < 4; idx++) {
       out = -1;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_EQ_INT(out, idx + 10);
     }
     EXPECT_EQ_INT(intg_dtor_n, 0);
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
     EXPECT_EQ_INT(intg_dtor_n, 0);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int *owned[3];
     int *out;
     int idx;
@@ -494,23 +494,23 @@ UTEST_CASE(integration)
       owned[idx] = (int *)malloc(sizeof(int));
       EXPECT_NOTNULL(owned[idx]);
       *owned[idx] = idx + 1;
-      EXPECT_EQ_INT(heap_push(&h, &owned[idx]), 0);
+      EXPECT_EQ_INT(heap_push(h, &owned[idx]), 0);
     }
     for (idx = 0; idx < 3; idx++) {
       out = (int *)1;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_NOTNULL(out);
       EXPECT_EQ_INT(*out, expect[idx]);
       EXPECT_EQ_INT(intg_iptr_dtor_n, 0);
       free(out);
     }
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
     EXPECT_EQ_INT(intg_iptr_dtor_n, 0);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int *p;
     int *out;
 
@@ -521,20 +521,20 @@ UTEST_CASE(integration)
     p = (int *)malloc(sizeof(int));
     EXPECT_NOTNULL(p);
     *p = 99;
-    EXPECT_EQ_INT(heap_push(&h, &p), 0);
+    EXPECT_EQ_INT(heap_push(h, &p), 0);
     out = NULL;
-    EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+    EXPECT_EQ_INT(heap_pop(h, &out), 0);
     EXPECT_NOTNULL(out);
     EXPECT_EQ_INT(*out, 99);
     EXPECT_EQ_INT(intg_iptr_dtor_n, 0);
     free(out);
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
     EXPECT_EQ_INT(intg_iptr_dtor_n, 0);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int vals[8];
     int out;
     int i;
@@ -544,23 +544,23 @@ UTEST_CASE(integration)
                   0);
     for (i = 0; i < 8; i++) {
       vals[i] = (i + 1) * 2;
-      EXPECT_EQ_INT(heap_push(&h, &vals[i]), 0);
+      EXPECT_EQ_INT(heap_push(h, &vals[i]), 0);
     }
     for (i = 0; i < 4; i++) {
       out = -1;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_EQ_INT(out, (i + 1) * 2);
     }
     EXPECT_EQ_INT(intg_dtor_n, 0);
-    EXPECT_EQ_UINT(heap_size(&h), 4);
-    heap_clear(&h);
+    EXPECT_EQ_UINT(heap_size(h), 4);
+    heap_clear(h);
     EXPECT_EQ_INT(intg_dtor_n, 4);
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int vals[6];
     int out;
     int i;
@@ -570,20 +570,20 @@ UTEST_CASE(integration)
                   0);
     for (i = 0; i < 6; i++) {
       vals[i] = i + 100;
-      EXPECT_EQ_INT(heap_push(&h, &vals[i]), 0);
+      EXPECT_EQ_INT(heap_push(h, &vals[i]), 0);
     }
     for (i = 0; i < 3; i++) {
       out = -1;
-      EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+      EXPECT_EQ_INT(heap_pop(h, &out), 0);
       EXPECT_EQ_INT(out, i + 100);
     }
     EXPECT_EQ_INT(intg_dtor_n, 0);
-    heap_fini(&h);
+    heap_free(h);
     EXPECT_EQ_INT(intg_dtor_n, 3);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int buf[12];
     int i;
 
@@ -592,17 +592,17 @@ UTEST_CASE(integration)
                   0);
     for (i = 0; i < 12; i++) {
       buf[i] = 12 - i;
-      EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+      EXPECT_EQ_INT(heap_push(h, &buf[i]), 0);
     }
     for (i = 0; i < 12; i++)
-      EXPECT_EQ_INT(heap_pop(&h, NULL), 0);
+      EXPECT_EQ_INT(heap_pop(h, NULL), 0);
     EXPECT_EQ_INT(intg_dtor_n, 12);
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int buf[10];
     int out;
     int expect;
@@ -613,26 +613,26 @@ UTEST_CASE(integration)
                   0);
     for (i = 0; i < 10; i++) {
       buf[i] = i * 2;
-      EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+      EXPECT_EQ_INT(heap_push(h, &buf[i]), 0);
     }
     expect = 0;
     for (i = 0; i < 10; i++) {
       if (i % 2 == 0) {
         out = -1;
-        EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+        EXPECT_EQ_INT(heap_pop(h, &out), 0);
         EXPECT_EQ_INT(out, expect);
       } else {
-        EXPECT_EQ_INT(heap_pop(&h, NULL), 0);
+        EXPECT_EQ_INT(heap_pop(h, NULL), 0);
       }
       expect += 2;
     }
     EXPECT_EQ_INT(intg_dtor_n, 5);
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int buf[20];
     int out;
     int cycle;
@@ -642,21 +642,21 @@ UTEST_CASE(integration)
     for (cycle = 0; cycle < 3; cycle++) {
       for (i = 0; i < 20; i++) {
         buf[i] = cycle * 100 + i;
-        EXPECT_EQ_INT(heap_push(&h, &buf[i]), 0);
+        EXPECT_EQ_INT(heap_push(h, &buf[i]), 0);
       }
-      EXPECT_EQ_UINT(heap_size(&h), 20);
+      EXPECT_EQ_UINT(heap_size(h), 20);
       for (i = 0; i < 20; i++) {
         out = -1;
-        EXPECT_EQ_INT(heap_pop(&h, &out), 0);
+        EXPECT_EQ_INT(heap_pop(h, &out), 0);
         EXPECT_EQ_INT(out, cycle * 100 + i);
       }
-      EXPECT_TRUE(heap_empty(&h));
+      EXPECT_TRUE(heap_empty(h));
     }
-    heap_fini(&h);
+    heap_free(h);
   }
 
   {
-    struct heap h;
+    struct heap *h;
     int *owned[4];
     int idx;
 
@@ -668,12 +668,12 @@ UTEST_CASE(integration)
       owned[idx] = (int *)malloc(sizeof(int));
       EXPECT_NOTNULL(owned[idx]);
       *owned[idx] = (idx + 1) * 10;
-      EXPECT_EQ_INT(heap_push(&h, &owned[idx]), 0);
+      EXPECT_EQ_INT(heap_push(h, &owned[idx]), 0);
     }
     for (idx = 0; idx < 4; idx++)
-      EXPECT_EQ_INT(heap_pop(&h, NULL), 0);
+      EXPECT_EQ_INT(heap_pop(h, NULL), 0);
     EXPECT_EQ_INT(intg_iptr_dtor_n, 4);
-    EXPECT_TRUE(heap_empty(&h));
-    heap_fini(&h);
+    EXPECT_TRUE(heap_empty(h));
+    heap_free(h);
   }
 }

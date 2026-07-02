@@ -9,3 +9,4 @@ compile_commands.json
 doc.md
 src-back/
 include-back/
+.cursor/

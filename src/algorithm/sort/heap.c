@@ -22,27 +22,27 @@
 
 int sortheap(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))
 {
-  if (!base || !sz || !cmp)
-    return -1;
+    if (!base || !sz || !cmp)
+        return -1;
 
-  struct heap h;
-  if (heap_init(&h, sz, cmp, NULL) == -1)
-    return -1;
+    struct heap *heap;
+    if (heap_init(&heap, sz, cmp, NULL) == -1)
+        return -1;
 
-  for (size_t i = 0; i < n; i++) {
-    if (heap_push(&h, GET(base, i, sz)) == -1) {
-      heap_fini(&h);
-      return -1;
+    for (size_t i = 0; i < n; i++) {
+        if (heap_push(heap, GET(base, i, sz)) == -1) {
+            heap_free(heap);
+            return -1;
+        }
     }
-  }
 
-  for (size_t i = 0; i < n; i++) {
-    if (heap_pop(&h, GET(base, i, sz)) == -1) {
-      heap_fini(&h);
-      return -1;
+    for (size_t i = 0; i < n; i++) {
+        if (heap_pop(heap, GET(base, i, sz)) == -1) {
+            heap_free(heap);
+            return -1;
+        }
     }
-  }
 
-  heap_fini(&h);
-  return 0;
+    heap_free(heap);
+    return 0;
 }
