@@ -18,25 +18,87 @@
 #ifndef COL_QUEUE_H
 #define COL_QUEUE_H
 
-#include <deque.h>
 #include <stddef.h>
 
 struct queue;
 
-#define queue_empty(queue)                                                     \
-  deq_empty(&(queue)->deq) /* Check if the queue is empty */
-#define queue_size(queue)                                                      \
-  deq_size(&(queue)->deq) /* Get the size of the queue */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int queue_init(struct queue *queue, size_t elesz, void (*destroy)(void *));
-void queue_fini(struct queue *queue);
+/**
+ * Allocate and initialize an empty queue. Each stored element is a copy of the
+ * value passed to enqueue operations.
+ *
+ * @param queue   output pointer to receive the new queue, must not be NULL
+ * @param elesz   byte size of each element, must be non-zero
+ * @param destroy optional callback invoked on each element when it is
+ *                discarded, or NULL for no-op
+ * @return        0 on success, -1 on failure
+ */
+int queue_init(struct queue **queue, size_t elesz, void (*destroy)(void *));
+
+/**
+ * Destroy all elements, release the internal buffer, and free the queue.
+ *
+ * @param queue the queue to free, or NULL
+ */
+void queue_free(struct queue *queue);
+
+/**
+ * Test whether the queue contains no elements.
+ *
+ * @param queue the queue to inspect, or NULL
+ * @return      non-zero if empty, zero otherwise
+ */
+int queue_empty(const struct queue *queue);
+
+/**
+ * Return the current number of elements in the queue.
+ *
+ * @param queue the queue to inspect, or NULL
+ * @return      element count, or 0 if queue is NULL
+ */
+size_t queue_size(const struct queue *queue);
+
+/**
+ * Append a copy of ele to the back of the queue.
+ *
+ * @param queue the queue to modify
+ * @param ele   pointer to the value to copy, must not be NULL
+ * @return      0 on success, -1 on failure
+ */
 int queue_enq(struct queue *queue, void *ele);
+
+/**
+ * Remove the front element. When dest is non-NULL, copy the element there and
+ * skip destroy; otherwise invoke destroy when set.
+ *
+ * @param queue the queue to modify
+ * @param dest  buffer of at least elesz bytes to receive the element, or NULL
+ *              to invoke destroy
+ * @return      0 on success, -1 if queue is NULL or the queue is empty
+ */
 int queue_deq(struct queue *queue, void *dest);
-void *queue_peek(struct queue *queue);
+
+/**
+ * Return a pointer to the front element without removing it.
+ *
+ * @param queue the queue to inspect, or NULL
+ * @return      pointer to the front element, or NULL if queue is NULL or empty
+ */
+void *queue_peek(const struct queue *queue);
+
+/**
+ * Remove all elements and reset size to zero, invoking destroy on each when
+ * set. Does not release the buffer or free the queue.
+ *
+ * @param queue the queue to clear, or NULL
+ */
 void queue_clear(struct queue *queue);
 
-struct queue {
-  struct deque deq;
-};
+#ifdef __cplusplus
+}
+#endif
 
 #endif
