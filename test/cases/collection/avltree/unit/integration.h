@@ -75,8 +75,7 @@ static void intg_destroy_val_box(void *v)
 UTEST_CASE(integration)
 {
   {
-    struct avltree t;
-    struct avltree_fns fns = {intg_cmp_int_key, intg_free_key, intg_free_val};
+    struct avltree *t;
     int idx;
     int q;
     int *pk;
@@ -84,7 +83,7 @@ UTEST_CASE(integration)
     int ins;
     void *fv;
 
-    EXPECT_EQ_INT(avltree_init(&t, &fns), 0);
+    EXPECT_EQ_INT(avltree_init(&t, intg_cmp_int_key, intg_free_key, intg_free_val), 0);
     for (idx = 0; idx < 128; idx++) {
       pk = (int *)malloc(sizeof(int));
       EXPECT_NOTNULL(pk);
@@ -95,29 +94,29 @@ UTEST_CASE(integration)
       EXPECT_NOTNULL(pv);
       *pk = idx * 4 + 7;
       *pv = idx * 17 + 3;
-      ins = avltree_insert(&t, pk, pv);
+      ins = avltree_insert(t, pk, pv);
       if (ins != 0) {
         free(pk);
         free(pv);
       }
       EXPECT_EQ_INT(ins, 0);
     }
-    EXPECT_EQ_UINT(avltree_size(&t), 128);
+    EXPECT_EQ_UINT(avltree_size(t), 128);
     for (idx = 0; idx < 128; idx++) {
       q = idx * 4 + 7;
-      fv = avltree_find(&t, &q);
+      fv = avltree_find(t, &q);
       EXPECT_NOTNULL(fv);
       EXPECT_EQ_INT(*(int *)fv, idx * 17 + 3);
     }
     q = 4 * 20 + 7;
-    EXPECT_EQ_INT(avltree_remove(&t, &q, NULL), 0);
+    EXPECT_EQ_INT(avltree_remove(t, &q, NULL), 0);
     q = 4 * 40 + 7;
-    EXPECT_EQ_INT(avltree_remove(&t, &q, NULL), 0);
+    EXPECT_EQ_INT(avltree_remove(t, &q, NULL), 0);
     q = 4 * 60 + 7;
-    EXPECT_EQ_INT(avltree_remove(&t, &q, NULL), 0);
-    EXPECT_EQ_UINT(avltree_size(&t), 125);
+    EXPECT_EQ_INT(avltree_remove(t, &q, NULL), 0);
+    EXPECT_EQ_UINT(avltree_size(t), 125);
     q = 4 * 20 + 7;
-    EXPECT_NULL(avltree_findnode(&t, &q));
+    EXPECT_NULL(avltree_findnode(t, &q));
     pk = (int *)malloc(sizeof(int));
     EXPECT_NOTNULL(pk);
     pv = (int *)malloc(sizeof(int));
@@ -127,23 +126,22 @@ UTEST_CASE(integration)
     EXPECT_NOTNULL(pv);
     *pk = 4 * 20 + 7;
     *pv = 90909;
-    ins = avltree_insert(&t, pk, pv);
+    ins = avltree_insert(t, pk, pv);
     if (ins != 0) {
       free(pk);
       free(pv);
     }
     EXPECT_EQ_INT(ins, 0);
-    EXPECT_EQ_UINT(avltree_size(&t), 126);
+    EXPECT_EQ_UINT(avltree_size(t), 126);
     q = 4 * 20 + 7;
-    fv = avltree_find(&t, &q);
+    fv = avltree_find(t, &q);
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_INT(*(int *)fv, 90909);
-    avltree_fini(&t);
+    avltree_free(t);
   }
 
   {
-    struct avltree t;
-    struct avltree_fns fns = {intg_cmp_str, intg_free_key, intg_free_val};
+    struct avltree *t;
     int idx;
     char *sk;
     int *pv;
@@ -151,7 +149,7 @@ UTEST_CASE(integration)
     char qbuf[48];
     void *fv;
 
-    EXPECT_EQ_INT(avltree_init(&t, &fns), 0);
+    EXPECT_EQ_INT(avltree_init(&t, intg_cmp_str, intg_free_key, intg_free_val), 0);
     for (idx = 0; idx < 120; idx++) {
       sk = (char *)malloc(40);
       EXPECT_NOTNULL(sk);
@@ -162,27 +160,27 @@ UTEST_CASE(integration)
       }
       EXPECT_NOTNULL(pv);
       *pv = idx * 31 - 100;
-      ins = avltree_insert(&t, sk, pv);
+      ins = avltree_insert(t, sk, pv);
       if (ins != 0) {
         free(sk);
         free(pv);
       }
       EXPECT_EQ_INT(ins, 0);
     }
-    EXPECT_EQ_UINT(avltree_size(&t), 120);
+    EXPECT_EQ_UINT(avltree_size(t), 120);
     for (idx = 0; idx < 120; idx++) {
       snprintf(qbuf, sizeof qbuf, "pref_%d_suf", idx);
-      fv = avltree_find(&t, qbuf);
+      fv = avltree_find(t, qbuf);
       EXPECT_NOTNULL(fv);
       EXPECT_EQ_INT(*(int *)fv, idx * 31 - 100);
     }
     snprintf(qbuf, sizeof qbuf, "pref_%d_suf", 44);
-    EXPECT_EQ_INT(avltree_remove(&t, qbuf, NULL), 0);
+    EXPECT_EQ_INT(avltree_remove(t, qbuf, NULL), 0);
     snprintf(qbuf, sizeof qbuf, "pref_%d_suf", 88);
-    EXPECT_EQ_INT(avltree_remove(&t, qbuf, NULL), 0);
-    EXPECT_EQ_UINT(avltree_size(&t), 118);
+    EXPECT_EQ_INT(avltree_remove(t, qbuf, NULL), 0);
+    EXPECT_EQ_UINT(avltree_size(t), 118);
     snprintf(qbuf, sizeof qbuf, "pref_%d_suf", 44);
-    EXPECT_NULL(avltree_findnode(&t, qbuf));
+    EXPECT_NULL(avltree_findnode(t, qbuf));
     sk = (char *)malloc(40);
     EXPECT_NOTNULL(sk);
     snprintf(sk, 40, "pref_%d_suf", 44);
@@ -192,23 +190,21 @@ UTEST_CASE(integration)
     }
     EXPECT_NOTNULL(pv);
     *pv = 44444;
-    ins = avltree_insert(&t, sk, pv);
+    ins = avltree_insert(t, sk, pv);
     if (ins != 0) {
       free(sk);
       free(pv);
     }
     EXPECT_EQ_INT(ins, 0);
     snprintf(qbuf, sizeof qbuf, "pref_%d_suf", 44);
-    fv = avltree_find(&t, qbuf);
+    fv = avltree_find(t, qbuf);
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_INT(*(int *)fv, 44444);
-    avltree_fini(&t);
+    avltree_free(t);
   }
 
   {
-    struct avltree t;
-    struct avltree_fns fns = {intg_cmp_point, intg_free_key,
-                              intg_destroy_val_box};
+    struct avltree *t;
     int idx;
     struct intg_point lq;
     struct intg_point *pk;
@@ -216,7 +212,8 @@ UTEST_CASE(integration)
     int ins;
     void *fv;
 
-    EXPECT_EQ_INT(avltree_init(&t, &fns), 0);
+    EXPECT_EQ_INT(avltree_init(&t, intg_cmp_point, intg_free_key,
+                               intg_destroy_val_box), 0);
     for (idx = 0; idx < 112; idx++) {
       pk = (struct intg_point *)malloc(sizeof(struct intg_point));
       EXPECT_NOTNULL(pk);
@@ -234,7 +231,7 @@ UTEST_CASE(integration)
       }
       EXPECT_NOTNULL(box->payload);
       *box->payload = idx * 101 + 1;
-      ins = avltree_insert(&t, pk, box);
+      ins = avltree_insert(t, pk, box);
       if (ins != 0) {
         free(box->payload);
         free(box);
@@ -242,11 +239,11 @@ UTEST_CASE(integration)
       }
       EXPECT_EQ_INT(ins, 0);
     }
-    EXPECT_EQ_UINT(avltree_size(&t), 112);
+    EXPECT_EQ_UINT(avltree_size(t), 112);
     for (idx = 0; idx < 112; idx++) {
       lq.x = idx;
       lq.y = idx * 13 + 5;
-      fv = avltree_find(&t, &lq);
+      fv = avltree_find(t, &lq);
       EXPECT_NOTNULL(fv);
       EXPECT_EQ_INT(*(int *)((struct intg_val_box *)fv)->payload,
                     idx * 101 + 1);
@@ -265,26 +262,25 @@ UTEST_CASE(integration)
       }
       EXPECT_NOTNULL(bnew->payload);
       *bnew->payload = 777777;
-      EXPECT_EQ_INT(avltree_update(&t, &lq, bnew, &oldv), 0);
+      EXPECT_EQ_INT(avltree_update(t, &lq, bnew, &oldv), 0);
       EXPECT_NOTNULL(oldv);
       intg_destroy_val_box(oldv);
     }
-    fv = avltree_find(&t, &lq);
+    fv = avltree_find(t, &lq);
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_INT(*(int *)((struct intg_val_box *)fv)->payload, 777777);
     lq.x = 10;
     lq.y = 10 * 13 + 5;
-    EXPECT_EQ_INT(avltree_remove(&t, &lq, NULL), 0);
+    EXPECT_EQ_INT(avltree_remove(t, &lq, NULL), 0);
     lq.x = 99;
     lq.y = 99 * 13 + 5;
-    EXPECT_EQ_INT(avltree_remove(&t, &lq, NULL), 0);
-    EXPECT_EQ_UINT(avltree_size(&t), 110);
-    avltree_fini(&t);
+    EXPECT_EQ_INT(avltree_remove(t, &lq, NULL), 0);
+    EXPECT_EQ_UINT(avltree_size(t), 110);
+    avltree_free(t);
   }
 
   {
-    struct avltree t;
-    struct avltree_fns fns = {intg_cmp_int_key, intg_free_key, intg_free_val};
+    struct avltree *t;
     int idx;
     int q;
     int *pk;
@@ -292,7 +288,7 @@ UTEST_CASE(integration)
     int ins;
     void *fv;
 
-    EXPECT_EQ_INT(avltree_init(&t, &fns), 0);
+    EXPECT_EQ_INT(avltree_init(&t, intg_cmp_int_key, intg_free_key, intg_free_val), 0);
     for (idx = 0; idx < 144; idx++) {
       pk = (int *)malloc(sizeof(int));
       EXPECT_NOTNULL(pk);
@@ -303,26 +299,25 @@ UTEST_CASE(integration)
       EXPECT_NOTNULL(pv);
       *pk = 50000 - idx;
       *pv = idx ^ (idx << 1);
-      ins = avltree_insert(&t, pk, pv);
+      ins = avltree_insert(t, pk, pv);
       if (ins != 0) {
         free(pk);
         free(pv);
       }
       EXPECT_EQ_INT(ins, 0);
     }
-    EXPECT_EQ_UINT(avltree_size(&t), 144);
+    EXPECT_EQ_UINT(avltree_size(t), 144);
     for (idx = 0; idx < 144; idx++) {
       q = 50000 - idx;
-      fv = avltree_find(&t, &q);
+      fv = avltree_find(t, &q);
       EXPECT_NOTNULL(fv);
       EXPECT_EQ_INT(*(int *)fv, idx ^ (idx << 1));
     }
-    avltree_fini(&t);
+    avltree_free(t);
   }
 
   {
-    struct avltree t;
-    struct avltree_fns fns = {intg_cmp_int_key, intg_free_key, intg_free_val};
+    struct avltree *t;
     struct intg_rec *pr;
     int idx;
     int kodd;
@@ -332,7 +327,7 @@ UTEST_CASE(integration)
     void *fv;
     void *oldv;
 
-    EXPECT_EQ_INT(avltree_init(&t, &fns), 0);
+    EXPECT_EQ_INT(avltree_init(&t, intg_cmp_int_key, intg_free_key, intg_free_val), 0);
     for (idx = 0; idx < 100; idx++) {
       pk = (int *)malloc(sizeof(int));
       EXPECT_NOTNULL(pk);
@@ -344,38 +339,38 @@ UTEST_CASE(integration)
       EXPECT_NOTNULL(pr);
       pr->id = (long)(idx + 900);
       pr->w = (double)idx * 0.25 + 0.5;
-      ins = avltree_insert(&t, pk, pr);
+      ins = avltree_insert(t, pk, pr);
       if (ins != 0) {
         free(pk);
         free(pr);
       }
       EXPECT_EQ_INT(ins, 0);
     }
-    EXPECT_EQ_UINT(avltree_size(&t), 100);
+    EXPECT_EQ_UINT(avltree_size(t), 100);
     for (idx = 0; idx < 100; idx += 2) {
       kfour = idx * 11 + 2;
-      EXPECT_EQ_INT(avltree_remove(&t, &kfour, NULL), 0);
+      EXPECT_EQ_INT(avltree_remove(t, &kfour, NULL), 0);
     }
-    EXPECT_EQ_UINT(avltree_size(&t), 50);
+    EXPECT_EQ_UINT(avltree_size(t), 50);
     for (idx = 1; idx < 100; idx += 2) {
       kodd = idx * 11 + 2;
       pr = (struct intg_rec *)malloc(sizeof(struct intg_rec));
       EXPECT_NOTNULL(pr);
       pr->id = (long)(idx + 7000);
       pr->w = (double)idx * 3.14159;
-      EXPECT_EQ_INT(avltree_update(&t, &kodd, pr, &oldv), 0);
+      EXPECT_EQ_INT(avltree_update(t, &kodd, pr, &oldv), 0);
       EXPECT_NOTNULL(oldv);
       free(oldv);
     }
     for (idx = 1; idx < 100; idx += 2) {
       kodd = idx * 11 + 2;
-      fv = avltree_find(&t, &kodd);
+      fv = avltree_find(t, &kodd);
       EXPECT_NOTNULL(fv);
       EXPECT_EQ_INT((int)((struct intg_rec *)fv)->id, idx + 7000);
     }
     for (idx = 1; idx < 100; idx += 4) {
       kodd = idx * 11 + 2;
-      EXPECT_EQ_INT(avltree_remove(&t, &kodd, NULL), 0);
+      EXPECT_EQ_INT(avltree_remove(t, &kodd, NULL), 0);
     }
     for (idx = 0; idx < 100; idx += 4) {
       kfour = idx * 11 + 2;
@@ -389,26 +384,25 @@ UTEST_CASE(integration)
       EXPECT_NOTNULL(pr);
       pr->id = (long)kfour;
       pr->w = 1.0;
-      ins = avltree_insert(&t, pk, pr);
+      ins = avltree_insert(t, pk, pr);
       if (ins != 0) {
         free(pk);
         free(pr);
       }
       EXPECT_EQ_INT(ins, 0);
     }
-    avltree_fini(&t);
+    avltree_free(t);
   }
 
   {
-    struct avltree t;
-    struct avltree_fns fns = {intg_cmp_point, intg_free_key, intg_free_val};
+    struct avltree *t;
     int idx;
     struct intg_point lq;
     struct intg_point *pk;
     double *pd;
     int ins;
 
-    EXPECT_EQ_INT(avltree_init(&t, &fns), 0);
+    EXPECT_EQ_INT(avltree_init(&t, intg_cmp_point, intg_free_key, intg_free_val), 0);
     for (idx = 0; idx < 105; idx++) {
       pk = (struct intg_point *)malloc(sizeof(struct intg_point));
       EXPECT_NOTNULL(pk);
@@ -420,23 +414,23 @@ UTEST_CASE(integration)
       }
       EXPECT_NOTNULL(pd);
       *pd = (double)idx * 1.75 - 40.5;
-      ins = avltree_insert(&t, pk, pd);
+      ins = avltree_insert(t, pk, pd);
       if (ins != 0) {
         free(pk);
         free(pd);
       }
       EXPECT_EQ_INT(ins, 0);
     }
-    EXPECT_EQ_UINT(avltree_size(&t), 105);
+    EXPECT_EQ_UINT(avltree_size(t), 105);
     for (idx = 0; idx < 105; idx++) {
       lq.x = -idx;
       lq.y = idx * idx;
-      pd = (double *)avltree_find(&t, &lq);
+      pd = (double *)avltree_find(t, &lq);
       EXPECT_NOTNULL(pd);
       EXPECT_EQ_DOUBLE(*pd, (double)idx * 1.75 - 40.5);
     }
-    avltree_clear(&t);
-    EXPECT_TRUE(avltree_empty(&t));
+    avltree_clear(t);
+    EXPECT_TRUE(avltree_empty(t));
     for (idx = 0; idx < 16; idx++) {
       pk = (struct intg_point *)malloc(sizeof(struct intg_point));
       EXPECT_NOTNULL(pk);
@@ -448,21 +442,19 @@ UTEST_CASE(integration)
       }
       EXPECT_NOTNULL(pd);
       *pd = (double)idx;
-      ins = avltree_insert(&t, pk, pd);
+      ins = avltree_insert(t, pk, pd);
       if (ins != 0) {
         free(pk);
         free(pd);
       }
       EXPECT_EQ_INT(ins, 0);
     }
-    EXPECT_EQ_UINT(avltree_size(&t), 16);
-    avltree_fini(&t);
+    EXPECT_EQ_UINT(avltree_size(t), 16);
+    avltree_free(t);
   }
 
   {
-    struct avltree t;
-    struct avltree_fns fns = {intg_cmp_int_key, intg_dk_inc_free,
-                              intg_dv_inc_free};
+    struct avltree *t;
     int idx;
     int q;
     int *pk;
@@ -471,7 +463,8 @@ UTEST_CASE(integration)
 
     intg_dk_n = 0;
     intg_dv_n = 0;
-    EXPECT_EQ_INT(avltree_init(&t, &fns), 0);
+    EXPECT_EQ_INT(avltree_init(&t, intg_cmp_int_key, intg_dk_inc_free,
+                               intg_dv_inc_free), 0);
     for (idx = 0; idx < 110; idx++) {
       pk = (int *)malloc(sizeof(int));
       EXPECT_NOTNULL(pk);
@@ -482,14 +475,14 @@ UTEST_CASE(integration)
       EXPECT_NOTNULL(pv);
       *pk = idx + 6000;
       *pv = idx;
-      ins = avltree_insert(&t, pk, pv);
+      ins = avltree_insert(t, pk, pv);
       if (ins != 0) {
         free(pk);
         free(pv);
       }
       EXPECT_EQ_INT(ins, 0);
     }
-    avltree_clear(&t);
+    avltree_clear(t);
     EXPECT_EQ_INT(intg_dk_n, 110);
     EXPECT_EQ_INT(intg_dv_n, 110);
     intg_dk_n = 0;
@@ -503,15 +496,15 @@ UTEST_CASE(integration)
     EXPECT_NOTNULL(pv);
     *pk = 1;
     *pv = 2;
-    ins = avltree_insert(&t, pk, pv);
+    ins = avltree_insert(t, pk, pv);
     if (ins != 0) {
       free(pk);
       free(pv);
     }
     EXPECT_EQ_INT(ins, 0);
     q = 1;
-    EXPECT_NOTNULL(avltree_find(&t, &q));
-    avltree_fini(&t);
+    EXPECT_NOTNULL(avltree_find(t, &q));
+    avltree_free(t);
     EXPECT_EQ_INT(intg_dk_n, 1);
     EXPECT_EQ_INT(intg_dv_n, 1);
   }

@@ -45,104 +45,97 @@ static void free_ele(void *p) { free(p); }
 UTEST_CASE(basic)
 {
   {
-    struct set s;
-    struct set_fns fns = {hash_int, cmp_int, NULL};
+    struct set *s;
 
-    EXPECT_EQ_INT(set_init(NULL, &fns), -1);
-    EXPECT_EQ_INT(set_init(&s, NULL), -1);
-    fns.hash = NULL;
-    EXPECT_EQ_INT(set_init(&s, &fns), -1);
-    fns.hash = hash_int;
-    fns.cmp = NULL;
-    EXPECT_EQ_INT(set_init(&s, &fns), -1);
+    EXPECT_EQ_INT(set_init(NULL, hash_int, cmp_int, NULL), -1);
+    EXPECT_EQ_INT(set_init(&s, NULL, NULL, NULL), -1);
+    EXPECT_EQ_INT(set_init(&s, NULL, cmp_int, NULL), -1);
+    EXPECT_EQ_INT(set_init(&s, hash_int, NULL, NULL), -1);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {hash_int, cmp_int, NULL};
+    struct set *s;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
-    EXPECT_TRUE(set_empty(&s));
-    EXPECT_EQ_UINT(set_size(&s), 0);
-    EXPECT_FALSE(set_contains(&s, (void *)1));
-    EXPECT_EQ_INT(set_insert(&s, NULL), -1);
-    EXPECT_EQ_INT(set_remove(&s, (void *)1), 0);
-    set_fini(NULL);
-    set_clear(&s);
-    set_fini(&s);
+    EXPECT_EQ_INT(set_init(&s, hash_int, cmp_int, NULL), 0);
+    EXPECT_TRUE(set_empty(NULL));
+    EXPECT_EQ_UINT(set_size(NULL), 0);
+    EXPECT_FALSE(set_contains(NULL, (void *)1));
+    EXPECT_TRUE(set_empty(s));
+    EXPECT_EQ_UINT(set_size(s), 0);
+    EXPECT_FALSE(set_contains(s, (void *)1));
+    EXPECT_EQ_INT(set_insert(s, NULL), -1);
+    EXPECT_EQ_INT(set_remove(s, (void *)1), 0);
+    set_free(NULL);
+    set_clear(s);
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {hash_int, cmp_int, NULL};
+    struct set *s;
     int k;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, hash_int, cmp_int, NULL), 0);
     k = 11;
-    EXPECT_EQ_INT(set_insert(&s, &k), 0);
-    EXPECT_FALSE(set_empty(&s));
-    EXPECT_EQ_UINT(set_size(&s), 1);
-    EXPECT_TRUE(set_contains(&s, &k));
-    EXPECT_EQ_INT(set_insert(&s, &k), 0);
-    EXPECT_EQ_UINT(set_size(&s), 1);
-    set_fini(&s);
+    EXPECT_EQ_INT(set_insert(s, &k), 0);
+    EXPECT_FALSE(set_empty(s));
+    EXPECT_EQ_UINT(set_size(s), 1);
+    EXPECT_TRUE(set_contains(s, &k));
+    EXPECT_EQ_INT(set_insert(s, &k), 0);
+    EXPECT_EQ_UINT(set_size(s), 1);
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {hash_int, cmp_int, NULL};
+    struct set *s;
     int k1, k2;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, hash_int, cmp_int, NULL), 0);
     k1 = 1;
     k2 = 2;
-    EXPECT_EQ_INT(set_insert(&s, &k1), 0);
-    EXPECT_EQ_INT(set_insert(&s, &k2), 0);
-    EXPECT_EQ_UINT(set_size(&s), 2);
-    EXPECT_TRUE(set_contains(&s, &k1));
-    EXPECT_TRUE(set_contains(&s, &k2));
-    set_fini(&s);
+    EXPECT_EQ_INT(set_insert(s, &k1), 0);
+    EXPECT_EQ_INT(set_insert(s, &k2), 0);
+    EXPECT_EQ_UINT(set_size(s), 2);
+    EXPECT_TRUE(set_contains(s, &k1));
+    EXPECT_TRUE(set_contains(s, &k2));
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {hash_int, cmp_int, NULL};
+    struct set *s;
     int k;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, hash_int, cmp_int, NULL), 0);
     k = 9;
-    EXPECT_EQ_INT(set_insert(&s, &k), 0);
-    EXPECT_EQ_INT(set_remove(&s, &k), 0);
-    EXPECT_TRUE(set_empty(&s));
-    EXPECT_FALSE(set_contains(&s, &k));
-    EXPECT_EQ_INT(set_remove(&s, &k), 0);
-    set_fini(&s);
+    EXPECT_EQ_INT(set_insert(s, &k), 0);
+    EXPECT_EQ_INT(set_remove(s, &k), 0);
+    EXPECT_TRUE(set_empty(s));
+    EXPECT_FALSE(set_contains(s, &k));
+    EXPECT_EQ_INT(set_remove(s, &k), 0);
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {hash_int, cmp_int, NULL};
+    struct set *s;
     int k0, k1, k2;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, hash_int, cmp_int, NULL), 0);
     k0 = 0;
     k1 = 1;
     k2 = 2;
-    EXPECT_EQ_INT(set_insert(&s, &k0), 0);
-    EXPECT_EQ_INT(set_insert(&s, &k1), 0);
-    EXPECT_EQ_INT(set_insert(&s, &k2), 0);
-    set_clear(&s);
-    EXPECT_TRUE(set_empty(&s));
-    EXPECT_EQ_UINT(set_size(&s), 0);
-    set_fini(&s);
+    EXPECT_EQ_INT(set_insert(s, &k0), 0);
+    EXPECT_EQ_INT(set_insert(s, &k1), 0);
+    EXPECT_EQ_INT(set_insert(s, &k2), 0);
+    set_clear(s);
+    EXPECT_TRUE(set_empty(s));
+    EXPECT_EQ_UINT(set_size(s), 0);
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {hash_str, cmp_str, free_ele};
+    struct set *s;
     char *ka, *kb;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, hash_str, cmp_str, free_ele), 0);
     ka = strdup("alpha");
     EXPECT_NOTNULL(ka);
     kb = strdup("beta");
@@ -150,80 +143,76 @@ UTEST_CASE(basic)
       free(ka);
     }
     EXPECT_NOTNULL(kb);
-    EXPECT_EQ_INT(set_insert(&s, ka), 0);
-    EXPECT_EQ_INT(set_insert(&s, kb), 0);
-    EXPECT_TRUE(set_contains(&s, ka));
-    EXPECT_TRUE(set_contains(&s, kb));
-    set_fini(&s);
+    EXPECT_EQ_INT(set_insert(s, ka), 0);
+    EXPECT_EQ_INT(set_insert(s, kb), 0);
+    EXPECT_TRUE(set_contains(s, ka));
+    EXPECT_TRUE(set_contains(s, kb));
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {hash_int, cmp_int, free_ele};
+    struct set *s;
     int idx;
     int *pe;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, hash_int, cmp_int, free_ele), 0);
     for (idx = 0; idx < 8; idx++) {
       int ins;
 
       pe = (int *)malloc(sizeof(int));
       EXPECT_NOTNULL(pe);
       *pe = idx;
-      ins = set_insert(&s, pe);
+      ins = set_insert(s, pe);
       if (ins != 0) {
         free(pe);
       }
       EXPECT_EQ_INT(ins, 0);
     }
-    EXPECT_EQ_UINT(set_size(&s), 8);
+    EXPECT_EQ_UINT(set_size(s), 8);
     for (idx = 0; idx < 8; idx++) {
       int key = idx;
-      EXPECT_TRUE(set_contains(&s, &key));
+      EXPECT_TRUE(set_contains(s, &key));
     }
-    set_fini(&s);
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {hash_int, cmp_int, dtor_inc};
+    struct set *s;
     int k;
 
     dtor_n = 0;
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, hash_int, cmp_int, dtor_inc), 0);
     k = 1;
-    EXPECT_EQ_INT(set_insert(&s, &k), 0);
-    set_clear(&s);
+    EXPECT_EQ_INT(set_insert(s, &k), 0);
+    set_clear(s);
     EXPECT_EQ_INT(dtor_n, 1);
-    set_fini(&s);
+    set_free(s);
     EXPECT_EQ_INT(dtor_n, 1);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {hash_int, cmp_int, dtor_inc};
+    struct set *s;
     int k;
 
     dtor_n = 0;
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, hash_int, cmp_int, dtor_inc), 0);
     k = 3;
-    EXPECT_EQ_INT(set_insert(&s, &k), 0);
-    EXPECT_EQ_INT(set_remove(&s, &k), 0);
+    EXPECT_EQ_INT(set_insert(s, &k), 0);
+    EXPECT_EQ_INT(set_remove(s, &k), 0);
     EXPECT_EQ_INT(dtor_n, 1);
-    set_fini(&s);
+    set_free(s);
     EXPECT_EQ_INT(dtor_n, 1);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {hash_int, cmp_int, dtor_inc};
+    struct set *s;
     int k;
 
     dtor_n = 0;
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, hash_int, cmp_int, dtor_inc), 0);
     k = 7;
-    EXPECT_EQ_INT(set_insert(&s, &k), 0);
-    set_fini(&s);
+    EXPECT_EQ_INT(set_insert(s, &k), 0);
+    set_free(s);
     EXPECT_EQ_INT(dtor_n, 1);
   }
 }

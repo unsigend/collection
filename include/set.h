@@ -18,46 +18,129 @@
 #ifndef COL_SET_H
 #define COL_SET_H
 
-#include <hashtbl.h>
+#include <stddef.h>
 #include <stdint.h>
 
-struct set_fns {
-  uint32_t (*hash)(void *);
-  int (*cmp)(void *, void *);
-  void (*destroy)(void *);
-};
+struct set;
+struct set_iter;
 
-struct set {
-  struct hashtbl tbl;
-  struct hashtbl_fns tbl_fns;
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define set_empty(set)                                                         \
-  (hashtbl_empty(&(set)->tbl)) /* Check if the set is empty */
-#define set_size(set) (hashtbl_size(&(set)->tbl)) /* Size of the set */
+typedef uint32_t (*set_fns_hash)(void *);
+typedef int (*set_fns_cmp)(void *, void *);
+typedef void (*set_fns_destroy)(void *);
 
-int set_init(struct set *set, struct set_fns *fns);
-void set_fini(struct set *set);
+/**
+ * Allocate and initialize an empty set.
+ *
+ * Elements are stored as opaque pointers; the set does not copy pointed-to
+ * data. destroy is invoked when a stored pointer is discarded, or NULL for
+ * no-op.
+ *
+ * @param set     output pointer to receive the new set, must not be NULL
+ * @param hash    element hash function, must not be NULL
+ * @param cmp     element comparator, must not be NULL
+ * @param destroy optional callback invoked on each discarded element, or NULL
+ * @return        0 on success, -1 on failure
+ */
+int set_init(struct set **set, set_fns_hash hash, set_fns_cmp cmp,
+             set_fns_destroy destroy);
 
-/* Insert a new element into the set. Returns 0 on success, -1 on error. If the
-   element already exists, ignore and return 0. */
+/**
+ * Destroy all elements and free the set.
+ *
+ * @param set the set to free, or NULL
+ */
+void set_free(struct set *set);
+
+/**
+ * Test whether the set contains no elements.
+ *
+ * @param set the set to inspect, or NULL
+ * @return    non-zero if empty, zero otherwise
+ */
+int set_empty(const struct set *set);
+
+/**
+ * Return the current number of elements in the set.
+ *
+ * @param set the set to inspect, or NULL
+ * @return    element count, or 0 if set is NULL
+ */
+size_t set_size(const struct set *set);
+
+/**
+ * Test whether the set contains ele.
+ *
+ * @param set the set to search, or NULL
+ * @param ele element to find, must not be NULL
+ * @return    non-zero if present, zero if set is NULL, ele is NULL, or ele is
+ *            not present
+ */
+int set_contains(const struct set *set, void *ele);
+
+/**
+ * Insert ele into the set. If ele is already present, does nothing and returns
+ * 0.
+ *
+ * @param set the set to modify
+ * @param ele element pointer to store, must not be NULL
+ * @return    0 on success, -1 on error
+ */
 int set_insert(struct set *set, void *ele);
 
-/* Remove an element from the set. Returns 0 on success, -1 on error. If the
-   element does not exist, ignore and return 0. */
+/**
+ * Remove ele from the set. If ele is not present, does nothing and returns 0.
+ *
+ * @param set the set to modify
+ * @param ele element to remove, must not be NULL
+ * @return    0 on success, -1 on error
+ */
 int set_remove(struct set *set, void *ele);
 
-/* Return non-zero if the set contains the element, 0 otherwise. */
-int set_contains(struct set *set, void *ele);
-
+/**
+ * Remove all elements and reset size to zero, invoking destroy on each stored
+ * pointer when set. Does not free the set itself. No-op if set is NULL.
+ *
+ * @param set the set to clear, or NULL
+ */
 void set_clear(struct set *set);
 
-struct set_iter {
-  struct hashtbl_iter iter;
-};
+/**
+ * Allocate and initialize an iterator at the first element in set.
+ *
+ * @param iter output pointer to receive the new iterator, must not be NULL
+ * @param set  the set to traverse, must not be NULL
+ * @return     0 on success, -1 on failure
+ */
+int set_iter_init(struct set_iter **iter, struct set *set);
 
-int set_iter_init(struct set_iter *iter, struct set *set);
+/**
+ * Advance the iterator to the next element.
+ *
+ * @param iter the iterator to advance, or NULL
+ */
 void set_iter_inc(struct set_iter *iter);
-void *set_iter_get(struct set_iter *iter);
+
+/**
+ * Return the element pointer at the current iterator position.
+ *
+ * @param iter the iterator to read from, or NULL
+ * @return     element pointer, or NULL if iter is NULL or not on an element
+ */
+void *set_iter_get(const struct set_iter *iter);
+
+/**
+ * Free the iterator.
+ *
+ * @param iter the iterator to free, or NULL
+ */
+void set_iter_free(struct set_iter *iter);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

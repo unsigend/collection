@@ -73,52 +73,50 @@ static uint32_t intg_hash_zero(void *k)
 UTEST_CASE(integration)
 {
   {
-    struct set s;
-    struct set_fns fns = {intg_hash_int, intg_cmp_int, NULL};
+    struct set *s;
     int keys[40];
     int idx;
     int q;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, intg_hash_int, intg_cmp_int, NULL), 0);
     for (idx = 0; idx < 40; idx++) {
       keys[idx] = idx * 3 + 1;
-      EXPECT_EQ_INT(set_insert(&s, &keys[idx]), 0);
+      EXPECT_EQ_INT(set_insert(s, &keys[idx]), 0);
     }
-    EXPECT_EQ_UINT(set_size(&s), 40);
+    EXPECT_EQ_UINT(set_size(s), 40);
     for (idx = 0; idx < 40; idx++) {
       q = idx * 3 + 1;
-      EXPECT_TRUE(set_contains(&s, &q));
+      EXPECT_TRUE(set_contains(s, &q));
     }
-    EXPECT_EQ_INT(set_remove(&s, &keys[0]), 0);
-    EXPECT_EQ_INT(set_remove(&s, &keys[39]), 0);
-    EXPECT_EQ_UINT(set_size(&s), 38);
+    EXPECT_EQ_INT(set_remove(s, &keys[0]), 0);
+    EXPECT_EQ_INT(set_remove(s, &keys[39]), 0);
+    EXPECT_EQ_UINT(set_size(s), 38);
     q = 1;
-    EXPECT_FALSE(set_contains(&s, &q));
+    EXPECT_FALSE(set_contains(s, &q));
     q = 118;
-    EXPECT_FALSE(set_contains(&s, &q));
-    set_clear(&s);
-    EXPECT_TRUE(set_empty(&s));
+    EXPECT_FALSE(set_contains(s, &q));
+    set_clear(s);
+    EXPECT_TRUE(set_empty(s));
     keys[0] = 999;
-    EXPECT_EQ_INT(set_insert(&s, &keys[0]), 0);
-    EXPECT_EQ_UINT(set_size(&s), 1);
-    set_fini(&s);
+    EXPECT_EQ_INT(set_insert(s, &keys[0]), 0);
+    EXPECT_EQ_UINT(set_size(s), 1);
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {intg_hash_int, intg_cmp_int, intg_free_ele};
+    struct set *s;
     int idx;
     int *pe;
     int q;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, intg_hash_int, intg_cmp_int, intg_free_ele), 0);
     for (idx = 0; idx < 24; idx++) {
       int ins;
 
       pe = (int *)malloc(sizeof(int));
       EXPECT_NOTNULL(pe);
       *pe = idx + 500;
-      ins = set_insert(&s, pe);
+      ins = set_insert(s, pe);
       if (ins != 0) {
         free(pe);
       }
@@ -126,120 +124,116 @@ UTEST_CASE(integration)
     }
     for (idx = 0; idx < 24; idx++) {
       q = idx + 500;
-      EXPECT_TRUE(set_contains(&s, &q));
+      EXPECT_TRUE(set_contains(s, &q));
     }
     q = 502;
-    EXPECT_EQ_INT(set_remove(&s, &q), 0);
+    EXPECT_EQ_INT(set_remove(s, &q), 0);
     q = 515;
-    EXPECT_EQ_INT(set_remove(&s, &q), 0);
-    EXPECT_EQ_UINT(set_size(&s), 22);
+    EXPECT_EQ_INT(set_remove(s, &q), 0);
+    EXPECT_EQ_UINT(set_size(s), 22);
     q = 502;
-    EXPECT_FALSE(set_contains(&s, &q));
-    set_fini(&s);
+    EXPECT_FALSE(set_contains(s, &q));
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {intg_hash_point, intg_cmp_point, NULL};
+    struct set *s;
     struct intg_point pk[6];
     struct intg_point lq;
     int idx;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, intg_hash_point, intg_cmp_point, NULL), 0);
     for (idx = 0; idx < 6; idx++) {
       pk[idx].x = idx;
       pk[idx].y = idx * 10;
-      EXPECT_EQ_INT(set_insert(&s, &pk[idx]), 0);
+      EXPECT_EQ_INT(set_insert(s, &pk[idx]), 0);
     }
     lq.x = 3;
     lq.y = 30;
-    EXPECT_TRUE(set_contains(&s, &lq));
+    EXPECT_TRUE(set_contains(s, &lq));
     lq.x = 1;
     lq.y = 10;
-    EXPECT_EQ_INT(set_remove(&s, &lq), 0);
+    EXPECT_EQ_INT(set_remove(s, &lq), 0);
     lq.x = 1;
     lq.y = 10;
-    EXPECT_FALSE(set_contains(&s, &lq));
+    EXPECT_FALSE(set_contains(s, &lq));
     lq.x = 5;
     lq.y = 50;
-    EXPECT_TRUE(set_contains(&s, &lq));
-    set_fini(&s);
+    EXPECT_TRUE(set_contains(s, &lq));
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {intg_hash_str, intg_cmp_str, intg_free_ele};
+    struct set *s;
     char *ks[5];
     int idx;
     char *kdup;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, intg_hash_str, intg_cmp_str, intg_free_ele), 0);
     for (idx = 0; idx < 5; idx++) {
       kdup = (char *)malloc(16);
       EXPECT_NOTNULL(kdup);
       memset(kdup, 0, 16);
       kdup[0] = (char)('a' + idx);
       ks[idx] = kdup;
-      EXPECT_EQ_INT(set_insert(&s, ks[idx]), 0);
+      EXPECT_EQ_INT(set_insert(s, ks[idx]), 0);
     }
     kdup = strdup("c");
     EXPECT_NOTNULL(kdup);
-    EXPECT_TRUE(set_contains(&s, kdup));
+    EXPECT_TRUE(set_contains(s, kdup));
     free(kdup);
     kdup = strdup("e");
     EXPECT_NOTNULL(kdup);
-    EXPECT_EQ_INT(set_remove(&s, kdup), 0);
+    EXPECT_EQ_INT(set_remove(s, kdup), 0);
     free(kdup);
-    EXPECT_EQ_UINT(set_size(&s), 4);
-    set_fini(&s);
+    EXPECT_EQ_UINT(set_size(s), 4);
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {intg_hash_zero, intg_cmp_int, NULL};
+    struct set *s;
     int keys[20];
     int idx;
     int q;
 
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, intg_hash_zero, intg_cmp_int, NULL), 0);
     for (idx = 0; idx < 20; idx++) {
       keys[idx] = idx;
-      EXPECT_EQ_INT(set_insert(&s, &keys[idx]), 0);
+      EXPECT_EQ_INT(set_insert(s, &keys[idx]), 0);
     }
     for (idx = 0; idx < 20; idx += 2)
-      EXPECT_EQ_INT(set_remove(&s, &keys[idx]), 0);
-    EXPECT_EQ_UINT(set_size(&s), 10);
+      EXPECT_EQ_INT(set_remove(s, &keys[idx]), 0);
+    EXPECT_EQ_UINT(set_size(s), 10);
     for (idx = 1; idx < 20; idx += 2) {
       q = idx;
-      EXPECT_TRUE(set_contains(&s, &q));
+      EXPECT_TRUE(set_contains(s, &q));
     }
     for (idx = 0; idx < 20; idx += 2) {
       q = idx;
-      EXPECT_FALSE(set_contains(&s, &q));
+      EXPECT_FALSE(set_contains(s, &q));
     }
-    EXPECT_EQ_INT(set_insert(&s, &keys[0]), 0);
-    EXPECT_EQ_INT(set_insert(&s, &keys[2]), 0);
-    EXPECT_EQ_UINT(set_size(&s), 12);
-    set_fini(&s);
+    EXPECT_EQ_INT(set_insert(s, &keys[0]), 0);
+    EXPECT_EQ_INT(set_insert(s, &keys[2]), 0);
+    EXPECT_EQ_UINT(set_size(s), 12);
+    set_free(s);
   }
 
   {
-    struct set s;
-    struct set_fns fns = {intg_hash_int, intg_cmp_int, intg_dtor_inc};
+    struct set *s;
     int k;
 
     intg_dtor_n = 0;
-    EXPECT_EQ_INT(set_init(&s, &fns), 0);
+    EXPECT_EQ_INT(set_init(&s, intg_hash_int, intg_cmp_int, intg_dtor_inc), 0);
     k = 7;
-    EXPECT_EQ_INT(set_insert(&s, &k), 0);
+    EXPECT_EQ_INT(set_insert(s, &k), 0);
     k = 8;
-    EXPECT_EQ_INT(set_insert(&s, &k), 0);
-    set_clear(&s);
+    EXPECT_EQ_INT(set_insert(s, &k), 0);
+    set_clear(s);
     EXPECT_EQ_INT(intg_dtor_n, 2);
     k = 1;
-    EXPECT_EQ_INT(set_insert(&s, &k), 0);
-    EXPECT_EQ_UINT(set_size(&s), 1);
-    set_fini(&s);
+    EXPECT_EQ_INT(set_insert(s, &k), 0);
+    EXPECT_EQ_UINT(set_size(s), 1);
+    set_free(s);
     EXPECT_EQ_INT(intg_dtor_n, 3);
   }
 }

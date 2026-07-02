@@ -54,176 +54,170 @@ static void free_val(void *p) { free(p); }
 UTEST_CASE(basic)
 {
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, NULL};
+    struct hashtbl *ht;
 
-    EXPECT_EQ_INT(hashtbl_init(NULL, &fns), -1);
-    EXPECT_EQ_INT(hashtbl_init(&ht, NULL), -1);
-    fns.hash = NULL;
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), -1);
-    fns.hash = hash_int_key;
-    fns.cmp = NULL;
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), -1);
+    EXPECT_EQ_INT(hashtbl_init(NULL, hash_int_key, cmp_int_key, NULL, NULL), -1);
+    EXPECT_EQ_INT(hashtbl_init(&ht, NULL, NULL, NULL, NULL), -1);
+    EXPECT_EQ_INT(hashtbl_init(&ht, NULL, cmp_int_key, NULL, NULL), -1);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, NULL, NULL, NULL), -1);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, NULL};
+    struct hashtbl *ht;
     float old_th;
     void *p;
 
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
-    EXPECT_TRUE(hashtbl_empty(&ht));
-    EXPECT_EQ_UINT(hashtbl_size(&ht), 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
-                     (double)hashtbl_threshold(&ht));
-    EXPECT_NULL(hashtbl_find(&ht, (void *)1));
-    EXPECT_NULL(hashtbl_findnode(&ht, (void *)1));
-    EXPECT_EQ_INT(hashtbl_remove(&ht, (void *)1, NULL), -1);
-    EXPECT_EQ_INT(hashtbl_insert(&ht, NULL, NULL), -1);
-    EXPECT_EQ_INT(hashtbl_update(&ht, (void *)1, NULL, NULL), -1);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, NULL, NULL), 0);
+    EXPECT_TRUE(hashtbl_empty(NULL));
+    EXPECT_EQ_UINT(hashtbl_size(NULL), 0);
+    EXPECT_EQ_DOUBLE((double)hashtbl_threshold(NULL), 0.0);
+    EXPECT_EQ_UINT(hashtbl_bucketsz(NULL), 0);
+    EXPECT_EQ_DOUBLE((double)hashtbl_loadfactor(NULL), 0.0);
+    EXPECT_TRUE(hashtbl_empty(ht));
+    EXPECT_EQ_UINT(hashtbl_size(ht), 0);
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(ht),
+                     (double)hashtbl_threshold(ht));
+    EXPECT_NULL(hashtbl_find(ht, (void *)1));
+    EXPECT_NULL(hashtbl_findnode(ht, (void *)1));
+    EXPECT_EQ_INT(hashtbl_remove(ht, (void *)1, NULL), -1);
+    EXPECT_EQ_INT(hashtbl_insert(ht, NULL, NULL), -1);
+    EXPECT_EQ_INT(hashtbl_update(ht, (void *)1, NULL, NULL), -1);
     p = (void *)1;
-    EXPECT_EQ_INT(hashtbl_update(&ht, p, p, NULL), -1);
+    EXPECT_EQ_INT(hashtbl_update(ht, p, p, NULL), -1);
     EXPECT_EQ_INT(hashtbl_setthreshold(NULL, 0.5f, NULL), -1);
-    EXPECT_EQ_INT(hashtbl_setthreshold(&ht, 0.0f, NULL), -1);
-    EXPECT_EQ_INT(hashtbl_setthreshold(&ht, -1.0f, NULL), -1);
-    EXPECT_EQ_INT(hashtbl_setthreshold(&ht, 0.5f, &old_th), 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
-                     (double)hashtbl_threshold(&ht));
-    hashtbl_fini(NULL);
-    hashtbl_clear(&ht);
-    hashtbl_fini(&ht);
+    EXPECT_EQ_INT(hashtbl_setthreshold(ht, 0.0f, NULL), -1);
+    EXPECT_EQ_INT(hashtbl_setthreshold(ht, -1.0f, NULL), -1);
+    EXPECT_EQ_INT(hashtbl_setthreshold(ht, 0.5f, &old_th), 0);
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(ht),
+                     (double)hashtbl_threshold(ht));
+    hashtbl_free(NULL);
+    hashtbl_clear(ht);
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, NULL};
+    struct hashtbl *ht;
     int k, v;
     void *fv;
 
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, NULL, NULL), 0);
     k = 11;
     v = 21;
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k, &v), 0);
-    EXPECT_FALSE(hashtbl_empty(&ht));
-    EXPECT_EQ_UINT(hashtbl_size(&ht), 1);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
-                     (double)hashtbl_threshold(&ht));
-    fv = hashtbl_find(&ht, &k);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k, &v), 0);
+    EXPECT_FALSE(hashtbl_empty(ht));
+    EXPECT_EQ_UINT(hashtbl_size(ht), 1);
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(ht),
+                     (double)hashtbl_threshold(ht));
+    fv = hashtbl_find(ht, &k);
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_INT(*(int *)fv, v);
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k, &v), -1);
-    hashtbl_fini(&ht);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k, &v), -1);
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, NULL};
+    struct hashtbl *ht;
     int k1, k2, v1, v2;
     struct hashtbl_node *n;
     void *fv;
 
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, NULL, NULL), 0);
     k1 = 1;
     v1 = 10;
     k2 = 2;
     v2 = 20;
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k1, &v1), 0);
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k2, &v2), 0);
-    EXPECT_EQ_UINT(hashtbl_size(&ht), 2);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
-                     (double)hashtbl_threshold(&ht));
-    n = hashtbl_findnode(&ht, &k2);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k1, &v1), 0);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k2, &v2), 0);
+    EXPECT_EQ_UINT(hashtbl_size(ht), 2);
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(ht),
+                     (double)hashtbl_threshold(ht));
+    n = hashtbl_findnode(ht, &k2);
     EXPECT_NOTNULL(n);
-    EXPECT_EQ_PTR(n->key, &k2);
-    EXPECT_NOTNULL(n->val);
-    EXPECT_EQ_INT(*(int *)n->val, v2);
-    fv = hashtbl_find(&ht, &k1);
+    EXPECT_EQ_PTR(hashtbl_node_key(n), &k2);
+    EXPECT_NOTNULL(hashtbl_node_val(n));
+    EXPECT_EQ_INT(*(int *)hashtbl_node_val(n), v2);
+    fv = hashtbl_find(ht, &k1);
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_INT(*(int *)fv, v1);
-    hashtbl_fini(&ht);
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, NULL};
+    struct hashtbl *ht;
     int k, v0, v1;
     void *oldv;
     void *fv;
 
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, NULL, NULL), 0);
     k = 5;
     v0 = 50;
     v1 = 51;
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k, &v0), 0);
-    EXPECT_EQ_INT(hashtbl_update(&ht, &k, &v1, &oldv), 0);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k, &v0), 0);
+    EXPECT_EQ_INT(hashtbl_update(ht, &k, &v1, &oldv), 0);
     EXPECT_NOTNULL(oldv);
     EXPECT_EQ_PTR(oldv, &v0);
-    fv = hashtbl_find(&ht, &k);
+    fv = hashtbl_find(ht, &k);
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_PTR(fv, &v1);
-    EXPECT_EQ_INT(hashtbl_update(&ht, &k, &v0, NULL), 0);
-    fv = hashtbl_find(&ht, &k);
+    EXPECT_EQ_INT(hashtbl_update(ht, &k, &v0, NULL), 0);
+    fv = hashtbl_find(ht, &k);
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_PTR(fv, &v0);
-    EXPECT_EQ_INT(hashtbl_update(&ht, &k, &v1, NULL), 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
-                     (double)hashtbl_threshold(&ht));
-    hashtbl_fini(&ht);
+    EXPECT_EQ_INT(hashtbl_update(ht, &k, &v1, NULL), 0);
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(ht),
+                     (double)hashtbl_threshold(ht));
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, NULL};
+    struct hashtbl *ht;
     int k, v;
     void *outv;
 
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, NULL, NULL), 0);
     k = 9;
     v = 99;
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k, &v), 0);
-    EXPECT_EQ_INT(hashtbl_remove(&ht, &k, &outv), 0);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k, &v), 0);
+    EXPECT_EQ_INT(hashtbl_remove(ht, &k, &outv), 0);
     EXPECT_NOTNULL(outv);
     EXPECT_EQ_PTR(outv, &v);
-    EXPECT_TRUE(hashtbl_empty(&ht));
-    EXPECT_EQ_INT(hashtbl_remove(&ht, &k, NULL), -1);
-    hashtbl_fini(&ht);
+    EXPECT_TRUE(hashtbl_empty(ht));
+    EXPECT_EQ_INT(hashtbl_remove(ht, &k, NULL), -1);
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, NULL};
+    struct hashtbl *ht;
     int k0, k1, k2;
 
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, NULL, NULL), 0);
     k0 = 0;
     k1 = 1;
     k2 = 2;
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k0, NULL), 0);
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k1, NULL), 0);
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k2, NULL), 0);
-    EXPECT_NOTNULL(hashtbl_findnode(&ht, &k0));
-    EXPECT_NOTNULL(hashtbl_findnode(&ht, &k1));
-    EXPECT_NOTNULL(hashtbl_findnode(&ht, &k2));
-    EXPECT_NULL(hashtbl_find(&ht, &k0));
-    EXPECT_NULL(hashtbl_find(&ht, &k1));
-    EXPECT_NULL(hashtbl_find(&ht, &k2));
-    hashtbl_clear(&ht);
-    EXPECT_TRUE(hashtbl_empty(&ht));
-    EXPECT_EQ_UINT(hashtbl_size(&ht), 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
-                     (double)hashtbl_threshold(&ht));
-    hashtbl_fini(&ht);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k0, NULL), 0);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k1, NULL), 0);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k2, NULL), 0);
+    EXPECT_NOTNULL(hashtbl_findnode(ht, &k0));
+    EXPECT_NOTNULL(hashtbl_findnode(ht, &k1));
+    EXPECT_NOTNULL(hashtbl_findnode(ht, &k2));
+    EXPECT_NULL(hashtbl_find(ht, &k0));
+    EXPECT_NULL(hashtbl_find(ht, &k1));
+    EXPECT_NULL(hashtbl_find(ht, &k2));
+    hashtbl_clear(ht);
+    EXPECT_TRUE(hashtbl_empty(ht));
+    EXPECT_EQ_UINT(hashtbl_size(ht), 0);
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(ht),
+                     (double)hashtbl_threshold(ht));
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_str_key, cmp_str_key, free_key, NULL};
+    struct hashtbl *ht;
     char *ka, *kb;
     int va, vb;
     void *fv;
 
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_str_key, cmp_str_key, free_key, NULL), 0);
     ka = strdup("alpha");
     EXPECT_NOTNULL(ka);
     kb = strdup("beta");
@@ -233,27 +227,26 @@ UTEST_CASE(basic)
     EXPECT_NOTNULL(kb);
     va = 1;
     vb = 2;
-    EXPECT_EQ_INT(hashtbl_insert(&ht, ka, &va), 0);
-    EXPECT_EQ_INT(hashtbl_insert(&ht, kb, &vb), 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
-                     (double)hashtbl_threshold(&ht));
-    fv = hashtbl_find(&ht, ka);
+    EXPECT_EQ_INT(hashtbl_insert(ht, ka, &va), 0);
+    EXPECT_EQ_INT(hashtbl_insert(ht, kb, &vb), 0);
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(ht),
+                     (double)hashtbl_threshold(ht));
+    fv = hashtbl_find(ht, ka);
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_INT(*(int *)fv, va);
-    fv = hashtbl_find(&ht, kb);
+    fv = hashtbl_find(ht, kb);
     EXPECT_NOTNULL(fv);
     EXPECT_EQ_INT(*(int *)fv, vb);
-    hashtbl_fini(&ht);
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, free_key, free_val};
+    struct hashtbl *ht;
     int idx;
     int *pk;
     int *pv;
 
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, free_key, free_val), 0);
     for (idx = 0; idx < 8; idx++) {
       int ins;
 
@@ -266,33 +259,32 @@ UTEST_CASE(basic)
       EXPECT_NOTNULL(pv);
       *pk = idx;
       *pv = idx * 10;
-      ins = hashtbl_insert(&ht, pk, pv);
+      ins = hashtbl_insert(ht, pk, pv);
       if (ins != 0) {
         free(pk);
         free(pv);
       }
       EXPECT_EQ_INT(ins, 0);
-      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
-                       (double)hashtbl_threshold(&ht));
+      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(ht),
+                       (double)hashtbl_threshold(ht));
     }
-    EXPECT_EQ_UINT(hashtbl_size(&ht), 8);
+    EXPECT_EQ_UINT(hashtbl_size(ht), 8);
     for (idx = 0; idx < 8; idx++) {
       int key = idx;
-      pv = (int *)hashtbl_find(&ht, &key);
+      pv = (int *)hashtbl_find(ht, &key);
       EXPECT_NOTNULL(pv);
       EXPECT_EQ_INT(*pv, idx * 10);
     }
-    hashtbl_fini(&ht);
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, free_key, free_val};
+    struct hashtbl *ht;
     int *pk;
     int *pv;
     void *outv;
 
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, free_key, free_val), 0);
     pk = (int *)malloc(sizeof(int));
     EXPECT_NOTNULL(pk);
     pv = (int *)malloc(sizeof(int));
@@ -305,137 +297,125 @@ UTEST_CASE(basic)
     {
       int ins;
 
-      ins = hashtbl_insert(&ht, pk, pv);
+      ins = hashtbl_insert(ht, pk, pv);
       if (ins != 0) {
         free(pk);
         free(pv);
       }
       EXPECT_EQ_INT(ins, 0);
     }
-    EXPECT_EQ_INT(hashtbl_remove(&ht, pk, &outv), 0);
+    EXPECT_EQ_INT(hashtbl_remove(ht, pk, &outv), 0);
     EXPECT_NOTNULL(outv);
     EXPECT_EQ_PTR(outv, pv);
     EXPECT_EQ_INT(*(int *)outv, 420);
     free(pv);
-    hashtbl_fini(&ht);
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, dtor_val_inc};
-
+    struct hashtbl *ht;
     dtor_val_n = 0;
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
-    EXPECT_EQ_INT(hashtbl_setthreshold(&ht, 0.5f, NULL), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, NULL, dtor_val_inc), 0);
+    EXPECT_EQ_INT(hashtbl_setthreshold(ht, 0.5f, NULL), 0);
     EXPECT_EQ_INT(dtor_val_n, 0);
-    hashtbl_fini(&ht);
+    hashtbl_free(ht);
     EXPECT_EQ_INT(dtor_val_n, 0);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, dtor_key_inc,
-                              dtor_val_inc};
+    struct hashtbl *ht;
     int k, v;
 
     dtor_key_n = 0;
     dtor_val_n = 0;
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, dtor_key_inc,
+                              dtor_val_inc), 0);
     k = 1;
     v = 2;
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k, &v), 0);
-    hashtbl_clear(&ht);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k, &v), 0);
+    hashtbl_clear(ht);
     EXPECT_EQ_INT(dtor_key_n, 1);
     EXPECT_EQ_INT(dtor_val_n, 1);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
-                     (double)hashtbl_threshold(&ht));
-    hashtbl_fini(&ht);
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(ht),
+                     (double)hashtbl_threshold(ht));
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, dtor_val_inc};
+    struct hashtbl *ht;
     int k, v0, v1;
 
     dtor_val_n = 0;
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, NULL, dtor_val_inc), 0);
     k = 7;
     v0 = 70;
     v1 = 71;
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k, &v0), 0);
-    EXPECT_EQ_INT(hashtbl_update(&ht, &k, &v1, NULL), 0);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k, &v0), 0);
+    EXPECT_EQ_INT(hashtbl_update(ht, &k, &v1, NULL), 0);
     EXPECT_EQ_INT(dtor_val_n, 1);
-    hashtbl_fini(&ht);
+    hashtbl_free(ht);
     EXPECT_EQ_INT(dtor_val_n, 2);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, dtor_val_inc};
+    struct hashtbl *ht;
     int k, v;
 
     dtor_val_n = 0;
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, NULL, dtor_val_inc), 0);
     k = 3;
     v = 33;
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k, &v), 0);
-    EXPECT_EQ_INT(hashtbl_remove(&ht, &k, NULL), 0);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k, &v), 0);
+    EXPECT_EQ_INT(hashtbl_remove(ht, &k, NULL), 0);
     EXPECT_EQ_INT(dtor_val_n, 1);
-    hashtbl_fini(&ht);
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, NULL};
+    struct hashtbl *ht;
     size_t bsz0, bsz1;
     int idx;
     int kbuf[256];
     int vbuf[256];
 
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
-    EXPECT_EQ_INT(hashtbl_setthreshold(&ht, 0.5f, NULL), 0);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, NULL, NULL), 0);
+    EXPECT_EQ_INT(hashtbl_setthreshold(ht, 0.5f, NULL), 0);
     kbuf[0] = 0;
     vbuf[0] = 0;
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &kbuf[0], &vbuf[0]), 0);
-    bsz0 = hashtbl_bucketsz(&ht);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &kbuf[0], &vbuf[0]), 0);
+    bsz0 = hashtbl_bucketsz(ht);
     EXPECT_GT_UINT(bsz0, 0);
-    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
-                     (double)hashtbl_threshold(&ht));
+    EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(ht),
+                     (double)hashtbl_threshold(ht));
     for (idx = 1; idx < 256; idx++) {
       kbuf[idx] = idx;
       vbuf[idx] = idx;
-      EXPECT_EQ_INT(hashtbl_insert(&ht, &kbuf[idx], &vbuf[idx]), 0);
-      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(&ht),
-                       (double)hashtbl_threshold(&ht));
+      EXPECT_EQ_INT(hashtbl_insert(ht, &kbuf[idx], &vbuf[idx]), 0);
+      EXPECT_LE_DOUBLE((double)hashtbl_loadfactor(ht),
+                       (double)hashtbl_threshold(ht));
     }
-    bsz1 = hashtbl_bucketsz(&ht);
+    bsz1 = hashtbl_bucketsz(ht);
     EXPECT_GT_UINT(bsz1, bsz0);
-    EXPECT_EQ_UINT(hashtbl_size(&ht), 256);
-    hashtbl_fini(&ht);
+    EXPECT_EQ_UINT(hashtbl_size(ht), 256);
+    hashtbl_free(ht);
   }
 
   {
-    struct hashtbl ht;
-    struct hashtbl_fns fns = {hash_int_key, cmp_int_key, NULL, NULL};
-    struct hashtbl_node **bp;
-    struct hashtbl_node *n;
+    struct hashtbl *ht;
     int k;
     int v;
 
-    EXPECT_EQ_INT(hashtbl_init(&ht, &fns), 0);
-    EXPECT_EQ_PTR(hashtbl_fns(&ht), &fns);
+    EXPECT_EQ_INT(hashtbl_init(&ht, hash_int_key, cmp_int_key, NULL, NULL), 0);
     k = 7;
     v = 77;
-    EXPECT_EQ_INT(hashtbl_insert(&ht, &k, &v), 0);
-    bp = hashtbl_buckets(&ht);
-    EXPECT_NOTNULL(bp);
-    EXPECT_GT_UINT(hashtbl_bucketsz(&ht), 0);
-    EXPECT_EQ_PTR(hashtbl_fns(&ht), &fns);
-    n = hashtbl_findnode(&ht, &k);
-    EXPECT_NOTNULL(n);
-    EXPECT_EQ_PTR(n->key, &k);
-    EXPECT_EQ_PTR(n->val, &v);
-    EXPECT_NULL(n->next);
-    hashtbl_fini(&ht);
+    EXPECT_EQ_INT(hashtbl_insert(ht, &k, &v), 0);
+    EXPECT_GT_UINT(hashtbl_bucketsz(ht), 0);
+    EXPECT_NOTNULL(hashtbl_findnode(ht, &k));
+    EXPECT_EQ_PTR(hashtbl_node_key(hashtbl_findnode(ht, &k)), &k);
+    EXPECT_EQ_PTR(hashtbl_node_val(hashtbl_findnode(ht, &k)), &v);
+    EXPECT_EQ_PTR(hashtbl_find(ht, &k), &v);
+    EXPECT_NULL(hashtbl_node_key(NULL));
+    EXPECT_NULL(hashtbl_node_val(NULL));
+    hashtbl_free(ht);
   }
 }
