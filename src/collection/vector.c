@@ -141,6 +141,8 @@ void vec_sort(struct vector *vec, int (*cmp)(const void *, const void *))
 {
     if (!vec || !cmp)
         return;
+    if (!vec->buf)
+        return;
     qsort(vec->buf, vec->sz, vec->elesz, cmp);
 }
 

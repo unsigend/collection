@@ -15,63 +15,61 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#define COL_ALL_SORTS
+#include "sort.h"
+
 #include <math.h>
-#include <sort.h>
-#include <stddef.h>
 #include <util.h>
 
-#define GET(base, idx, sz) ((void *)((char *)(base) + (idx) * (sz)))
 #define THRESHOLD 16
 
-static int sortrec(void *base, size_t n, size_t sz, int (*cmp)(void *, void *),
-                   int depth)
+static int sort_rec(void *base, size_t n, size_t sz, int (*cmp)(void *, void *),
+                    int depth)
 {
-  if (n <= THRESHOLD)
-    return sortins(base, n, sz, cmp);
-  if (!depth)
-    return sortheap(base, n, sz, cmp);
+    if (n <= THRESHOLD)
+        return sort_insertion(base, n, sz, cmp);
+    if (!depth)
+        return sort_heap(base, n, sz, cmp);
 
-  size_t min = 0, mid = n / 2, max = n - 1;
-  if (cmp(GET(base, min, sz), GET(base, mid, sz)) > 0)
-    swap(GET(base, min, sz), GET(base, mid, sz), sz);
-  if (cmp(GET(base, min, sz), GET(base, max, sz)) > 0)
-    swap(GET(base, min, sz), GET(base, max, sz), sz);
-  if (cmp(GET(base, mid, sz), GET(base, max, sz)) > 0)
-    swap(GET(base, mid, sz), GET(base, max, sz), sz);
+    size_t min = 0, mid = n / 2, max = n - 1;
+    if (cmp(GET(base, min, sz), GET(base, mid, sz)) > 0)
+        swap(GET(base, min, sz), GET(base, mid, sz), sz);
+    if (cmp(GET(base, min, sz), GET(base, max, sz)) > 0)
+        swap(GET(base, min, sz), GET(base, max, sz), sz);
+    if (cmp(GET(base, mid, sz), GET(base, max, sz)) > 0)
+        swap(GET(base, mid, sz), GET(base, max, sz), sz);
 
-  if (n <= 3)
-    return 0;
+    if (n <= 3)
+        return 0;
 
-  size_t pivot = max - 1;
-  swap(GET(base, mid, sz), GET(base, pivot, sz), sz);
+    size_t pivot = max - 1;
+    swap(GET(base, mid, sz), GET(base, pivot, sz), sz);
 
-  size_t l = 1, r = n - 3;
-  while (l < r) {
-    while (l < r && cmp(GET(base, l, sz), GET(base, pivot, sz)) < 0)
-      l++;
-    while (l < r && cmp(GET(base, r, sz), GET(base, pivot, sz)) > 0)
-      r--;
-    if (l < r) {
-      swap(GET(base, l, sz), GET(base, r, sz), sz);
-      l++, r--;
+    size_t l = 1, r = n - 3;
+    while (l < r) {
+        while (l < r && cmp(GET(base, l, sz), GET(base, pivot, sz)) < 0)
+            l++;
+        while (l < r && cmp(GET(base, r, sz), GET(base, pivot, sz)) > 0)
+            r--;
+        if (l < r) {
+            swap(GET(base, l, sz), GET(base, r, sz), sz);
+            l++, r--;
+        }
     }
-  }
-  size_t pos = l;
-  if (cmp(GET(base, pos, sz), GET(base, pivot, sz)) <= 0)
-    pos++;
-  swap(GET(base, pos, sz), GET(base, pivot, sz), sz);
+    size_t pos = l;
+    if (cmp(GET(base, pos, sz), GET(base, pivot, sz)) <= 0)
+        pos++;
+    swap(GET(base, pos, sz), GET(base, pivot, sz), sz);
 
-  return sortrec(base, pos, sz, cmp, depth - 1) ||
-         sortrec(GET(base, pos + 1, sz), n - pos - 1, sz, cmp, depth - 1);
+    return sort_rec(base, pos, sz, cmp, depth - 1) ||
+           sort_rec(GET(base, pos + 1, sz), n - pos - 1, sz, cmp, depth - 1);
 }
 
 int sort(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))
 {
-  if (!base || !sz || !cmp)
-    return -1;
-  if (n <= 1)
-    return 0;
-  int depth = 2 * (int)log2(n);
-  return sortrec(base, n, sz, cmp, depth);
+    if (!base || !sz || !cmp)
+        return -1;
+    if (n <= 1)
+        return 0;
+    int depth = 2 * (int)log2(n);
+    return sort_rec(base, n, sz, cmp, depth);
 }

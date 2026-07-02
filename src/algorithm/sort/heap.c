@@ -15,12 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "sort.h"
 #include <heap.h>
-#include <stddef.h>
 
-#define GET(base, idx, sz) ((void *)((char *)(base) + (idx) * (sz)))
-
-int sortheap(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))
+int sort_heap(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))
 {
     if (!base || !sz || !cmp)
         return -1;

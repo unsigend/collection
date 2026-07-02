@@ -20,38 +20,38 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define GET(base, idx, sz) ((void *)((char *)(base) + (idx) * (sz)))
+#define GET(BASE, IDX, SZ) ((void *)((char *)(BASE) + (IDX) * (SZ)))
 #define THRESHOLD 256
 
-int sortins(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))
+int sort_insertion(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))
 {
-  if (!base || !sz || !cmp)
-    return -1;
+    if (!base || !sz || !cmp)
+        return -1;
 
-  char stack[THRESHOLD];
-  char *buf = NULL;
-  if (sz <= THRESHOLD)
-    buf = stack;
-  else {
-    buf = malloc(sz);
-    if (!buf) {
-      errno = ENOMEM;
-      return -1;
+    char stack[THRESHOLD];
+    char *buf = NULL;
+    if (sz <= THRESHOLD)
+        buf = stack;
+    else {
+        buf = malloc(sz);
+        if (!buf) {
+            errno = ENOMEM;
+            return -1;
+        }
     }
-  }
 
-  for (size_t cur = 1; cur < n; cur++) {
-    void *key = GET(base, cur, sz);
-    memcpy(buf, key, sz);
-    size_t pos = cur;
-    while (pos && cmp(GET(base, pos - 1, sz), buf) > 0) {
-      memcpy(GET(base, pos, sz), GET(base, pos - 1, sz), sz);
-      pos--;
+    for (size_t cur = 1; cur < n; cur++) {
+        void *key = GET(base, cur, sz);
+        memcpy(buf, key, sz);
+        size_t pos = cur;
+        while (pos && cmp(GET(base, pos - 1, sz), buf) > 0) {
+            memcpy(GET(base, pos, sz), GET(base, pos - 1, sz), sz);
+            pos--;
+        }
+        memcpy(GET(base, pos, sz), buf, sz);
     }
-    memcpy(GET(base, pos, sz), buf, sz);
-  }
 
-  if (buf != stack)
-    free(buf);
-  return 0;
+    if (buf != stack)
+        free(buf);
+    return 0;
 }

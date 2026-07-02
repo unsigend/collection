@@ -20,54 +20,184 @@
 
 #include <stddef.h>
 
-struct slist {
-  struct slist_node *head;
-  struct slist_node *tail;
-  size_t len;
-  void (*destroy)(void *);
-};
+struct slist;
+struct slist_node;
+struct slist_iter;
 
-struct slist_node {
-  void *data;
-  struct slist_node *next;
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define slist_empty(slist)                                                     \
-  ((slist)->len == 0)                    /* Check if the slist is empty        \
-                                          */
-#define slist_size(slist) ((slist)->len) /* Get the size of the slist */
-#define slist_front(slist)                                                     \
-  ((slist)->head ? (slist)->head->data                                         \
-                 : NULL) /* Get the front element of the slist */
-#define slist_back(slist)                                                      \
-  ((slist)->tail ? (slist)->tail->data                                         \
-                 : NULL) /* Get the back element of the slist */
-#define slist_next(node)                                                       \
-  ((node) ? (node)->next : NULL) /* Get the next node of the given node */
-#define slist_data(node)                                                       \
-  ((node) ? (node)->data : NULL) /* Get the data of the given node */
+/**
+ * Allocate and initialize an empty list with an optional destructor invoked on
+ * each stored data pointer when it is discarded.
+ *
+ * @param slist   output pointer to receive the new list, must not be NULL
+ * @param destroy optional callback invoked on each data pointer when it is
+ *                discarded, or NULL for no-op
+ * @return        0 on success, -1 on failure
+ */
+int slist_init(struct slist **slist, void (*destroy)(void *));
 
-int slist_init(struct slist *slist, void (*destroy)(void *));
-void slist_fini(struct slist *slist);
+/**
+ * Destroy all elements, release every node, and free the list.
+ *
+ * @param slist the list to free, or NULL
+ */
+void slist_free(struct slist *slist);
 
+/**
+ * Test whether the list contains no elements.
+ *
+ * @param slist the list to inspect, or NULL
+ * @return      non-zero if empty, zero otherwise
+ */
+int slist_empty(const struct slist *slist);
+
+/**
+ * Return the current number of elements in the list.
+ *
+ * @param slist the list to inspect, or NULL
+ * @return      element count, or 0 if slist is NULL
+ */
+size_t slist_size(const struct slist *slist);
+
+/**
+ * Return the data pointer stored in the first node.
+ *
+ * @param slist the list to inspect, or NULL
+ * @return      front data pointer, or NULL if slist is NULL or empty
+ */
+void *slist_front(const struct slist *slist);
+
+/**
+ * Return the data pointer stored in the last node.
+ *
+ * @param slist the list to inspect, or NULL
+ * @return      back data pointer, or NULL if slist is NULL or empty
+ */
+void *slist_back(const struct slist *slist);
+
+/**
+ * Return the first node in the list.
+ *
+ * @param slist the list to inspect, or NULL
+ * @return      head node, or NULL if slist is NULL or empty
+ */
+struct slist_node *slist_head(const struct slist *slist);
+
+/**
+ * Return the next node after node.
+ *
+ * @param node the node to inspect, or NULL
+ * @return     next node, or NULL if node is NULL or has no successor
+ */
+struct slist_node *slist_next(const struct slist_node *node);
+
+/**
+ * Return the data pointer stored in node.
+ *
+ * @param node the node to inspect, or NULL
+ * @return     data pointer, or NULL if node is NULL
+ */
+void *slist_data(const struct slist_node *node);
+
+/**
+ * Prepend a data pointer to the front of the list.
+ *
+ * @param slist the list to modify
+ * @param data  pointer to store, must not be NULL
+ * @return      0 on success, -1 on failure
+ */
 int slist_pushfront(struct slist *slist, void *data);
+
+/**
+ * Append a data pointer to the back of the list.
+ *
+ * @param slist the list to modify
+ * @param data  pointer to store, must not be NULL
+ * @return      0 on success, -1 on failure
+ */
 int slist_pushback(struct slist *slist, void *data);
+
+/**
+ * Remove the front node. When dest is non-NULL, store the data pointer in
+ * *dest and skip destroy; otherwise invoke destroy when set.
+ *
+ * @param slist the list to modify
+ * @param dest  output location for the front data pointer, or NULL to invoke
+ *              destroy
+ * @return      0 on success, -1 if slist is NULL or the list is empty
+ */
 int slist_popfront(struct slist *slist, void **dest);
 
-/* Operations on the node after the given node, NULL to insert or remove at the
-   head */
-int slist_insertn(struct slist *slist, struct slist_node *node, void *data);
-int slist_removen(struct slist *slist, struct slist_node *node, void **dest);
+/**
+ * Insert a new node carrying data immediately after node. When node is NULL,
+ * behaves like slist_pushfront.
+ *
+ * @param slist the list to modify
+ * @param node  predecessor node, or NULL to insert at the head
+ * @param data  pointer to store, must not be NULL
+ * @return      0 on success, -1 on failure
+ */
+int slist_insert_next(struct slist *slist, struct slist_node *node, void *data);
 
+/**
+ * Remove the node immediately after node. When node is NULL, behaves like
+ * slist_popfront. When dest is non-NULL, store the removed data pointer in
+ * *dest and skip destroy; otherwise invoke destroy when set.
+ *
+ * @param slist the list to modify
+ * @param node  predecessor node, or NULL to remove the head
+ * @param dest  output location for the removed data pointer, or NULL to invoke
+ *              destroy
+ * @return      0 on success, -1 if slist is NULL, node has no successor, or
+ *              the operation is invalid
+ */
+int slist_remove_next(struct slist *slist, struct slist_node *node,
+                      void **dest);
+
+/**
+ * Remove all nodes and reset size to zero, invoking destroy on each data
+ * pointer when set. Does not free the list itself. No-op if slist is NULL.
+ *
+ * @param slist the list to clear, or NULL
+ */
 void slist_clear(struct slist *slist);
 
-struct slist_iter {
-  struct slist *slist;
-  struct slist_node *node;
-};
+/**
+ * Allocate and initialize an iterator at the first node of slist.
+ *
+ * @param iter  output pointer to receive the new iterator, must not be NULL
+ * @param slist the list to traverse, must not be NULL
+ * @return      0 on success, -1 on failure
+ */
+int slist_iter_init(struct slist_iter **iter, struct slist *slist);
 
-int slist_iter_init(struct slist_iter *iter, struct slist *slist);
+/**
+ * Advance the iterator to the next node.
+ *
+ * @param iter the iterator to advance, or NULL
+ */
 void slist_iter_inc(struct slist_iter *iter);
+
+/**
+ * Return the data pointer at the current iterator position.
+ *
+ * @param iter the iterator to read from, or NULL
+ * @return     data pointer, or NULL if iter is NULL or past the last node
+ */
 void *slist_iter_get(struct slist_iter *iter);
+
+/**
+ * Free the iterator.
+ *
+ * @param iter the iterator to free, or NULL
+ */
+void slist_iter_free(struct slist_iter *iter);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

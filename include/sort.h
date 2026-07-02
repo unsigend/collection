@@ -20,23 +20,76 @@
 
 #include <stddef.h>
 
-/* Default sort implementation in collection, based on introsort */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * Sort n elements of sz bytes each in place at base using cmp.
+ *
+ * cmp receives pointers to two elements and should return a value less than
+ * zero, zero, or greater than zero if the first argument sorts before, equal
+ * to, or after the second, in the usual style of strcmp.
+ *
+ * @param base pointer to the first element, must not be NULL when n > 0
+ * @param n    number of elements
+ * @param sz   byte size of each element, must be non-zero when n > 0
+ * @param cmp  element comparator, must not be NULL when n > 0
+ * @return     0 on success, -1 on error
+ */
 int sort(void *base, size_t n, size_t sz, int (*cmp)(void *, void *));
 
 #ifdef COL_ALL_SORTS
 
-/* Explicitly enable all sorts, these are internal raw sorts without specific
-   optimizations, so they are not recommended for general use, use the default
-   generic sort instead */
+/**
+ * Insertion sort. Same parameters and return values as sort.
+ *
+ * Declared only when COL_ALL_SORTS is defined before including this header.
+ * Internal raw algorithm without the tuning of sort; prefer sort for general
+ * use.
+ *
+ * @param base pointer to the first element, must not be NULL when n > 0
+ * @param n    number of elements
+ * @param sz   byte size of each element, must be non-zero when n > 0
+ * @param cmp  element comparator, must not be NULL when n > 0
+ * @return     0 on success, -1 on error
+ */
+int sort_insertion(void *base, size_t n, size_t sz, int (*cmp)(void *, void *));
 
-int sortins(void *base, size_t n, size_t sz,
-            int (*cmp)(void *, void *)); /* Insertion sort */
+/**
+ * Quicksort. Same parameters and return values as sort.
+ *
+ * Declared only when COL_ALL_SORTS is defined before including this header.
+ * Internal raw algorithm without the tuning of sort; prefer sort for general
+ * use.
+ *
+ * @param base pointer to the first element, must not be NULL when n > 0
+ * @param n    number of elements
+ * @param sz   byte size of each element, must be non-zero when n > 0
+ * @param cmp  element comparator, must not be NULL when n > 0
+ * @return     0 on success, -1 on error
+ */
+int sort_quick(void *base, size_t n, size_t sz, int (*cmp)(void *, void *));
 
-int sortqs(void *base, size_t n, size_t sz,
-           int (*cmp)(void *, void *)); /* Quicksort */
+/**
+ * Heapsort. Same parameters and return values as sort.
+ *
+ * Declared only when COL_ALL_SORTS is defined before including this header.
+ * Internal raw algorithm without the tuning of sort; prefer sort for general
+ * use.
+ *
+ * @param base pointer to the first element, must not be NULL when n > 0
+ * @param n    number of elements
+ * @param sz   byte size of each element, must be non-zero when n > 0
+ * @param cmp  element comparator, must not be NULL when n > 0
+ * @return     0 on success, -1 on error
+ */
+int sort_heap(void *base, size_t n, size_t sz, int (*cmp)(void *, void *));
 
-int sortheap(void *base, size_t n, size_t sz,
-             int (*cmp)(void *, void *)); /* Heap sort */
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

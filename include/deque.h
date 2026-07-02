@@ -29,6 +29,26 @@ extern "C" {
 #endif
 
 /**
+ * Allocate and initialize an empty deque with element size elesz and an
+ * optional destructor. Each stored element is a copy of the value passed to
+ * insert or push operations.
+ *
+ * @param deq     output pointer to receive the new deque, must not be NULL
+ * @param elesz   byte size of each element, must be non-zero
+ * @param destroy optional callback invoked on each element when it is
+ *                discarded, or NULL for no-op
+ * @return        0 on success, -1 on failure
+ */
+int deq_init(struct deque **deq, size_t elesz, void (*destroy)(void *));
+
+/**
+ * Destroy all elements, release the internal buffer, and free the deque.
+ *
+ * @param deq the deque to free, or NULL
+ */
+void deq_free(struct deque *deq);
+
+/**
  * Test whether the deque contains no elements.
  *
  * @param deq the deque to inspect, or NULL
@@ -67,26 +87,6 @@ void *deq_front(const struct deque *deq);
  * @return    pointer to the back element, or NULL if deq is NULL or empty
  */
 void *deq_back(const struct deque *deq);
-
-/**
- * Allocate and initialize an empty deque with element size elesz and an optional
- * destructor. Each stored element is a copy of the value passed to insert or
- * push operations.
- *
- * @param deq     output pointer to receive the new deque, must not be NULL
- * @param elesz   byte size of each element, must be non-zero
- * @param destroy optional callback invoked on each element when it is
- *                discarded, or NULL for no-op
- * @return        0 on success, -1 on failure
- */
-int deq_init(struct deque **deq, size_t elesz, void (*destroy)(void *));
-
-/**
- * Destroy all elements, release the internal buffer, and free the deque.
- *
- * @param deq the deque to free, or NULL
- */
-void deq_free(struct deque *deq);
 
 /**
  * Return a pointer to the element at the given logical index.
