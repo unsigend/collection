@@ -12,7 +12,7 @@ Generic data structures and algorithms for C, inspired by the C++ STL. Container
 
 ## What's included
 
-**11 containers**
+**12 containers**
 
 | Module | Description |
 | --- | --- |
@@ -23,10 +23,11 @@ Generic data structures and algorithms for C, inspired by the C++ STL. Container
 | `heap` | Binary heap priority queue |
 | `slist` | Singly linked list |
 | `dlist` | Doubly linked list |
+| `list` | Intrusive circular doubly linked list |
 | `avltree` | Self-balancing binary search tree |
 | `hashtbl` | Hash table |
-| `set` | Ordered set (AVL-backed) |
-| `string` | Length-counted byte string |
+| `set` | Ordered set |
+| `str` | Length-counted byte string |
 
 **3 algorithm modules**
 
@@ -34,13 +35,9 @@ Generic data structures and algorithms for C, inspired by the C++ STL. Container
 | --- | --- |
 | `sort` | Sorting (`qsort`, heap sort, quick sort) |
 | `hash` | Hash helpers for integer and string keys |
-| `util` | Small utilities (e.g. swap) |
+| `util` | Small utilities |
 
-Include everything with `#include <collection.h>`, or pull in individual headers such as `#include <collection/vector.h>`.
-
-## Documentation
-
-API reference: [collection-c.vercel.app](https://collection-c.vercel.app/)
+Include everything with `#include <collection.h>`, or pull in individual headers such as `#include <vector.h>` or `#include <list.h>`.
 
 ## Quick start
 
@@ -68,13 +65,14 @@ make flags          - Show the compile and link flags
 make clang          - Run clang to generate compile commands
 make format         - Format the code
 make docker         - Run Docker container with development environment
+make line           - Count source lines in include and src
 ```
 
 Running `make` with no target shows the same usage.
 
 ## Contributing
 
-Bug reports, docs, and patches are welcome. Open an issue to discuss larger changes, then fork and submit a pull request.
+Bug reports and patches are welcome. Open an issue to discuss larger changes, then fork and submit a pull request.
 
 ## Copyright
 

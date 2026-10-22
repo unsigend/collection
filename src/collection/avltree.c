@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <collection/avltree.h>
+#include <avltree.h>
 #include <stdlib.h>
 
 struct avltree_node {

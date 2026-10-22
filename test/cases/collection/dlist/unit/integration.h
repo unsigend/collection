@@ -1,4 +1,4 @@
-#include <collection/dlist.h>
+#include <dlist.h>
 #include <stdlib.h>
 #include <utest.h>
 

@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <utest.h>
-#include <collection/vector.h>
+#include <vector.h>
 
 static int edg_dtor_n;
 static void edg_dtor_inc(void *p)

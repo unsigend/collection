@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <collection/string.h>
+#include <str.h>
 #include <ctype.h>
 #include <errno.h>
 #include <stdarg.h>

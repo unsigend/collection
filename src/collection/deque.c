@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <collection/deque.h>
+#include <deque.h>
 #include <errno.h>
 #include <stdint.h>
 #include <stdlib.h>

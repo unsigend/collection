@@ -18,20 +18,20 @@
 #ifndef COLLECTION_H
 #define COLLECTION_H
 
-#include <collection/hash.h>
-#include <collection/sort.h>
-#include <collection/util.h>
-
-#include <collection/avltree.h>
-#include <collection/deque.h>
-#include <collection/dlist.h>
-#include <collection/hashtbl.h>
-#include <collection/heap.h>
-#include <collection/queue.h>
-#include <collection/set.h>
-#include <collection/slist.h>
-#include <collection/stack.h>
-#include <collection/string.h>
-#include <collection/vector.h>
+#include <avltree.h>
+#include <deque.h>
+#include <dlist.h>
+#include <hash.h>
+#include <hashtbl.h>
+#include <heap.h>
+#include <list.h>
+#include <queue.h>
+#include <set.h>
+#include <slist.h>
+#include <sort.h>
+#include <stack.h>
+#include <str.h>
+#include <util.h>
+#include <vector.h>
 
 #endif

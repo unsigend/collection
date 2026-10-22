@@ -1,4 +1,4 @@
-#include <collection/set.h>
+#include <set.h>
 #include <stdint.h>
 #include <utest.h>
 

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef COLLECTION_STRING_H
-#define COLLECTION_STRING_H
+#ifndef COLLECTION_STR_H
+#define COLLECTION_STR_H
 
 #include <stddef.h>
 

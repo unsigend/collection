@@ -17,9 +17,9 @@
 
 #include "vector_struct.h"
 
-#include <collection/heap.h>
-#include <collection/util.h>
-#include <collection/vector.h>
+#include <heap.h>
+#include <util.h>
+#include <vector.h>
 #include <stdlib.h>
 #include <string.h>
 

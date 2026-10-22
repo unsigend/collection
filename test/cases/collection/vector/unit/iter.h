@@ -1,5 +1,5 @@
 #include <utest.h>
-#include <collection/vector.h>
+#include <vector.h>
 
 UTEST_CASE(iter)
 {

@@ -17,7 +17,7 @@
 
 #include "vector_struct.h"
 
-#include <collection/vector.h>
+#include <vector.h>
 #include <errno.h>
 #include <stdint.h>
 #include <stdlib.h>

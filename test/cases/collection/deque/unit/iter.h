@@ -1,4 +1,4 @@
-#include <collection/deque.h>
+#include <deque.h>
 #include <utest.h>
 
 UTEST_CASE(iter)

@@ -1,4 +1,4 @@
-#include <collection/queue.h>
+#include <queue.h>
 #include <utest.h>
 
 static int dtor_n;

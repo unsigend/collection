@@ -1,5 +1,5 @@
 #include <errno.h>
-#include <collection/stack.h>
+#include <stack.h>
 #include <stdint.h>
 #include <string.h>
 #include <utest.h>

@@ -1,7 +1,7 @@
 #ifndef STRING_TEST_COMMON_H
 #define STRING_TEST_COMMON_H
 
-#include <collection/string.h>
+#include <str.h>
 #include <string.h>
 #include <utest.h>
 

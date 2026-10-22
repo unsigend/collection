@@ -1,4 +1,4 @@
-#include <collection/hash.h>
+#include <hash.h>
 #include <utest.h>
 
 UTEST_CASE(hash_str)

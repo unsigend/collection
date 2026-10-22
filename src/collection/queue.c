@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <collection/deque.h>
-#include <collection/queue.h>
+#include <deque.h>
+#include <queue.h>
 #include <stdlib.h>
 
 struct queue {

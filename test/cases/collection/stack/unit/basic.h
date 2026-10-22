@@ -1,4 +1,4 @@
-#include <collection/stack.h>
+#include <stack.h>
 #include <utest.h>
 
 static int dtor_n;

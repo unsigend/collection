@@ -16,7 +16,7 @@
  */
 
 #include "sort.h"
-#include <collection/heap.h>
+#include <heap.h>
 
 int sort_heap(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))
 {

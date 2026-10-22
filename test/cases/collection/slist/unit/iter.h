@@ -1,4 +1,4 @@
-#include <collection/slist.h>
+#include <slist.h>
 #include <utest.h>
 
 UTEST_CASE(iter)

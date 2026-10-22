@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <utest.h>
-#include <collection/util.h>
+#include <util.h>
 
 UTEST_CASE(swap)
 {

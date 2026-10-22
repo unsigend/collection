@@ -1,4 +1,4 @@
-#include <collection/heap.h>
+#include <heap.h>
 #include <utest.h>
 
 static int cmp_int(void *a, void *b)

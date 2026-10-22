@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <collection/hashtbl.h>
-#include <collection/set.h>
+#include <hashtbl.h>
+#include <set.h>
 #include <stdlib.h>
 
 struct set {

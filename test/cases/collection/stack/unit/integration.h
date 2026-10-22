@@ -1,4 +1,4 @@
-#include <collection/stack.h>
+#include <stack.h>
 #include <stdlib.h>
 #include <string.h>
 #include <utest.h>

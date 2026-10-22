@@ -20,6 +20,8 @@ OBJ_PATH 		:= $(BUILD_PATH)/obj
 DEP_PATH 		:= $(BUILD_PATH)/dep
 LIB_PATH 		:= $(CUR_DIR)/lib
 TEST_PATH 		:= $(CUR_DIR)/test
+SCRIPT_PATH 	:= $(CUR_DIR)/scripts
+PYTHON 			?= python3
 
 include $(CONFIG_PATH)/config.mk
 
@@ -94,7 +96,7 @@ endif
 -include $(DEPS)
 
 .DEFAULT_GOAL := help
-.PHONY: all lib test test-% clean help docker flags clang format
+.PHONY: all lib test test-% clean help docker flags clang format line
 
 all: lib
 	@$(MAKE) -C $(TEST_PATH) test
@@ -122,6 +124,7 @@ help:
 	@echo "  make clang     - Run clang to generate compile commands"
 	@echo "  make format    - Format the code"
 	@echo "  make docker    - Run Docker container with development environment"
+	@echo "  make line      - Count source lines in include and src"
 	@echo ""
 
 docker:
@@ -150,6 +153,9 @@ format:
 	@find $(INCLUDE_PATH) $(SRC_PATH) $(TEST_PATH)/cases \
 		\( -name "*.c" -o -name "*.h" \) -exec clang-format -i {} +
 	@echo "Format done."
+
+line:
+	@$(PYTHON) $(SCRIPT_PATH)/linecount.py
 
 export STD_C
 export DEBUG

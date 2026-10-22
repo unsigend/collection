@@ -17,7 +17,7 @@
 
 #include "sort.h"
 
-#include <collection/util.h>
+#include <util.h>
 
 int sort_quick(void *base, size_t n, size_t sz, int (*cmp)(void *, void *))
 {
