@@ -4,47 +4,27 @@
 
 # collection
 
-**v1.3.1**
+**v2.0.0** (in progress)
 
-Generic data structures and algorithms for C, inspired by the C++ STL. Containers use opaque heap-allocated handles, optional element destructors, and a consistent init/free API. Build as a static or shared library via `config/config.mk`.
+A high-performance, optimized C data structure library.
 
 **Requires:** GCC or Clang, GNU Make, and a standard C library.
 
-## What's included
+## Layout
 
-**12 containers**
-
-| Module | Description |
+| Path | Role |
 | --- | --- |
-| `vector` | Contiguous resizable array |
-| `stack` | LIFO adapter |
-| `queue` | FIFO adapter |
-| `deque` | Double-ended queue |
-| `heap` | Binary heap priority queue |
-| `slist` | Singly linked list |
-| `dlist` | Doubly linked list |
-| `list` | Intrusive circular doubly linked list |
-| `avltree` | Self-balancing binary search tree |
-| `hashtbl` | Hash table |
-| `set` | Ordered set |
-| `str` | Length-counted byte string |
-
-**3 algorithm modules**
-
-| Module | Description |
-| --- | --- |
-| `sort` | Sorting (`qsort`, heap sort, quick sort) |
-| `hash` | Hash helpers for integer and string keys |
-| `util` | Small utilities |
-
-Include everything with `#include <collection.h>`, or pull in individual headers such as `#include <vector.h>` or `#include <list.h>`.
+| `include/` | Public headers |
+| `src/` | Implementations |
+| `test/external/` | utest framework |
+| `test/cases/` | Tests and (later) benchmarks |
 
 ## Quick start
 
 ```bash
 make lib          # build lib/libcollection.a
-make test-vector  # run one test module
-make all          # build and run all tests
+make test         # build and run tests
+make all          # build the library and run tests
 ```
 
 Link against the library:
