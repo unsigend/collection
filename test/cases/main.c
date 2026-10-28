@@ -28,8 +28,15 @@ int main(int argc, char *argv[])
             suite = argv[i];
     }
 
-    (void)nthreads;
-    (void)suite;
+    UTEST_SUITE(dys);
+    UTEST_ADDSUITE(dys);
+
+    if (strcmp(suite, "all") == 0)
+        UTEST_RUNSUITES_THREAD(nthreads);
+    else if (UTEST_RUNSUITE(suite) != 0) {
+        fprintf(stderr, "unknown test suite: %s\n", suite);
+        return EXIT_FAILURE;
+    }
 
     UTEST_FINI();
     return EXIT_SUCCESS;

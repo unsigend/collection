@@ -1,5 +1,5 @@
-# Collection - A generic data structure and algorithms library
-# Copyright (C) 2025 Yixiang Qiu
+# collection - A high-performance C data structure library
+# Copyright (C) 2026-2027 Yixiang Qiu
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -10,6 +10,9 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 CUR_DIR   		:= .
 SRC_PATH 		:= $(CUR_DIR)/src
@@ -96,7 +99,7 @@ endif
 -include $(DEPS)
 
 .DEFAULT_GOAL := help
-.PHONY: all lib test test-% clean help docker flags clang format line
+.PHONY: all lib test test-% bench-% clean help docker flags clang format line
 
 all: lib
 	@$(MAKE) -C $(TEST_PATH) test
@@ -109,22 +112,26 @@ test: lib
 test-%: lib
 	@$(MAKE) -C $(TEST_PATH) test-$*
 
+bench-%:
+	@$(MAKE) -C $(TEST_PATH) bench-$*
+
 clean:
 	@rm -rf $(BUILD_PATH) $(LIB_PATH)
 	@$(MAKE) -C $(TEST_PATH) clean
 
 help:
 	@echo "Usage:"
-	@echo "  make all       - Build the library and run all tests"
-	@echo "  make lib       - Build the library"
-	@echo "  make test      - Build and run all tests"
-	@echo "  make test-NAME - Build and run tests for a specific module"
-	@echo "  make clean     - Clean the build artifacts"
-	@echo "  make flags     - Show the compile and link flags"
-	@echo "  make clang     - Run clang to generate compile commands"
-	@echo "  make format    - Format the code"
-	@echo "  make docker    - Run Docker container with development environment"
-	@echo "  make line      - Count source lines in include and src"
+	@echo "  make all        - Build the library and run all tests"
+	@echo "  make lib        - Build the library"
+	@echo "  make test       - Build and run all tests"
+	@echo "  make test-NAME  - Build and run tests for a specific module"
+	@echo "  make bench-NAME - Build and run a specific module bench"
+	@echo "  make clean      - Clean the build artifacts"
+	@echo "  make flags      - Show the compile and link flags"
+	@echo "  make clang      - Run clang to generate compile commands"
+	@echo "  make format     - Format the code"
+	@echo "  make docker     - Run Docker container with development environment"
+	@echo "  make line       - Count source lines in include and src"
 	@echo ""
 
 docker:

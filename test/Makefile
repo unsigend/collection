@@ -1,5 +1,5 @@
-# Collection - A generic data structure and algorithms library
-# Copyright (C) 2025 Yixiang Qiu
+# collection - A high-performance C data structure library
+# Copyright (C) 2026-2027 Yixiang Qiu
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -10,6 +10,9 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 CUR_DIR 		:= .
 ROOT_DIR 		:= ..
@@ -94,7 +97,7 @@ $(OBJ_PATH)/external/%.o: $(EXTERNAL_PATH)/src/%.c
 
 .SECONDARY: $(DEPS)
 .DEFAULT_GOAL := test
-.PHONY: all test test-% clean flags
+.PHONY: all test test-% bench-% clean flags
 
 all: $(OBJS)
 	@mkdir -p $(BUILD_PATH)
@@ -108,8 +111,12 @@ test: all
 test-%: all
 	@$(BUILD_PATH)/test -m $*
 
+bench-%:
+	@$(MAKE) -C $(CUR_DIR)/benchmark bench-$*
+
 clean:
 	@rm -rf $(BUILD_PATH)
+	@$(MAKE) -C $(CUR_DIR)/benchmark clean
 
 flags:
 	@echo "TEST_LIB_METHOD: $(LIB_METHOD)"

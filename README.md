@@ -56,4 +56,4 @@ Bug reports and patches are welcome. Open an issue to discuss larger changes, th
 
 ## Copyright
 
-Copyright © 2025 Yixiang Qiu. Licensed under the GNU General Public License v3.0 or later.
+Copyright © 2026-2027 Yixiang Qiu. Licensed under the GNU General Public License v3.0 or later.
