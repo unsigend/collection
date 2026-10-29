@@ -38,7 +38,7 @@ size_t dyslen(dys s) { return header(s)->len; }
 size_t dyscap(dys s) { return header(s)->cap; }
 size_t dysavail(dys s) { return dyscap(s) - dyslen(s) - 1; }
 
-dys dysnewlen(const void *s, size_t len)
+dys dysinitlen(const void *s, size_t len)
 {
     struct dyshdr *ds;
 
@@ -58,8 +58,8 @@ dys dysnewlen(const void *s, size_t len)
     return ds->buf;
 }
 
-dys dysnew(const char *s) { return dysnewlen(s, s ? strlen(s) : 0); }
-dys dysnew_empty(void) { return dysnewlen(NULL, 0); };
+dys dysinit(const char *s) { return dysinitlen(s, s ? strlen(s) : 0); }
+dys dysinit_empty(void) { return dysinitlen(NULL, 0); };
 void dysfree(dys s)
 {
     if (!s)
@@ -67,7 +67,7 @@ void dysfree(dys s)
     free(header(s));
 };
 
-dys dysdup(dys s) { return dysnewlen(s, dyslen(s)); }
+dys dysdup(dys s) { return dysinitlen(s, dyslen(s)); }
 dys dysclear(dys s)
 {
     struct dyshdr *ds = header(s);

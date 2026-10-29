@@ -29,7 +29,10 @@ int main(int argc, char *argv[])
     }
 
     UTEST_SUITE(dys);
+    UTEST_SUITE(dlist);
+
     UTEST_ADDSUITE(dys);
+    UTEST_ADDSUITE(dlist);
 
     if (strcmp(suite, "all") == 0)
         UTEST_RUNSUITES_THREAD(nthreads);

@@ -61,6 +61,8 @@ LIB_TARGET := $(LIB_PATH)/lib$(LIB_NAME)$(LIB_POSTFIX)
 
 CC_FLAGS := -std=$(STD_C)
 CC_FLAGS += -Wall -Wextra -Werror
+CC_FLAGS += -Wstrict-prototypes
+CC_FLAGS += -Wmissing-prototypes
 CC_FLAGS += -I$(INCLUDE_PATH)
 CC_FLAGS += -fPIC
 

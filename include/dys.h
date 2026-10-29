@@ -26,9 +26,13 @@
 
 typedef char *dys;
 
-dys dysnew(const char *s);
-dys dysnewlen(const void *s, size_t len);
-dys dysnew_empty(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+dys dysinit(const char *s);
+dys dysinitlen(const void *s, size_t len);
+dys dysinit_empty(void);
 void dysfree(dys s);
 
 size_t dyslen(dys s);
@@ -47,5 +51,9 @@ dys dystrim(dys s, const char *t);
 int dyscmp(dys s1, dys s2);
 void dystolower(dys s);
 void dystoupper(dys s);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _DYS_H_ */

@@ -55,7 +55,7 @@ static void append_byte(int n)
     double t0, dys_ms, naive_ms;
     int i;
 
-    s = dysnew_empty();
+    s = dysinit_empty();
     t0 = now_ms();
     for (i = 0; i < n; i++)
         s = dysncat(s, "x", 1);
@@ -84,7 +84,7 @@ static void append_chunk(int n)
     double t0, dys_ms, naive_ms;
     int i;
 
-    s = dysnew_empty();
+    s = dysinit_empty();
     t0 = now_ms();
     for (i = 0; i < n; i++)
         s = dysncat(s, CHUNK, CHUNKLEN);
@@ -114,7 +114,7 @@ static void new_free(int n)
 
     t0 = now_ms();
     for (i = 0; i < n; i++) {
-        dys s = dysnew("hello world");
+        dys s = dysinit("hello world");
         sink += dyslen(s);
         dysfree(s);
     }
@@ -129,7 +129,7 @@ static void cpy_grow(int n)
     double t0, ms;
     int i;
 
-    s = dysnew("x");
+    s = dysinit("x");
     t0 = now_ms();
     for (i = 0; i < n; i++)
         s = (i & 1) ? dyscpy(s, "short") : dyscpy(s, CHUNK);
@@ -144,7 +144,7 @@ static void dup_n(int n)
     double t0, ms;
     int i;
 
-    s = dysnew(CHUNK);
+    s = dysinit(CHUNK);
     t0 = now_ms();
     for (i = 0; i < n; i++) {
         d = dysdup(s);
@@ -162,8 +162,8 @@ static void cmp_n(int n)
     int i;
     volatile int sink = 0;
 
-    a = dysnew("the quick brown fox");
-    b = dysnew("the quick brown fox");
+    a = dysinit("the quick brown fox");
+    b = dysinit("the quick brown fox");
     t0 = now_ms();
     for (i = 0; i < n; i++)
         sink += dyscmp(a, b);
