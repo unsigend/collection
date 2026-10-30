@@ -36,7 +36,6 @@ void dlist_free(struct dlist *l)
 {
     if (l == NULL)
         return;
-
     dlist_clear(l);
     free(l);
 }
@@ -45,14 +44,11 @@ void dlist_clear(struct dlist *l)
 {
     struct dlist_node *node, *next;
 
-    if (l == NULL)
-        return;
-
     node = l->head;
     while (node) {
         next = node->next;
         if (l->free)
-            l->free(node->value);
+            l->free(node->val);
         free(node);
         node = next;
     }
@@ -69,7 +65,7 @@ struct dlist *dlist_add_head(struct dlist *l, void *value)
     if (node == NULL)
         return NULL;
 
-    node->value = value;
+    node->val = value;
     node->prev = NULL;
     node->next = l->head;
 
@@ -92,7 +88,7 @@ struct dlist *dlist_add_tail(struct dlist *l, void *value)
     if (node == NULL)
         return NULL;
 
-    node->value = value;
+    node->val = value;
     node->prev = l->tail;
     node->next = NULL;
 
@@ -116,7 +112,7 @@ struct dlist *dlist_insert(struct dlist *l, struct dlist_node *where,
     if (node == NULL)
         return NULL;
 
-    node->value = value;
+    node->val = value;
     if (after) {
         node->prev = where;
         node->next = where->next;
@@ -153,7 +149,8 @@ void dlist_del(struct dlist *l, struct dlist_node *node)
     if (l->tail == node)
         l->tail = node->prev;
     if (l->free)
-        l->free(node->value);
+        l->free(node->val);
+
     free(node);
     l->len--;
 }
@@ -176,13 +173,13 @@ struct dlist *dlist_dup(struct dlist *l)
         void *value;
 
         if (newl->dup) {
-            value = newl->dup(node->value);
+            value = newl->dup(node->val);
             if (value == NULL) {
                 dlist_free(newl);
                 return NULL;
             }
         } else
-            value = node->value;
+            value = node->val;
 
         if (dlist_add_tail(newl, value) == NULL) {
             if (newl->dup && newl->free) {
@@ -206,9 +203,9 @@ struct dlist_node *dlist_search(struct dlist *l, void *key)
 
     node = l->head;
     while (node) {
-        if (l->match && l->match(node->value, key))
+        if (l->match && l->match(node->val, key))
             return node;
-        if (!l->match && node->value == key)
+        if (!l->match && node->val == key)
             return node;
         node = node->next;
     }

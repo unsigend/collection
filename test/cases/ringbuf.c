@@ -15,12 +15,11 @@ UTEST_CASE(ringbuf_init)
     EXPECT_EQ_UINT(ringbuf_cap(&rb), 4);
     EXPECT_EQ_UINT(ringbuf_len(&rb), 0);
     EXPECT_EQ_UINT(ringbuf_elesz(&rb), 1);
-    EXPECT_TRUE(ringbuf_isempty(&rb));
-    EXPECT_FALSE(ringbuf_isfull(&rb));
+    EXPECT_TRUE(ringbuf_empty(&rb));
+    EXPECT_FALSE(ringbuf_full(&rb));
 
-    EXPECT_EQ_INT(ringbuf_init(&rb, buf, 0, 1), -1);
-    EXPECT_EQ_INT(ringbuf_init(&rb, buf, 4, 0), -1);
-    EXPECT_EQ_INT(ringbuf_init(&rb, NULL, 4, 1), -1);
+    EXPECT_EQ_INT(ringbuf_init(&rb, buf, 0, 1), -EINVAL);
+    EXPECT_EQ_INT(ringbuf_init(&rb, buf, 4, 0), -EINVAL);
 }
 
 UTEST_CASE(ringbuf_clear)
@@ -35,7 +34,7 @@ UTEST_CASE(ringbuf_clear)
     ringbuf_push(&rb, &v);
     ringbuf_clear(&rb);
     EXPECT_EQ_UINT(ringbuf_len(&rb), 0);
-    EXPECT_TRUE(ringbuf_isempty(&rb));
+    EXPECT_TRUE(ringbuf_empty(&rb));
     EXPECT_EQ_UINT(ringbuf_avail(&rb), 3);
     EXPECT_EQ_PTR(ringbuf_buf(&rb), buf);
     EXPECT_EQ_UINT(ringbuf_cap(&rb), 3);
@@ -93,33 +92,33 @@ UTEST_CASE(ringbuf_elesz)
     EXPECT_EQ_UINT(ringbuf_elesz(&rb), sizeof(int));
 }
 
-UTEST_CASE(ringbuf_isfull)
+UTEST_CASE(ringbuf_full)
 {
     struct ringbuf rb;
     char buf[2], c;
 
     ringbuf_init(&rb, buf, 2, 1);
-    EXPECT_FALSE(ringbuf_isfull(&rb));
+    EXPECT_FALSE(ringbuf_full(&rb));
     c = 'a';
     ringbuf_push(&rb, &c);
-    EXPECT_FALSE(ringbuf_isfull(&rb));
+    EXPECT_FALSE(ringbuf_full(&rb));
     c = 'b';
     ringbuf_push(&rb, &c);
-    EXPECT_TRUE(ringbuf_isfull(&rb));
+    EXPECT_TRUE(ringbuf_full(&rb));
 }
 
-UTEST_CASE(ringbuf_isempty)
+UTEST_CASE(ringbuf_empty)
 {
     struct ringbuf rb;
     char buf[2], c;
 
     ringbuf_init(&rb, buf, 2, 1);
-    EXPECT_TRUE(ringbuf_isempty(&rb));
+    EXPECT_TRUE(ringbuf_empty(&rb));
     c = 'a';
     ringbuf_push(&rb, &c);
-    EXPECT_FALSE(ringbuf_isempty(&rb));
+    EXPECT_FALSE(ringbuf_empty(&rb));
     ringbuf_pop(&rb, &c);
-    EXPECT_TRUE(ringbuf_isempty(&rb));
+    EXPECT_TRUE(ringbuf_empty(&rb));
 }
 
 UTEST_CASE(ringbuf_avail)
@@ -155,11 +154,9 @@ UTEST_CASE(ringbuf_push)
     EXPECT_EQ_INT(ringbuf_push(&rb, &v), 0);
     v = 30;
     EXPECT_EQ_INT(ringbuf_push(&rb, &v), 0);
-    EXPECT_TRUE(ringbuf_isfull(&rb));
+    EXPECT_TRUE(ringbuf_full(&rb));
     v = 40;
-    errno = 0;
-    EXPECT_EQ_INT(ringbuf_push(&rb, &v), -1);
-    EXPECT_EQ_INT(errno, ENOSPC);
+    EXPECT_EQ_INT(ringbuf_push(&rb, &v), -ENOSPC);
 
     ringbuf_pop(&rb, &out);
     EXPECT_EQ_INT(out, 10);
@@ -179,9 +176,7 @@ UTEST_CASE(ringbuf_pop)
     char buf[3], c, out;
 
     ringbuf_init(&rb, buf, 3, 1);
-    errno = 0;
-    EXPECT_EQ_INT(ringbuf_pop(&rb, &out), -1);
-    EXPECT_EQ_INT(errno, ENOENT);
+    EXPECT_EQ_INT(ringbuf_pop(&rb, &out), -EAGAIN);
 
     c = 'x';
     ringbuf_push(&rb, &c);
@@ -191,7 +186,7 @@ UTEST_CASE(ringbuf_pop)
     EXPECT_EQ_CHAR(out, 'x');
     EXPECT_EQ_INT(ringbuf_pop(&rb, &out), 0);
     EXPECT_EQ_CHAR(out, 'y');
-    EXPECT_TRUE(ringbuf_isempty(&rb));
+    EXPECT_TRUE(ringbuf_empty(&rb));
 }
 
 UTEST_CASE(ringbuf_peek)
@@ -200,9 +195,7 @@ UTEST_CASE(ringbuf_peek)
     int buf[2], v, out;
 
     ringbuf_init(&rb, buf, 2, sizeof(int));
-    errno = 0;
-    EXPECT_EQ_INT(ringbuf_peek(&rb, &out), -1);
-    EXPECT_EQ_INT(errno, ENOENT);
+    EXPECT_EQ_INT(ringbuf_peek(&rb, &out), -EAGAIN);
 
     v = 7;
     ringbuf_push(&rb, &v);
@@ -239,10 +232,10 @@ UTEST_CASE(ringbuf_drop)
     EXPECT_EQ_CHAR(out, 'c');
 
     ringbuf_drop(&rb, 100);
-    EXPECT_TRUE(ringbuf_isempty(&rb));
+    EXPECT_TRUE(ringbuf_empty(&rb));
     EXPECT_EQ_UINT(ringbuf_avail(&rb), 4);
     ringbuf_drop(&rb, 1);
-    EXPECT_TRUE(ringbuf_isempty(&rb));
+    EXPECT_TRUE(ringbuf_empty(&rb));
 
     c = 'd';
     ringbuf_push(&rb, &c);
@@ -258,8 +251,8 @@ UTEST_SUITE(ringbuf)
     UTEST_RUNCASE(ringbuf_cap);
     UTEST_RUNCASE(ringbuf_buf);
     UTEST_RUNCASE(ringbuf_elesz);
-    UTEST_RUNCASE(ringbuf_isfull);
-    UTEST_RUNCASE(ringbuf_isempty);
+    UTEST_RUNCASE(ringbuf_full);
+    UTEST_RUNCASE(ringbuf_empty);
     UTEST_RUNCASE(ringbuf_avail);
     UTEST_RUNCASE(ringbuf_push);
     UTEST_RUNCASE(ringbuf_pop);

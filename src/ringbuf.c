@@ -21,8 +21,8 @@
 
 int ringbuf_init(struct ringbuf *rb, void *buf, size_t cap, size_t elesz)
 {
-    if (!rb || !buf || cap == 0 || elesz == 0)
-        return -1;
+    if (elesz == 0 || cap == 0)
+        return -EINVAL;
 
     rb->buf = buf;
     rb->cap = cap;
@@ -30,14 +30,12 @@ int ringbuf_init(struct ringbuf *rb, void *buf, size_t cap, size_t elesz)
     rb->head = 0;
     rb->tail = 0;
     rb->elesz = elesz;
+
     return 0;
 }
 
 void ringbuf_clear(struct ringbuf *rb)
 {
-    if (!rb)
-        return;
-
     rb->len = 0;
     rb->head = 0;
     rb->tail = 0;
@@ -45,10 +43,8 @@ void ringbuf_clear(struct ringbuf *rb)
 
 int ringbuf_push(struct ringbuf *rb, const void *data)
 {
-    if (ringbuf_isfull(rb)) {
-        errno = ENOSPC;
-        return -1;
-    }
+    if (ringbuf_full(rb))
+        return -ENOSPC;
 
     if (rb->elesz == 1)
         ((unsigned char *)rb->buf)[rb->tail] = ((unsigned char *)data)[0];
@@ -63,10 +59,8 @@ int ringbuf_push(struct ringbuf *rb, const void *data)
 
 int ringbuf_pop(struct ringbuf *rb, void *data)
 {
-    if (ringbuf_isempty(rb)) {
-        errno = ENOENT;
-        return -1;
-    }
+    if (ringbuf_empty(rb))
+        return -EAGAIN;
 
     if (rb->elesz == 1)
         ((unsigned char *)data)[0] = ((unsigned char *)rb->buf)[rb->head];
@@ -81,10 +75,8 @@ int ringbuf_pop(struct ringbuf *rb, void *data)
 
 int ringbuf_peek(struct ringbuf *rb, void *data)
 {
-    if (ringbuf_isempty(rb)) {
-        errno = ENOENT;
-        return -1;
-    }
+    if (ringbuf_empty(rb))
+        return -EAGAIN;
 
     if (rb->elesz == 1)
         ((unsigned char *)data)[0] = ((unsigned char *)rb->buf)[rb->head];
@@ -96,7 +88,7 @@ int ringbuf_peek(struct ringbuf *rb, void *data)
 
 void ringbuf_drop(struct ringbuf *rb, size_t n)
 {
-    if (n == 0 || ringbuf_isempty(rb))
+    if (n == 0 || ringbuf_empty(rb))
         return;
 
     if (n > ringbuf_len(rb))

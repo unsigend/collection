@@ -37,6 +37,9 @@ struct ringbuf {
 #define ringbuf_cap(rb) ((rb)->cap)
 #define ringbuf_buf(rb) ((rb)->buf)
 #define ringbuf_elesz(rb) ((rb)->elesz)
+#define ringbuf_empty(rb) ((rb)->len == 0)
+#define ringbuf_full(rb) ((rb)->len == (rb)->cap)
+#define ringbuf_avail(rb) ((rb)->cap - (rb)->len)
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,37 +47,11 @@ extern "C" {
 
 extern int ringbuf_init(struct ringbuf *rb, void *buf, size_t cap,
                         size_t elesz);
-static inline bool ringbuf_isfull(struct ringbuf *rb);
-static inline bool ringbuf_isempty(struct ringbuf *rb);
-static inline size_t ringbuf_avail(struct ringbuf *rb);
 extern void ringbuf_clear(struct ringbuf *rb);
 extern int ringbuf_push(struct ringbuf *rb, const void *data);
 extern int ringbuf_pop(struct ringbuf *rb, void *data);
 extern int ringbuf_peek(struct ringbuf *rb, void *data);
 extern void ringbuf_drop(struct ringbuf *rb, size_t n);
-
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-static inline bool ringbuf_isfull(struct ringbuf *rb)
-{
-    return ringbuf_len(rb) == ringbuf_cap(rb);
-}
-
-static inline bool ringbuf_isempty(struct ringbuf *rb)
-{
-    return ringbuf_len(rb) == 0;
-}
-
-static inline size_t ringbuf_avail(struct ringbuf *rb)
-{
-    return ringbuf_cap(rb) - ringbuf_len(rb);
-}
 
 #ifdef __cplusplus
 }

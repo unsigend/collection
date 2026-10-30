@@ -25,7 +25,7 @@
 struct dlist_node {
     struct dlist_node *prev;
     struct dlist_node *next;
-    void *value;
+    void *val;
 };
 
 struct dlist {
@@ -40,9 +40,10 @@ struct dlist {
 #define dlist_len(l) ((l)->len)
 #define dlist_first(l) ((l)->head)
 #define dlist_last(l) ((l)->tail)
+#define dlist_empty(l) ((l)->len == 0)
 #define dlist_prevnode(n) ((n)->prev)
 #define dlist_nextnode(n) ((n)->next)
-#define dlist_nodevalue(n) ((n)->value)
+#define dlist_nodevalue(n) ((n)->val)
 
 #define dlist_setdup(l, d) ((l)->dup = (d))
 #define dlist_setfree(l, f) ((l)->free = (f))

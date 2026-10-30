@@ -108,6 +108,18 @@ UTEST_CASE(dlist_last)
     dlist_free(l);
 }
 
+UTEST_CASE(dlist_empty)
+{
+    struct dlist *l = dlist_init();
+
+    EXPECT_TRUE(dlist_empty(l));
+    dlist_add_tail(l, V(1));
+    EXPECT_FALSE(dlist_empty(l));
+    dlist_del(l, dlist_first(l));
+    EXPECT_TRUE(dlist_empty(l));
+    dlist_free(l);
+}
+
 UTEST_CASE(dlist_prevnode)
 {
     struct dlist *l = dlist_init();
@@ -410,6 +422,7 @@ UTEST_SUITE(dlist)
     UTEST_RUNCASE(dlist_len);
     UTEST_RUNCASE(dlist_first);
     UTEST_RUNCASE(dlist_last);
+    UTEST_RUNCASE(dlist_empty);
     UTEST_RUNCASE(dlist_prevnode);
     UTEST_RUNCASE(dlist_nextnode);
     UTEST_RUNCASE(dlist_nodevalue);

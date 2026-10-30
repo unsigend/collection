@@ -1,6 +1,7 @@
 /* dvec test suite */
 
 #include <dvec.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <utest.h>
 
@@ -30,7 +31,7 @@ UTEST_CASE(dvec_init)
     EXPECT_NULL(dvec_buf(&v));
     dvec_free(&v);
 
-    EXPECT_EQ_INT(dvec_init(&v, 4, 0), -1);
+    EXPECT_EQ_INT(dvec_init(&v, 4, 0), -EINVAL);
 }
 
 UTEST_CASE(dvec_init_empty)
@@ -48,7 +49,7 @@ UTEST_CASE(dvec_init_empty)
     EXPECT_EQ_INT(*(int *)dvec_at(&v, 0), 7);
     dvec_free(&v);
 
-    EXPECT_EQ_INT(dvec_init_empty(&v, 0), -1);
+    EXPECT_EQ_INT(dvec_init_empty(&v, 0), -EINVAL);
 }
 
 UTEST_CASE(dvec_free)
@@ -218,7 +219,7 @@ UTEST_CASE(dvec_popb)
     int a = 1, b = 2, out;
 
     dvec_init_empty(&v, sizeof(int));
-    EXPECT_EQ_INT(dvec_popb(&v, &out), -1);
+    EXPECT_EQ_INT(dvec_popb(&v, &out), -EINVAL);
     dvec_pushb(&v, &a);
     dvec_pushb(&v, &b);
     EXPECT_EQ_INT(dvec_popb(&v, &out), 0);
@@ -235,7 +236,7 @@ UTEST_CASE(dvec_popf)
     int a = 1, b = 2, c = 3, out;
 
     dvec_init_empty(&v, sizeof(int));
-    EXPECT_EQ_INT(dvec_popf(&v, &out), -1);
+    EXPECT_EQ_INT(dvec_popf(&v, &out), -EINVAL);
     dvec_pushb(&v, &a);
     dvec_pushb(&v, &b);
     dvec_pushb(&v, &c);
@@ -257,7 +258,7 @@ UTEST_CASE(dvec_ins)
     int a = 1, b = 3, c = 2;
 
     dvec_init_empty(&v, sizeof(int));
-    EXPECT_EQ_INT(dvec_ins(&v, 1, &a), -1);
+    EXPECT_EQ_INT(dvec_ins(&v, 1, &a), -EINVAL);
     EXPECT_EQ_INT(dvec_ins(&v, 0, &a), 0);
     EXPECT_EQ_INT(dvec_ins(&v, 1, &b), 0);
     EXPECT_EQ_INT(dvec_ins(&v, 1, &c), 0);
@@ -273,7 +274,7 @@ UTEST_CASE(dvec_del)
     int a = 1, b = 2, c = 3;
 
     dvec_init_empty(&v, sizeof(int));
-    EXPECT_EQ_INT(dvec_del(&v, 0), -1);
+    EXPECT_EQ_INT(dvec_del(&v, 0), -EINVAL);
     dvec_pushb(&v, &a);
     dvec_pushb(&v, &b);
     dvec_pushb(&v, &c);

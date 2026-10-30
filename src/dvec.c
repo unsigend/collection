@@ -16,6 +16,7 @@
  */
 
 #include <dvec.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -24,12 +25,12 @@
 int dvec_init(struct dvec *v, size_t cap, size_t elesz)
 {
     if (elesz == 0)
-        return -1;
+        return -EINVAL;
 
     if (cap) {
         v->buf = calloc(cap, elesz);
         if (!v->buf)
-            return -1;
+            return -ENOMEM;
         v->cap = cap;
     } else {
         v->buf = NULL;
@@ -53,12 +54,7 @@ void dvec_free(struct dvec *v)
     memset(v, 0, sizeof(struct dvec));
 }
 
-void dvec_clear(struct dvec *v)
-{
-    if (v == NULL)
-        return;
-    v->len = 0;
-}
+void dvec_clear(struct dvec *v) { v->len = 0; }
 
 void *dvec_at(struct dvec *v, size_t index)
 {
@@ -104,7 +100,7 @@ int dvec_pushf(struct dvec *v, const void *data)
 int dvec_popb(struct dvec *v, void *data)
 {
     if (v->len == 0)
-        return -1;
+        return -EINVAL;
     if (data)
         memcpy(data, dvec_back(v), v->elesz);
     v->len--;
@@ -114,7 +110,7 @@ int dvec_popb(struct dvec *v, void *data)
 int dvec_popf(struct dvec *v, void *data)
 {
     if (v->len == 0)
-        return -1;
+        return -EINVAL;
     if (data)
         memcpy(data, dvec_front(v), v->elesz);
     if (v->len > 1)
@@ -128,7 +124,7 @@ int dvec_ins(struct dvec *v, size_t index, const void *data)
     int err;
 
     if (index > v->len)
-        return -1;
+        return -EINVAL;
 
     if (dvec_avail(v) == 0) {
         if ((err = dvec_reserve(v, v->cap ? v->cap * GROW_FACTOR : 1)))
@@ -145,7 +141,7 @@ int dvec_ins(struct dvec *v, size_t index, const void *data)
 int dvec_del(struct dvec *v, size_t index)
 {
     if (index >= v->len)
-        return -1;
+        return -EINVAL;
 
     if (index != v->len - 1)
         memmove((char *)v->buf + index * v->elesz,
@@ -198,7 +194,7 @@ int dvec_reserve(struct dvec *v, size_t newcap)
 
     newbuf = realloc(v->buf, newcap * v->elesz);
     if (!newbuf)
-        return -1;
+        return -ENOMEM;
     v->buf = newbuf;
     v->cap = newcap;
     return 0;
