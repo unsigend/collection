@@ -30,12 +30,14 @@ int main(int argc, char *argv[])
 
     UTEST_SUITE(dys);
     UTEST_SUITE(dlist);
+    UTEST_SUITE(slist);
     UTEST_SUITE(ringbuf);
     UTEST_SUITE(list);
     UTEST_SUITE(dvec);
 
     UTEST_ADDSUITE(dys);
     UTEST_ADDSUITE(dlist);
+    UTEST_ADDSUITE(slist);
     UTEST_ADDSUITE(ringbuf);
     UTEST_ADDSUITE(list);
     UTEST_ADDSUITE(dvec);
