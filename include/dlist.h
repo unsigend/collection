@@ -70,4 +70,4 @@ extern int dlist_dup(struct dlist *l, struct dlist *dup);
 extern struct dlist_node *dlist_search(struct dlist *l, void *key);
 extern struct dlist_node *dlist_at(struct dlist *l, size_t index);
 
-#endif
+#endif /* _DLIST_H */

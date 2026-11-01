@@ -59,4 +59,4 @@ extern int dyscmp(const dys s1, const dys s2);
 extern void dystolower(dys s);
 extern void dystoupper(dys s);
 
-#endif
+#endif /* _DYS_H */

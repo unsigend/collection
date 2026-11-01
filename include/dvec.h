@@ -59,4 +59,4 @@ extern int dvec_del(struct dvec *v, size_t index, void *ele);
 extern int dvec_dup(struct dvec *v, struct dvec *dup);
 extern void dvec_sort(struct dvec *v, int (*cmp)(const void *, const void *));
 
-#endif
+#endif /* _DVEC_H */

@@ -68,4 +68,4 @@ extern int slist_dup(struct slist *l, struct slist *dup);
 extern struct slist_node *slist_search(struct slist *l, void *key);
 extern struct slist_node *slist_at(struct slist *l, size_t index);
 
-#endif
+#endif /* _SLIST_H */
