@@ -13,6 +13,7 @@
 extern UTEST_SUITE(dys);
 extern UTEST_SUITE(dvec);
 extern UTEST_SUITE(dlist);
+extern UTEST_SUITE(slist);
 
 int main(int argc, char *argv[])
 {
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
     UTEST_ADDSUITE(dys);
     UTEST_ADDSUITE(dvec);
     UTEST_ADDSUITE(dlist);
+    UTEST_ADDSUITE(slist);
 
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "-j", 2) == 0) {
