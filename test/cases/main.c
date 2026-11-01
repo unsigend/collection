@@ -11,6 +11,7 @@
 #define NTHREADMAX 64
 
 extern UTEST_SUITE(dys);
+extern UTEST_SUITE(dvec);
 
 int main(int argc, char *argv[])
 {
@@ -19,6 +20,7 @@ int main(int argc, char *argv[])
 
     UTEST_INIT(UTF_STOPONASS | UTF_SHOWSUITE | UTF_STOPONCASE);
     UTEST_ADDSUITE(dys);
+    UTEST_ADDSUITE(dvec);
 
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "-j", 2) == 0) {
