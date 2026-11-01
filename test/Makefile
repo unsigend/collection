@@ -111,12 +111,8 @@ test: all
 test-%: all
 	@$(BUILD_PATH)/test -m $*
 
-bench-%:
-	@$(MAKE) -C $(CUR_DIR)/benchmark bench-$*
-
 clean:
 	@rm -rf $(BUILD_PATH)
-	@$(MAKE) -C $(CUR_DIR)/benchmark clean
 
 flags:
 	@echo "TEST_LIB_METHOD: $(LIB_METHOD)"

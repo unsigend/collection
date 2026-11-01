@@ -10,12 +10,15 @@
 #define NTHREADS 5
 #define NTHREADMAX 64
 
+extern UTEST_SUITE(dys);
+
 int main(int argc, char *argv[])
 {
     int nthreads = NTHREADS;
     const char *suite = "all";
 
     UTEST_INIT(UTF_STOPONASS | UTF_SHOWSUITE | UTF_STOPONCASE);
+    UTEST_ADDSUITE(dys);
 
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "-j", 2) == 0) {
