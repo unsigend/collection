@@ -156,7 +156,7 @@ int dvec_ins(struct dvec *v, size_t index, const void *ele)
     int err;
 
     if (index > v->len)
-        return -EINVAL;
+        return -ERANGE;
 
     if (dvec_avail(v) == 0) {
         if ((err = dvec_reserve(v, v->cap ? v->cap * 2 : 1)))
@@ -175,7 +175,7 @@ int dvec_ins(struct dvec *v, size_t index, const void *ele)
 int dvec_popb(struct dvec *v, void *ele)
 {
     if (v->len == 0)
-        return -EINVAL;
+        return -ENOENT;
 
     if (ele)
         memcpy(ele, at(v, v->len - 1, v->elesz), v->elesz);
@@ -187,7 +187,7 @@ int dvec_popb(struct dvec *v, void *ele)
 int dvec_popf(struct dvec *v, void *ele)
 {
     if (v->len == 0)
-        return -EINVAL;
+        return -ENOENT;
 
     if (ele)
         memcpy(ele, at(v, 0, v->elesz), v->elesz);
@@ -202,7 +202,7 @@ int dvec_popf(struct dvec *v, void *ele)
 int dvec_del(struct dvec *v, size_t index, void *ele)
 {
     if (index >= v->len)
-        return -EINVAL;
+        return -ERANGE;
 
     if (ele)
         memcpy(ele, at(v, index, v->elesz), v->elesz);

@@ -268,7 +268,7 @@ UTEST_CASE(dvec_popb)
     int a = 1, b = 2, out = 0;
 
     EXPECT_EQ_INT(dvec_init_empty(&v, sizeof(int)), 0);
-    EXPECT_EQ_INT(dvec_popb(&v, &out), -EINVAL);
+    EXPECT_EQ_INT(dvec_popb(&v, &out), -ENOENT);
     EXPECT_EQ_INT(dvec_pushb(&v, &a), 0);
     EXPECT_EQ_INT(dvec_pushb(&v, &b), 0);
     EXPECT_EQ_INT(dvec_popb(&v, &out), 0);
@@ -285,7 +285,7 @@ UTEST_CASE(dvec_popf)
     int a = 1, b = 2, c = 3, out = 0;
 
     EXPECT_EQ_INT(dvec_init_empty(&v, sizeof(int)), 0);
-    EXPECT_EQ_INT(dvec_popf(&v, &out), -EINVAL);
+    EXPECT_EQ_INT(dvec_popf(&v, &out), -ENOENT);
     EXPECT_EQ_INT(dvec_pushb(&v, &a), 0);
     EXPECT_EQ_INT(dvec_pushb(&v, &b), 0);
     EXPECT_EQ_INT(dvec_pushb(&v, &c), 0);
@@ -305,7 +305,7 @@ UTEST_CASE(dvec_ins)
     int a = 1, b = 3, mid = 2;
 
     EXPECT_EQ_INT(dvec_init_empty(&v, sizeof(int)), 0);
-    EXPECT_EQ_INT(dvec_ins(&v, 1, &a), -EINVAL);
+    EXPECT_EQ_INT(dvec_ins(&v, 1, &a), -ERANGE);
     EXPECT_EQ_INT(dvec_ins(&v, 0, &a), 0);
     EXPECT_EQ_INT(dvec_ins(&v, 1, &b), 0);
     EXPECT_EQ_INT(dvec_ins(&v, 1, &mid), 0);
@@ -322,7 +322,7 @@ UTEST_CASE(dvec_del)
     int a = 1, b = 2, c = 3, out = 0;
 
     EXPECT_EQ_INT(dvec_init_empty(&v, sizeof(int)), 0);
-    EXPECT_EQ_INT(dvec_del(&v, 0, &out), -EINVAL);
+    EXPECT_EQ_INT(dvec_del(&v, 0, &out), -ERANGE);
     EXPECT_EQ_INT(dvec_pushb(&v, &a), 0);
     EXPECT_EQ_INT(dvec_pushb(&v, &b), 0);
     EXPECT_EQ_INT(dvec_pushb(&v, &c), 0);
@@ -333,7 +333,7 @@ UTEST_CASE(dvec_del)
     EXPECT_EQ_INT(*(int *)dvec_at(&v, 1), 3);
     EXPECT_EQ_INT(dvec_del(&v, 0, NULL), 0);
     EXPECT_EQ_INT(*(int *)dvec_at(&v, 0), 3);
-    EXPECT_EQ_INT(dvec_del(&v, 1, &out), -EINVAL);
+    EXPECT_EQ_INT(dvec_del(&v, 1, &out), -ERANGE);
     dvec_free(&v);
 }
 

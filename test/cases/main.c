@@ -12,6 +12,7 @@
 
 extern UTEST_SUITE(dys);
 extern UTEST_SUITE(dvec);
+extern UTEST_SUITE(dlist);
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
     UTEST_INIT(UTF_STOPONASS | UTF_SHOWSUITE | UTF_STOPONCASE);
     UTEST_ADDSUITE(dys);
     UTEST_ADDSUITE(dvec);
+    UTEST_ADDSUITE(dlist);
 
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "-j", 2) == 0) {
