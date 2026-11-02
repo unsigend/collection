@@ -15,6 +15,7 @@ extern UTEST_SUITE(dvec);
 extern UTEST_SUITE(dlist);
 extern UTEST_SUITE(slist);
 extern UTEST_SUITE(ringbuf);
+extern UTEST_SUITE(deque);
 
 int main(int argc, char *argv[])
 {
@@ -27,6 +28,7 @@ int main(int argc, char *argv[])
     UTEST_ADDSUITE(dlist);
     UTEST_ADDSUITE(slist);
     UTEST_ADDSUITE(ringbuf);
+    UTEST_ADDSUITE(deque);
 
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "-j", 2) == 0) {
