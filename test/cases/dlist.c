@@ -34,6 +34,11 @@ UTEST_CASE(dlist_len)
     EXPECT_EQ_UINT(dlist_len(&l), 0);
     EXPECT_EQ_INT(dlist_add_tail(&l, ip(1)), 0);
     EXPECT_EQ_UINT(dlist_len(&l), 1);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(2)), 0);
+    EXPECT_EQ_INT(dlist_add_head(&l, ip(0)), 0);
+    EXPECT_EQ_UINT(dlist_len(&l), 3);
+    EXPECT_EQ_INT(dlist_del_head(&l, NULL), 0);
+    EXPECT_EQ_UINT(dlist_len(&l), 2);
     dlist_free(&l);
 }
 
@@ -45,6 +50,8 @@ UTEST_CASE(dlist_empty)
     EXPECT_TRUE(dlist_empty(&l));
     EXPECT_EQ_INT(dlist_add_head(&l, ip(1)), 0);
     EXPECT_FALSE(dlist_empty(&l));
+    EXPECT_EQ_INT(dlist_del_tail(&l, NULL), 0);
+    EXPECT_TRUE(dlist_empty(&l));
     dlist_free(&l);
 }
 
@@ -57,6 +64,14 @@ UTEST_CASE(dlist_front)
     EXPECT_EQ_INT(dlist_add_tail(&l, ip(1)), 0);
     EXPECT_EQ_INT(dlist_add_tail(&l, ip(2)), 0);
     EXPECT_EQ_PTR(dlist_nodeval(dlist_front(&l)), ip(1));
+    EXPECT_EQ_PTR(dlist_front(&l), dlist_at(&l, 0));
+    dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_head(&l, ip(7)), 0);
+    EXPECT_EQ_PTR(dlist_front(&l), dlist_back(&l));
+    EXPECT_NULL(dlist_prevnode(dlist_front(&l)));
+    EXPECT_NULL(dlist_nextnode(dlist_front(&l)));
     dlist_free(&l);
 }
 
@@ -69,6 +84,13 @@ UTEST_CASE(dlist_back)
     EXPECT_EQ_INT(dlist_add_tail(&l, ip(1)), 0);
     EXPECT_EQ_INT(dlist_add_tail(&l, ip(2)), 0);
     EXPECT_EQ_PTR(dlist_nodeval(dlist_back(&l)), ip(2));
+    EXPECT_EQ_PTR(dlist_back(&l), dlist_at(&l, 1));
+    dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(9)), 0);
+    EXPECT_EQ_PTR(dlist_back(&l), dlist_front(&l));
+    EXPECT_EQ_PTR(dlist_nodeval(dlist_back(&l)), ip(9));
     dlist_free(&l);
 }
 
@@ -82,6 +104,15 @@ UTEST_CASE(dlist_prevnode)
     EXPECT_NULL(dlist_prevnode(dlist_front(&l)));
     EXPECT_EQ_PTR(dlist_nodeval(dlist_prevnode(dlist_back(&l))), ip(1));
     dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(1)), 0);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(2)), 0);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(3)), 0);
+    EXPECT_EQ_PTR(dlist_prevnode(dlist_at(&l, 1)), dlist_front(&l));
+    EXPECT_EQ_PTR(dlist_prevnode(dlist_back(&l)), dlist_at(&l, 1));
+    EXPECT_NULL(dlist_prevnode(dlist_at(&l, 0)));
+    dlist_free(&l);
 }
 
 UTEST_CASE(dlist_nextnode)
@@ -93,6 +124,15 @@ UTEST_CASE(dlist_nextnode)
     EXPECT_EQ_INT(dlist_add_tail(&l, ip(2)), 0);
     EXPECT_NULL(dlist_nextnode(dlist_back(&l)));
     EXPECT_EQ_PTR(dlist_nodeval(dlist_nextnode(dlist_front(&l))), ip(2));
+    dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(1)), 0);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(2)), 0);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(3)), 0);
+    EXPECT_EQ_PTR(dlist_nextnode(dlist_front(&l)), dlist_at(&l, 1));
+    EXPECT_EQ_PTR(dlist_nextnode(dlist_at(&l, 1)), dlist_back(&l));
+    EXPECT_NULL(dlist_nextnode(dlist_back(&l)));
     dlist_free(&l);
 }
 
@@ -216,6 +256,18 @@ UTEST_CASE(dlist_clear)
     EXPECT_NULL(dlist_back(&l));
     EXPECT_EQ_PTR(dlist_getfree(&l), int_free);
     dlist_free(&l);
+
+    dlist_init(&l);
+    dlist_setdup(&l, int_dup);
+    dlist_setfree(&l, int_free);
+    dlist_setmatch(&l, int_match);
+    dlist_clear(&l);
+    EXPECT_TRUE(dlist_empty(&l));
+    EXPECT_NULL(dlist_front(&l));
+    EXPECT_EQ_PTR(dlist_getdup(&l), int_dup);
+    EXPECT_EQ_PTR(dlist_getfree(&l), int_free);
+    EXPECT_EQ_PTR(dlist_getmatch(&l), int_match);
+    dlist_free(&l);
 }
 
 UTEST_CASE(dlist_add_head)
@@ -231,6 +283,18 @@ UTEST_CASE(dlist_add_head)
     EXPECT_EQ_PTR(dlist_nextnode(dlist_front(&l)), dlist_back(&l));
     EXPECT_EQ_PTR(dlist_prevnode(dlist_back(&l)), dlist_front(&l));
     dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_head(&l, ip(1)), 0);
+    EXPECT_EQ_PTR(dlist_front(&l), dlist_back(&l));
+    EXPECT_EQ_INT(dlist_add_head(&l, ip(2)), 0);
+    EXPECT_EQ_INT(dlist_add_head(&l, ip(3)), 0);
+    EXPECT_EQ_PTR(dlist_nodeval(dlist_at(&l, 0)), ip(3));
+    EXPECT_EQ_PTR(dlist_nodeval(dlist_at(&l, 1)), ip(2));
+    EXPECT_EQ_PTR(dlist_nodeval(dlist_at(&l, 2)), ip(1));
+    EXPECT_EQ_PTR(dlist_nextnode(dlist_at(&l, 0)), dlist_at(&l, 1));
+    EXPECT_EQ_PTR(dlist_prevnode(dlist_at(&l, 2)), dlist_at(&l, 1));
+    dlist_free(&l);
 }
 
 UTEST_CASE(dlist_add_tail)
@@ -243,6 +307,17 @@ UTEST_CASE(dlist_add_tail)
     EXPECT_EQ_UINT(dlist_len(&l), 2);
     EXPECT_EQ_PTR(dlist_nodeval(dlist_front(&l)), ip(1));
     EXPECT_EQ_PTR(dlist_nodeval(dlist_back(&l)), ip(2));
+    EXPECT_EQ_PTR(dlist_nextnode(dlist_front(&l)), dlist_back(&l));
+    EXPECT_NULL(dlist_nextnode(dlist_back(&l)));
+    dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_head(&l, ip(4)), 0);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(5)), 0);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(6)), 0);
+    EXPECT_EQ_PTR(dlist_nodeval(dlist_front(&l)), ip(4));
+    EXPECT_EQ_PTR(dlist_nodeval(dlist_back(&l)), ip(6));
+    EXPECT_EQ_PTR(dlist_nodeval(dlist_at(&l, 1)), ip(5));
     dlist_free(&l);
 }
 
@@ -261,6 +336,17 @@ UTEST_CASE(dlist_del_head)
     EXPECT_EQ_PTR(dlist_nodeval(dlist_front(&l)), ip(2));
     EXPECT_EQ_INT(dlist_del_head(&l, NULL), 0);
     EXPECT_TRUE(dlist_empty(&l));
+    EXPECT_NULL(dlist_back(&l));
+    EXPECT_NULL(dlist_front(&l));
+    EXPECT_EQ_INT(dlist_del_head(&l, &out), -ENOENT);
+    dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_head(&l, ip(4)), 0);
+    EXPECT_EQ_INT(dlist_del_head(&l, &out), 0);
+    EXPECT_EQ_PTR(out, ip(4));
+    EXPECT_TRUE(dlist_empty(&l));
+    EXPECT_NULL(dlist_front(&l));
     EXPECT_NULL(dlist_back(&l));
     dlist_free(&l);
 }
@@ -281,6 +367,15 @@ UTEST_CASE(dlist_del_tail)
     EXPECT_EQ_INT(dlist_del_tail(&l, NULL), 0);
     EXPECT_TRUE(dlist_empty(&l));
     EXPECT_NULL(dlist_front(&l));
+    EXPECT_NULL(dlist_back(&l));
+    EXPECT_EQ_INT(dlist_del_tail(&l, &out), -ENOENT);
+    dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(8)), 0);
+    EXPECT_EQ_INT(dlist_del_tail(&l, &out), 0);
+    EXPECT_EQ_PTR(out, ip(8));
+    EXPECT_EQ_UINT(dlist_len(&l), 0);
     dlist_free(&l);
 }
 
@@ -300,6 +395,19 @@ UTEST_CASE(dlist_ins)
     EXPECT_EQ_PTR(dlist_nodeval(dlist_front(&l)), ip(0));
     EXPECT_EQ_INT(dlist_ins(&l, dlist_back(&l), ip(4), 1), 0);
     EXPECT_EQ_PTR(dlist_nodeval(dlist_back(&l)), ip(4));
+    EXPECT_EQ_PTR(dlist_prevnode(dlist_back(&l)), dlist_at(&l, dlist_len(&l) - 2));
+    EXPECT_EQ_PTR(dlist_nextnode(dlist_at(&l, 0)), dlist_at(&l, 1));
+    dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(1)), 0);
+    EXPECT_EQ_INT(dlist_ins(&l, dlist_front(&l), ip(0), 0), 0);
+    EXPECT_EQ_INT(dlist_ins(&l, dlist_back(&l), ip(2), 1), 0);
+    EXPECT_EQ_PTR(dlist_nodeval(dlist_front(&l)), ip(0));
+    EXPECT_EQ_PTR(dlist_nodeval(dlist_at(&l, 1)), ip(1));
+    EXPECT_EQ_PTR(dlist_nodeval(dlist_back(&l)), ip(2));
+    EXPECT_EQ_PTR(dlist_prevnode(dlist_at(&l, 1)), dlist_front(&l));
+    EXPECT_EQ_PTR(dlist_nextnode(dlist_at(&l, 1)), dlist_back(&l));
     dlist_free(&l);
 }
 
@@ -323,6 +431,21 @@ UTEST_CASE(dlist_del)
     EXPECT_EQ_PTR(dlist_nodeval(dlist_front(&l)), ip(3));
     EXPECT_EQ_INT(dlist_del(&l, dlist_front(&l), NULL), 0);
     EXPECT_TRUE(dlist_empty(&l));
+    EXPECT_NULL(dlist_front(&l));
+    EXPECT_NULL(dlist_back(&l));
+    dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(1)), 0);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(2)), 0);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(3)), 0);
+    EXPECT_EQ_INT(dlist_del(&l, dlist_back(&l), &out), 0);
+    EXPECT_EQ_PTR(out, ip(3));
+    EXPECT_EQ_PTR(dlist_nodeval(dlist_back(&l)), ip(2));
+    EXPECT_NULL(dlist_nextnode(dlist_back(&l)));
+    EXPECT_EQ_INT(dlist_del(&l, dlist_front(&l), &out), 0);
+    EXPECT_EQ_PTR(out, ip(1));
+    EXPECT_EQ_PTR(dlist_front(&l), dlist_back(&l));
     dlist_free(&l);
 }
 
@@ -358,6 +481,20 @@ UTEST_CASE(dlist_dup)
     EXPECT_EQ_PTR(dlist_getfree(&d), int_free);
     EXPECT_EQ_INT(*(int *)dlist_nodeval(dlist_front(&d)), 4);
     EXPECT_NE_PTR(dlist_nodeval(dlist_front(&d)), a);
+    EXPECT_EQ_PTR(dlist_getdup(&d), int_dup);
+    EXPECT_EQ_PTR(dlist_getmatch(&d), NULL);
+    EXPECT_EQ_INT(*(int *)dlist_nodeval(dlist_back(&d)), 5);
+    dlist_free(&d);
+    dlist_free(&l);
+
+    dlist_init(&l);
+    dlist_setdup(&l, int_dup);
+    dlist_setmatch(&l, int_match);
+    EXPECT_EQ_INT(dlist_dup(&l, &d), 0);
+    EXPECT_TRUE(dlist_empty(&d));
+    EXPECT_EQ_PTR(dlist_getdup(&d), int_dup);
+    EXPECT_EQ_PTR(dlist_getmatch(&d), int_match);
+    EXPECT_NULL(dlist_front(&d));
     dlist_free(&d);
     dlist_free(&l);
 }
@@ -375,6 +512,19 @@ UTEST_CASE(dlist_search)
     EXPECT_NOTNULL(n);
     EXPECT_EQ_PTR(dlist_nodeval(n), ip(2));
     EXPECT_NULL(dlist_search(&l, ip(9)));
+    EXPECT_EQ_PTR(dlist_search(&l, ip(1)), dlist_front(&l));
+    dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_NULL(dlist_search(&l, ip(1)));
+    dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(2)), 0);
+    EXPECT_EQ_INT(dlist_add_tail(&l, ip(2)), 0);
+    n = dlist_search(&l, ip(2));
+    EXPECT_EQ_PTR(n, dlist_front(&l));
+    EXPECT_NE_PTR(n, dlist_back(&l));
     dlist_free(&l);
 
     dlist_init(&l);
@@ -410,6 +560,15 @@ UTEST_CASE(dlist_at)
     EXPECT_EQ_PTR(dlist_nodeval(dlist_at(&l, 1)), ip(2));
     EXPECT_EQ_PTR(dlist_nodeval(dlist_at(&l, 2)), ip(3));
     EXPECT_NULL(dlist_at(&l, 3));
+    EXPECT_EQ_PTR(dlist_at(&l, 2), dlist_back(&l));
+    EXPECT_EQ_PTR(dlist_nextnode(dlist_at(&l, 0)), dlist_at(&l, 1));
+    EXPECT_EQ_PTR(dlist_prevnode(dlist_at(&l, 2)), dlist_at(&l, 1));
+    dlist_free(&l);
+
+    dlist_init(&l);
+    EXPECT_EQ_INT(dlist_add_head(&l, ip(4)), 0);
+    EXPECT_EQ_PTR(dlist_at(&l, 0), dlist_front(&l));
+    EXPECT_NULL(dlist_at(&l, 1));
     dlist_free(&l);
 }
 

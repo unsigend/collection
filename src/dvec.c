@@ -20,16 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
- * Contiguous slab vector. Caller owns the struct one malloc'd buf of cap *
- * elesz.
- *
- * reserve() is the only realloc. Push/ins double when full. Failure
- * leaves the vector unchanged. shrink() is a no-op if realloc fails.
- * Elements are memcpy'd: store scalars, not owned pointers.
- * NULL free is a no-op. pop/del may pass NULL to discard.
- */
-
 #define at(v, index, elesz) ((void *)((char *)(v)->buf + (index) * (elesz)))
 
 int dvec_init(struct dvec *v, size_t elesz, size_t cap)

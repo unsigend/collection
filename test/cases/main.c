@@ -16,6 +16,9 @@ extern UTEST_SUITE(dlist);
 extern UTEST_SUITE(slist);
 extern UTEST_SUITE(ringbuf);
 extern UTEST_SUITE(deque);
+extern UTEST_SUITE(stack);
+extern UTEST_SUITE(queue);
+extern UTEST_SUITE(hash);
 
 int main(int argc, char *argv[])
 {
@@ -29,6 +32,9 @@ int main(int argc, char *argv[])
     UTEST_ADDSUITE(slist);
     UTEST_ADDSUITE(ringbuf);
     UTEST_ADDSUITE(deque);
+    UTEST_ADDSUITE(stack);
+    UTEST_ADDSUITE(queue);
+    UTEST_ADDSUITE(hash);
 
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "-j", 2) == 0) {

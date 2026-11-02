@@ -115,6 +115,14 @@ UTEST_CASE(dysnewlen)
     EXPECT_EQ_INT(memcmp(s, bin, 5), 0);
     EXPECT_EQ_CHAR(s[5], '\0');
     dysfree(s);
+
+    s = dysnewlen("Z", 1);
+    EXPECT_NOTNULL(s);
+    EXPECT_EQ_UINT(dyslen(s), 1);
+    EXPECT_EQ_CHAR(s[0], 'Z');
+    EXPECT_EQ_CHAR(s[1], '\0');
+    EXPECT_FALSE(dysempty(s));
+    dysfree(s);
 }
 
 UTEST_CASE(dysnew)
@@ -135,6 +143,19 @@ UTEST_CASE(dysnew)
     EXPECT_TRUE(dysempty(s));
     EXPECT_EQ_STR(s, "");
     EXPECT_EQ_CHAR(s[0], '\0');
+    dysfree(s);
+
+    s = dysnew("Z");
+    EXPECT_NOTNULL(s);
+    EXPECT_EQ_UINT(dyslen(s), 1);
+    EXPECT_EQ_STR(s, "Z");
+    dysfree(s);
+
+    s = dysnew("longer-than-a-word");
+    EXPECT_NOTNULL(s);
+    EXPECT_EQ_UINT(dyslen(s), 18);
+    EXPECT_EQ_STR(s, "longer-than-a-word");
+    EXPECT_EQ_CHAR(s[18], '\0');
     dysfree(s);
 }
 
@@ -241,6 +262,14 @@ UTEST_CASE(dysgrow)
     EXPECT_EQ_CHAR(s[3], '\0');
     EXPECT_EQ_CHAR(s[12], '\0');
     dysfree(s);
+
+    s = dysnew("hi");
+    EXPECT_NOTNULL(s);
+    s = dysgrow(s, dyslen(s));
+    EXPECT_NOTNULL(s);
+    EXPECT_EQ_UINT(dyslen(s), 2);
+    EXPECT_EQ_STR(s, "hi");
+    dysfree(s);
 }
 
 UTEST_CASE(dysdup)
@@ -325,6 +354,14 @@ UTEST_CASE(dysndup)
     EXPECT_EQ_INT(memcmp(d, bin, 3), 0);
     EXPECT_EQ_CHAR(d[3], '\0');
     dysfree(d);
+
+    d = dysndup(s, 100);
+    EXPECT_NOTNULL(d);
+    EXPECT_EQ_UINT(dyslen(d), 5);
+    EXPECT_EQ_INT(memcmp(d, bin, 5), 0);
+    EXPECT_EQ_CHAR(d[5], '\0');
+    EXPECT_EQ_UINT(dyslen(s), 5);
+    dysfree(d);
     dysfree(s);
 }
 
@@ -357,6 +394,36 @@ UTEST_CASE(dyscat)
     EXPECT_EQ_STR(s, "keep");
     EXPECT_EQ_UINT(dyslen(s), 4);
     dysfree(s);
+
+    s = dysnew("a");
+    EXPECT_NOTNULL(s);
+    s = dyscat(s, "b");
+    EXPECT_NOTNULL(s);
+    s = dyscat(s, "c");
+    EXPECT_NOTNULL(s);
+    EXPECT_EQ_STR(s, "abc");
+    EXPECT_EQ_UINT(dyslen(s), 3);
+    dysfree(s);
+
+    {
+        char big[64];
+        size_t i;
+
+        for (i = 0; i < 63; i++)
+            big[i] = 'q';
+        big[63] = '\0';
+        s = dysnew("z");
+        EXPECT_NOTNULL(s);
+        s = dyscat(s, big);
+        EXPECT_NOTNULL(s);
+        EXPECT_EQ_UINT(dyslen(s), 64);
+        EXPECT_GE_UINT(dyscap(s), 64);
+        EXPECT_EQ_CHAR(s[0], 'z');
+        EXPECT_EQ_CHAR(s[1], 'q');
+        EXPECT_EQ_CHAR(s[63], 'q');
+        EXPECT_EQ_CHAR(s[64], '\0');
+        dysfree(s);
+    }
 }
 
 UTEST_CASE(dysncat)
@@ -434,6 +501,15 @@ UTEST_CASE(dyscatdys)
     EXPECT_NOTNULL(s);
     EXPECT_EQ_STR(s, "keep");
     dysfree(t);
+    dysfree(s);
+
+    s = dysnew("ab");
+    EXPECT_NOTNULL(s);
+    s = dyscatdys(s, s);
+    EXPECT_NOTNULL(s);
+    EXPECT_EQ_UINT(dyslen(s), 4);
+    EXPECT_EQ_STR(s, "abab");
+    EXPECT_EQ_CHAR(s[4], '\0');
     dysfree(s);
 }
 
@@ -543,6 +619,34 @@ UTEST_CASE(dystrim)
     dystrim(s, "");
     EXPECT_EQ_STR(s, "hello");
     dysfree(s);
+
+    s = dysnew("xxhello");
+    EXPECT_NOTNULL(s);
+    dystrim(s, "x");
+    EXPECT_EQ_STR(s, "hello");
+    EXPECT_EQ_UINT(dyslen(s), 5);
+    dysfree(s);
+
+    s = dysnew("helloxx");
+    EXPECT_NOTNULL(s);
+    dystrim(s, "x");
+    EXPECT_EQ_STR(s, "hello");
+    EXPECT_EQ_UINT(dyslen(s), 5);
+    dysfree(s);
+
+    s = dysnew("hexxllo");
+    EXPECT_NOTNULL(s);
+    dystrim(s, "x");
+    EXPECT_EQ_STR(s, "hexxllo");
+    EXPECT_EQ_UINT(dyslen(s), 7);
+    dysfree(s);
+
+    s = dysnewempty();
+    EXPECT_NOTNULL(s);
+    dystrim(s, "x");
+    EXPECT_TRUE(dysempty(s));
+    EXPECT_EQ_STR(s, "");
+    dysfree(s);
 }
 
 UTEST_CASE(dyscmp)
@@ -597,6 +701,20 @@ UTEST_CASE(dyscmp)
     EXPECT_GT_INT(dyscmp(b, a), 0);
     dysfree(b);
     dysfree(a);
+
+    a = dysnew("same");
+    EXPECT_NOTNULL(a);
+    EXPECT_EQ_INT(dyscmp(a, a), 0);
+    dysfree(a);
+
+    a = dysnewempty();
+    EXPECT_NOTNULL(a);
+    b = dysnew("a");
+    EXPECT_NOTNULL(b);
+    EXPECT_LT_INT(dyscmp(a, b), 0);
+    EXPECT_GT_INT(dyscmp(b, a), 0);
+    dysfree(b);
+    dysfree(a);
 }
 
 UTEST_CASE(dystolower)
@@ -622,6 +740,27 @@ UTEST_CASE(dystolower)
     dystolower(s);
     EXPECT_EQ_STR(s, "");
     dysfree(s);
+
+    s = dysnew("abc");
+    EXPECT_NOTNULL(s);
+    dystolower(s);
+    EXPECT_EQ_STR(s, "abc");
+    EXPECT_EQ_UINT(dyslen(s), 3);
+    dysfree(s);
+
+    {
+        const char bin[] = {'A', '\0', 'B'};
+
+        s = dysnewlen(bin, 3);
+        EXPECT_NOTNULL(s);
+        dystolower(s);
+        EXPECT_EQ_UINT(dyslen(s), 3);
+        EXPECT_EQ_CHAR(s[0], 'a');
+        EXPECT_EQ_CHAR(s[1], '\0');
+        EXPECT_EQ_CHAR(s[2], 'b');
+        EXPECT_EQ_CHAR(s[3], '\0');
+        dysfree(s);
+    }
 }
 
 UTEST_CASE(dystoupper)
@@ -647,6 +786,26 @@ UTEST_CASE(dystoupper)
     dystoupper(s);
     EXPECT_EQ_STR(s, "");
     dysfree(s);
+
+    s = dysnew("ABC");
+    EXPECT_NOTNULL(s);
+    dystoupper(s);
+    EXPECT_EQ_STR(s, "ABC");
+    EXPECT_EQ_UINT(dyslen(s), 3);
+    dysfree(s);
+
+    {
+        const char bin[] = {'a', '\0', 'z'};
+
+        s = dysnewlen(bin, 3);
+        EXPECT_NOTNULL(s);
+        dystoupper(s);
+        EXPECT_EQ_UINT(dyslen(s), 3);
+        EXPECT_EQ_CHAR(s[0], 'A');
+        EXPECT_EQ_CHAR(s[1], '\0');
+        EXPECT_EQ_CHAR(s[2], 'Z');
+        dysfree(s);
+    }
 }
 
 UTEST_SUITE(dys)
