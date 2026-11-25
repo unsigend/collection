@@ -21,6 +21,7 @@ extern UTEST_SUITE(queue);
 extern UTEST_SUITE(hash);
 extern UTEST_SUITE(dict);
 extern UTEST_SUITE(set);
+extern UTEST_SUITE(heap);
 
 int main(int argc, char *argv[])
 {
@@ -39,6 +40,7 @@ int main(int argc, char *argv[])
     UTEST_ADDSUITE(hash);
     UTEST_ADDSUITE(dict);
     UTEST_ADDSUITE(set);
+    UTEST_ADDSUITE(heap);
 
     for (int i = 1; i < argc; i++) {
         if (strncmp(argv[i], "-j", 2) == 0) {
